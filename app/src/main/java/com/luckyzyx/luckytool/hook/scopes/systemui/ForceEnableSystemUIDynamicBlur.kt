@@ -1,5 +1,12 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
+import android.content.Context
+import android.graphics.Canvas
+import android.graphics.drawable.Drawable
+import android.os.Handler
+import android.os.Looper
+import android.view.View
+import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.hookAll
@@ -22,6 +29,12 @@ import org.lsposed.lsparanoid.Obfuscate
  *    - 拦截 PlatformBlurManagerImpl.useMotionBlur() 固定为 true。
  *    - 拦截 PlatformBlurManagerImpl.handleTimeoutPauseBlur() 阻止超时自动暂停动态模糊。
  *    - 拦截 MaterialBlurStateManager.enableMaterialBlur() 固定为 true。
+ * 4. 消除解锁状态下下拉通知/快捷设置时的纯灰底色遮罩：
+ *    - 拦截 ScrimControllerExImp.getNotificationScrimBgColor() 与 ScrimState.getBehindTint()，
+ *      在 UNLOCKED 状态下固定返回 0（透明），防止 isQsVisible=true 时强行注入 #1A1A1A 纯灰遮罩。
+ * 5. 桌面壁纸模糊底衬合成：
+ *    - 在 AutoBlurDrawable.draw(Canvas) 执行前，为 scrimBehind 绘制 WallpaperBlurDrawable 作为动态模糊底衬。
+ *    - 当在前台打开应用或抽屉时，应用图层不透明，前台动态模糊完整覆盖底衬；在桌面时，桌面图标与壁纸模糊完美融合。
  */
 @Obfuscate
 object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
@@ -127,6 +140,81 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
         // 7. 系统设置中的质感模糊与窗口模糊开关拦截
         hookSettingGetInt("android.provider.Settings\$System", "system_material_blur_enable", 1)
         hookSettingGetInt("android.provider.Settings\$Global", "disable_window_blurs", 0)
+
+        // 8. 消除解锁状态下下拉通知/快捷设置时的纯灰底色遮罩（ScrimControllerExImp & ScrimState）
+        "com.oplus.systemui.statusbar.phone.ScrimControllerExImp".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull {
+                name = "getNotificationScrimBgColor"
+                parameterCount = 1
+            }?.hook {
+                before {
+                    val scrimController = instance.asResolver().firstMethodOrNull { name = "getScrimController" }?.invoke<Any>()
+                    val state = scrimController?.asResolver()?.firstMethodOrNull { name = "getState" }?.invoke<Any>()
+                    val stateName = state?.toString()
+                    if (stateName == "UNLOCKED" || stateName == null) {
+                        result = 0
+                    }
+                }
+            }
+        }
+
+        "com.android.systemui.statusbar.phone.ScrimState".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull {
+                name = "getBehindTint"
+                emptyParameters()
+            }?.hook {
+                after {
+                    if (instance.toString() == "UNLOCKED") {
+                        result = 0
+                    }
+                }
+            }
+        }
+
+        // 9. 桌面壁纸模糊底衬合成：
+        // 在桌面透明背景下，AutoBlurDrawable 捕获的 Surface 缺少壁纸图层（FLAG_SHOW_WALLPAPER）。
+        // 在 AutoBlurDrawable.draw(Canvas) 执行前，为 scrimBehind 绘制 WallpaperBlurDrawable 作为动态模糊底衬。
+        // 当打开应用或抽屉时，应用图层不透明，前台动态模糊完整覆盖底衬；在桌面时，桌面图标与壁纸模糊完美融合。
+        "com.oplusos.systemui.common.blurability.drawable.AutoBlurDrawable".toClassOrNull()?.resolve()?.apply {
+            var wallpaperBlurDrawable: Drawable? = null
+
+            firstMethodOrNull {
+                name = "draw"
+                parameters(Canvas::class.java)
+            }?.hook {
+                before {
+                    val canvas = args.getOrNull(0) as? Canvas ?: return@before
+                    val autoBlur = instance as? Drawable ?: return@before
+                    val viewBlurProxy = autoBlur.asResolver().firstMethodOrNull { name = "getViewBlurProxy" }?.invoke<Any>() ?: return@before
+                    val hostView = viewBlurProxy.asResolver().firstMethodOrNull { name = "getView" }?.invoke<View>() ?: return@before
+
+                    val entryName = runCatching { hostView.resources.getResourceEntryName(hostView.id) }.getOrNull()
+                    if (entryName == "scrim_behind" || hostView.javaClass.name.contains("ScrimView")) {
+                        val blurAmount = (viewBlurProxy.asResolver().firstMethodOrNull { name = "getBlurAmount" }?.invoke<Float>() as? Number)?.toFloat() ?: 0.0f
+                        if (blurAmount > 0.001f) {
+                            if (wallpaperBlurDrawable == null) {
+                                val wbClass = "com.oplusos.systemui.common.blurability.wallpaperblur.WallpaperBlurDrawable".toClassOrNull()
+                                if (wbClass != null) {
+                                    runCatching {
+                                        val ctor = wbClass.getConstructor(
+                                            Context::class.java,
+                                            Handler::class.java,
+                                            Boolean::class.javaPrimitiveType
+                                        )
+                                        wallpaperBlurDrawable = ctor.newInstance(hostView.context, Handler(Looper.getMainLooper()), false) as? Drawable
+                                    }
+                                }
+                            }
+                            wallpaperBlurDrawable?.let { wb ->
+                                wb.bounds = autoBlur.bounds
+                                wb.alpha = (blurAmount * 255f).toInt().coerceIn(0, 255)
+                                wb.draw(canvas)
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         YLog.info("ForceEnableSystemUIDynamicBlur: hooks initialized successfully", tag = "LuckyTool")
     }
