@@ -1,11 +1,5 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
-import android.content.Context
-import android.graphics.Canvas
-import android.graphics.drawable.Drawable
-import android.os.Handler
-import android.os.Looper
-import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.asResolver
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
@@ -32,9 +26,9 @@ import org.lsposed.lsparanoid.Obfuscate
  * 4. 消除解锁状态下下拉通知/快捷设置时的纯灰底色遮罩：
  *    - 拦截 ScrimControllerExImp.getNotificationScrimBgColor() 与 ScrimState.getBehindTint()，
  *      在 UNLOCKED 状态下固定返回 0（透明），防止 isQsVisible=true 时强行注入 #1A1A1A 纯灰遮罩。
- * 5. 桌面壁纸模糊底衬合成：
- *    - 在 AutoBlurDrawable.draw(Canvas) 执行前，为 scrimBehind 绘制 WallpaperBlurDrawable 作为动态模糊底衬。
- *    - 当在前台打开应用或抽屉时，应用图层不透明，前台动态模糊完整覆盖底衬；在桌面时，桌面图标与壁纸模糊完美融合。
+ * 5. 保持解锁状态下拉通知/快捷设置时桌面壁纸图层合成（FLAG_SHOW_WALLPAPER）：
+ *    - 拦截 OplusNotificationShadeWindowControllerExImpl.shouldShowWallpaper，在下拉展开或面板可见时返回 true。
+ *    - WindowManager/SurfaceFlinger 在状态栏窗口展开期间保持壁纸与桌面图标、应用、PiP 视频统一合成，实现 100% 实时动态模糊。
  */
 @Obfuscate
 object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
@@ -153,7 +147,7 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                 }?.hook {
                     before {
                         val reason = args.getOrNull(0) as? String ?: ""
-                        if (reason.contains("should not blur")) {
+                        if (reason.contains("should not blur") || reason.contains("unsupportBlur")) {
                             result = null
                             return@before
                         }
@@ -236,48 +230,31 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
             }
         }
 
-        // 9. 桌面壁纸模糊底衬合成：
-        // 在桌面透明背景下，AutoBlurDrawable 捕获的 Surface 缺少壁纸图层（FLAG_SHOW_WALLPAPER）。
-        // 在 AutoBlurDrawable.draw(Canvas) 执行前，为 scrimBehind 绘制 WallpaperBlurDrawable 作为动态模糊底衬。
-        // 当打开应用或抽屉时，应用图层不透明，前台动态模糊完整覆盖底衬；在桌面时，桌面图标与壁纸模糊完美融合。
+        // 9. 保持解锁状态下拉通知/快捷设置时桌面壁纸图层合成（FLAG_SHOW_WALLPAPER）：
+        // 在桌面透明背景下，Launcher 仅绘制图标与 Dock，壁纸由 ImageWallpaper 独立图层承载。
+        // ColorOS 的 OplusNotificationShadeWindowControllerExImpl.shouldShowWallpaper 在解锁状态下拉时默认返回 false，
+        // 导致 NotificationShadeWindowControllerImpl 清除 FLAG_SHOW_WALLPAPER，SurfaceFlinger 无法捕获壁纸底衬。
+        // 拦截 shouldShowWallpaper，当下拉展开或面板可见时返回 true，确保壁纸与桌面图标、应用、PiP 视频统一参与硬件动态高斯模糊。
         runCatching {
-            "com.oplusos.systemui.common.blurability.drawable.AutoBlurDrawable".toClassOrNull()?.resolve()?.apply {
-                var wallpaperBlurDrawable: Drawable? = null
-
+            "com.oplus.systemui.shade.OplusNotificationShadeWindowControllerExImpl".toClassOrNull()?.resolve()?.apply {
                 firstMethodOrNull {
-                    name = "draw"
-                    parameters(Canvas::class.java)
+                    name = "shouldShowWallpaper"
                     optional()
                 }?.hook {
-                    before {
-                        val canvas = args.getOrNull(0) as? Canvas ?: return@before
-                        val autoBlur = instance as? Drawable ?: return@before
-                        val viewBlurProxy = autoBlur.asResolver().firstMethodOrNull { name = "getViewBlurProxy"; optional() }?.invoke<Any>() ?: return@before
-                        val hostView = viewBlurProxy.asResolver().firstMethodOrNull { name = "getView"; optional() }?.invoke<View>() ?: return@before
+                    after {
+                        val state = args.getOrNull(1)
+                        val panelVisible = runCatching {
+                            state?.asResolver()?.firstFieldOrNull { name = "panelVisible"; optional() }?.get<Boolean>()
+                        }.getOrNull() == true
+                        val shadeOrQsExpanded = runCatching {
+                            state?.asResolver()?.firstFieldOrNull { name = "shadeOrQsExpanded"; optional() }?.get<Boolean>()
+                        }.getOrNull() == true
+                        val keyguardShowing = runCatching {
+                            state?.asResolver()?.firstFieldOrNull { name = "keyguardShowing"; optional() }?.get<Boolean>()
+                        }.getOrNull() == true
 
-                        val entryName = runCatching { hostView.resources.getResourceEntryName(hostView.id) }.getOrNull()
-                        if (entryName == "scrim_behind" || hostView.javaClass.name.contains("ScrimView")) {
-                            val blurAmount = (viewBlurProxy.asResolver().firstMethodOrNull { name = "getBlurAmount"; optional() }?.invoke<Float>() as? Number)?.toFloat() ?: 0.0f
-                            if (blurAmount > 0.001f) {
-                                if (wallpaperBlurDrawable == null) {
-                                    val wbClass = "com.oplusos.systemui.common.blurability.wallpaperblur.WallpaperBlurDrawable".toClassOrNull()
-                                    if (wbClass != null) {
-                                        runCatching {
-                                            val ctor = wbClass.getConstructor(
-                                                Context::class.java,
-                                                Handler::class.java,
-                                                Boolean::class.javaPrimitiveType
-                                            )
-                                            wallpaperBlurDrawable = ctor.newInstance(hostView.context, Handler(Looper.getMainLooper()), false) as? Drawable
-                                        }
-                                    }
-                                }
-                                wallpaperBlurDrawable?.let { wb ->
-                                    wb.bounds = autoBlur.bounds
-                                    wb.alpha = (blurAmount * 255f).toInt().coerceIn(0, 255)
-                                    wb.draw(canvas)
-                                }
-                            }
+                        if (!keyguardShowing && (panelVisible || shadeOrQsExpanded)) {
+                            result = true
                         }
                     }
                 }
