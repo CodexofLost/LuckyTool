@@ -48,7 +48,8 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.systemui.gauss_blur_disabled", false)
                 put("com.android.systemui.pan_view_gauss_blur_disabled", false)
                 put("com.android.systemui.wallpaper_blur_disabled", false)
-                put("com.android.systemui.notification_light_os_level", false)
+                put("com.android.systemui.notification_light_os_level", 0)
+                put("com.android.systemui.disable_bouncer_blur_scrim", false)
             }
 
             //Source SystemUI 启用手电筒亮度调节

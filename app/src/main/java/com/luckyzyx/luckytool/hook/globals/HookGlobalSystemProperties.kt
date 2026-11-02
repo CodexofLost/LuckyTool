@@ -59,10 +59,10 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             if (preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
                 put("ro.surface_flinger.supports_background_blur", true)
                 put("persist.sys.sf.disable_blurs", false)
-                put("ro.oplus.animationlevel", 3)
-                put("persist.sys.oplus.anim_level", 2)
+                put("ro.oplus.animationlevel", 1)
+                put("persist.sys.oplus.anim_level", 1)
                 put("ro.oplus.gaussianlevel", 3)
-                put("debug.systemui.gaussblur_level", 3)
+                put("debug.systemui.gaussblur_level", 1)
                 put("persist.sys.oplus.systemui.dynamic_blur", "true")
                 put("persist.sysui.disableBlur", false)
             }
