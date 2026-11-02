@@ -288,50 +288,16 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
         // 9. 强制 scrim_behind 使用 AutoBlurDrawable 与 BlurTypePlatformStatic
         runCatching {
             "com.oplus.systemui.statusbar.phone.ScrimControllerExImp".toClassOrNull()?.resolve()?.apply {
-                // 确保 scrimBehind 获得 AutoBlurDrawable，避免被切换为 WallpaperBlurDrawable
+                // 确保 scrimBehind 使用 AutoBlurDrawable，避免持有旧的 WallpaperBlurDrawable
                 firstMethodOrNull { name = "refreshBehindDrawable"; optional() }?.hook {
                     before {
-                        val scrimBehind = runCatching {
+                        runCatching {
                             val scrimController = instance.asResolver().firstMethodOrNull { name = "getScrimController"; optional() }?.invoke<Any>()
-                            scrimController?.asResolver()?.firstMethodOrNull { name = "getScrimBehind"; optional() }?.invoke<View>()
-                        }.getOrNull() ?: return@before
-
-                        val drawable = (scrimBehind as? ImageView)?.drawable ?: runCatching {
-                            scrimBehind.asResolver().firstMethodOrNull { name = "getDrawable"; optional() }?.invoke<Drawable>()
-                        }.getOrNull()
-
-                        val isAutoBlur = drawable != null && drawable.javaClass.name.contains("AutoBlurDrawable")
-                        val isWallpaperBlur = drawable != null && drawable.javaClass.name.contains("WallpaperBlurDrawable")
-
-                        if (isWallpaperBlur || !isAutoBlur) {
-                            runCatching {
-                                val ctx = instance.asResolver().firstFieldOrNull { name = "context"; optional() }?.get<Context>() ?: scrimBehind.context
-                                val panelRadius = "com.oplusos.systemui.common.util.NotifiAndQsPlatformBlurExKt".toClassOrNull()?.resolve()
-                                    ?.firstMethodOrNull { name = "panelBlurRadius"; optional() }?.invoke<Int>(null, ctx) ?: 540
-                                val panelMixConfig = instance.asResolver().firstMethodOrNull { name = "getPanelPlatformMixConfig"; optional() }?.invoke<Any>()
-
-                                val blurConfigClass = "com.oplusos.systemui.common.blurability.BlurConfig".toClassOrNull()
-                                val blurConfig = blurConfigClass?.resolve()?.firstConstructorOrNull { parameterCount = 8; optional() }
-                                    ?.newInstance(panelRadius, 0, null, true, panelMixConfig, null, null, 6654)
-                                    ?: blurConfigClass?.resolve()?.firstConstructorOrNull { optional() }?.newInstance()
-
-                                val notifiBlurManager = "com.oplus.systemui.statusbar.phone.ScrimControllerExImp\$Companion".toClassOrNull()?.resolve()
-                                    ?.firstMethodOrNull { name = "getNotifiAndQsBlurManager"; optional() }?.invoke<Any>(null, ctx)
-
-                                val viewBlurProxy = "com.oplusos.systemui.common.blurability.ViewBlurProxy".toClassOrNull()?.resolve()
-                                    ?.firstConstructorOrNull { parameterCount = 4; optional() }
-                                    ?.newInstance(scrimBehind, blurConfig, notifiBlurManager, 24)
-
-                                val maskDrawable = "com.oplusos.systemui.common.blurability.drawable.MaskDrawable".toClassOrNull()?.resolve()
-                                    ?.firstConstructorOrNull { optional() }?.newInstance(blurConfig)
-
-                                val autoBlurDrawable = "com.oplusos.systemui.common.blurability.drawable.AutoBlurDrawable".toClassOrNull()?.resolve()
-                                    ?.firstConstructorOrNull { optional() }?.newInstance(viewBlurProxy, maskDrawable) as? Drawable
-
-                                if (autoBlurDrawable != null) {
-                                    scrimBehind.asResolver().firstMethodOrNull { name = "setDrawable"; optional() }?.invoke<Unit>(autoBlurDrawable)
-                                    intercept()
-                                }
+                            val scrimBehind = scrimController?.asResolver()?.firstMethodOrNull { name = "getScrimBehind"; optional() }?.invoke<View>() ?: return@runCatching
+                            val drawable = (scrimBehind as? ImageView)?.drawable ?: scrimBehind.asResolver().firstMethodOrNull { name = "getDrawable"; optional() }?.invoke<Drawable>()
+                            if (drawable != null && drawable.javaClass.name.contains("WallpaperBlurDrawable")) {
+                                (scrimBehind as? ImageView)?.setImageDrawable(null)
+                                scrimBehind.asResolver().firstMethodOrNull { name = "setDrawable"; optional() }?.invoke<Unit>(null)
                             }
                         }
                     }
