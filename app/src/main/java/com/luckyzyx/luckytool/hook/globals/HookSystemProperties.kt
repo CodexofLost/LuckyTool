@@ -25,7 +25,9 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
                             null -> return@before
                             is Boolean -> result = value.toString()
                             is String -> result = value
-                            is Int -> result = value
+                            is Int -> result = value.toString()
+                            is Long -> result = value.toString()
+                            else -> result = value.toString()
                         }
                     }
                 }
@@ -40,6 +42,8 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
                             "true" -> result = true
                             "false" -> result = false
                             is Boolean -> result = value
+                            is Int -> result = value != 0
+                            is Long -> result = value != 0L
                         }
                     }
                 }
@@ -51,6 +55,8 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
                             null -> return@before
                             is Long -> result = value.toInt()
                             is Int -> result = value
+                            is String -> result = value.toIntOrNull() ?: return@before
+                            is Boolean -> result = if (value) 1 else 0
                         }
                     }
                 }
@@ -62,6 +68,8 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
                             null -> return@before
                             is Int -> result = value.toLong()
                             is Long -> result = value
+                            is String -> result = value.toLongOrNull() ?: return@before
+                            is Boolean -> result = if (value) 1L else 0L
                         }
                     }
                 }

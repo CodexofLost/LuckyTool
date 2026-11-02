@@ -125,6 +125,17 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.launcher.APP_NAME_SHOW_IN_TWO_LINES", true)
 //                put("com.android.launcher.two_lines_all_show_textheightdp", -1)
             }
+            //Source SystemUI Flagship Dynamic Blur & Feature Flags
+            if (preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
+                put("com.android.systemui.gauss_blur_disabled", false)
+                put("com.android.systemui.pan_view_gauss_blur_disabled", false)
+                put("com.android.systemui.wallpaper_blur_disabled", false)
+                put("com.android.systemui.disable_bouncer_blur_scrim", false)
+                put("com.android.systemui.enable_bouncer_wallpaper_blur", false)
+                put("com.android.systemui.DEVICE_LEVEL_HIGH", true)
+                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
+            }
+
             //Source Launcher Flagship Device Level & Blur
             if (preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
                 preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false)) {
