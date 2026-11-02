@@ -5,7 +5,9 @@ import java.util.Properties
 
 val keystorePropertiesFile: File = rootProject.file("keystore/keystore.properties")
 val keystoreProperties = Properties()
-keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 plugins {
@@ -18,10 +20,10 @@ plugins {
 
 extra["jdkVersion"] = 21
 
-extra["storeFile"] = keystoreProperties["storeFile"]
-extra["storePassword"] = keystoreProperties["storePassword"]
-extra["keyAlias"] = keystoreProperties["keyAlias"]
-extra["keyPassword"] = keystoreProperties["keyPassword"]
+extra["storeFile"] = keystoreProperties["storeFile"] ?: ""
+extra["storePassword"] = keystoreProperties["storePassword"] ?: ""
+extra["keyAlias"] = keystoreProperties["keyAlias"] ?: ""
+extra["keyPassword"] = keystoreProperties["keyPassword"] ?: ""
 
 tasks {
     register("clean", Delete::class) {

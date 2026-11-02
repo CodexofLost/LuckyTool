@@ -39,6 +39,12 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
                 "2" -> put("ro.oplus.gaussianlevel", 2)
                 "3" -> put("ro.oplus.gaussianlevel", 3)
             }
+            //Source Android OplusPlatformLevelUtils AnimationLevel
+            if (preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
+                preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
+                put("ro.oplus.animationlevel", 3)
+                put("persist.sys.oplus.anim_level", 2)
+            }
             //Source Android OplusFeatureMEMC 启用视频动态插帧
             if (preferences(ModulePrefs).getBoolean("enable_video_memc_frame_insertion", false)
             ) {

@@ -288,6 +288,11 @@ object LauncherRelatedPage {
             )
         }
         switch(
+            key = "force_enable_launcher_high_level",
+            title = c.getString(R.string.force_enable_launcher_high_level),
+            summary = c.getString(R.string.force_enable_launcher_high_level_summary),
+        )
+        switch(
             key = "remove_docker_max_number_limit",
             title = c.getString(R.string.remove_docker_max_number_limit),
             summary = c.getString(R.string.remove_docker_max_number_limit_summary),

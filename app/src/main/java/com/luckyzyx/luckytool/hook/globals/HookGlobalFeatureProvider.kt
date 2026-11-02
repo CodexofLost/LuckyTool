@@ -122,6 +122,15 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.launcher.APP_NAME_SHOW_IN_TWO_LINES", true)
 //                put("com.android.launcher.two_lines_all_show_textheightdp", -1)
             }
+            //Source Launcher Flagship Device Level & Blur
+            if (preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
+                preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false)) {
+                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
+                put("com.android.launcher.support_spring_animation_app_start", true)
+                put("com.android.launcher.NEW_RECENTS_VIBRATION", true)
+                put("oplus.software.support_fluid_entry", true)
+                put("oplus.software.zoom_wallpaper", true)
+            }
 
             //Source OplusGame  AI辅助
 //            if (preferences(ModulePrefs).getBoolean("enable_game_ai_play", false)) {

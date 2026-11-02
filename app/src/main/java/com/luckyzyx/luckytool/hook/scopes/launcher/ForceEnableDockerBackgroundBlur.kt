@@ -3,6 +3,7 @@ package com.luckyzyx.luckytool.hook.scopes.launcher
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.toClass
+import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
@@ -40,6 +41,14 @@ object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
             firstMethodOrNull { name = "hasLargeDisplayFeatures"; emptyParameters() }?.hook {
                 before {
                     if (forcingBlur.get() == true) result = true
+                }
+            }
+        }
+        //Source AppFeatureUtils (disable light OS animation restrictions to unlock launcher blur)
+        "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull { name = "isLightOSAnimation"; emptyParameters() }?.hook {
+                before {
+                    result = false
                 }
             }
         }

@@ -106,6 +106,7 @@ import java.io.File
         "com.android.permissioncontroller",
         "com.coloros.directui",
         "com.heytap.quicksearchbox",
+        "com.oppo.quicksearchbox",
         "com.heytap.market",
         "com.coloros.weather2",
         "com.coloros.calendar",
@@ -271,6 +272,7 @@ class MainHook : YukiHookXposedModule {
 
         //全局搜索
         loadApp("com.heytap.quicksearchbox", HookQuickSearchBox)
+        loadApp("com.oppo.quicksearchbox", HookQuickSearchBox)
 
         //软件商店
         loadApp("com.heytap.market", HookMarket)

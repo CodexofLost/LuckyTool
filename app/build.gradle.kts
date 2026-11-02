@@ -29,17 +29,20 @@ android {
         versionName = "1.3.5_beta"
         ndk.abiFilters.addAll(arrayOf("arm64-v8a"/*, "armeabi-v7a", "x86", "x86_64"*/))
     }
-    signingConfigs {
-        all {
-            enableV1Signing = true
-            enableV2Signing = true
-            enableV3Signing = true
-            enableV4Signing = null
+    val customStoreFile = rootProject.extra.get("storeFile") as? String ?: ""
+    if (customStoreFile.isNotEmpty() && file(customStoreFile).exists()) {
+        signingConfigs {
+            all {
+                enableV1Signing = true
+                enableV2Signing = true
+                enableV3Signing = true
+                enableV4Signing = null
 
-            storeFile = file(rootProject.extra.get("storeFile") as String)
-            storePassword = rootProject.extra.get("storePassword") as String
-            keyAlias = rootProject.extra.get("keyAlias") as String
-            keyPassword = rootProject.extra.get("keyPassword") as String
+                storeFile = file(customStoreFile)
+                storePassword = rootProject.extra.get("storePassword") as String
+                keyAlias = rootProject.extra.get("keyAlias") as String
+                keyPassword = rootProject.extra.get("keyPassword") as String
+            }
         }
     }
     buildTypes {
@@ -50,14 +53,18 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            if (customStoreFile.isNotEmpty() && file(customStoreFile).exists()) {
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
         debug {
             isDebuggable = false
             isMinifyEnabled = false
             //noinspection NotShrinkingResources
             isShrinkResources = false
-            signingConfig = signingConfigs.getByName("debug")
+            if (customStoreFile.isNotEmpty() && file(customStoreFile).exists()) {
+                signingConfig = signingConfigs.getByName("debug")
+            }
         }
     }
     compileOptions {

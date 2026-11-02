@@ -636,6 +636,8 @@
     <string name="custom_desktop_default_home_page">Custom desktop default home page</string>
     <string name="enable_docker_background">Enable Docker background display</string>
     <string name="force_enable_docker_background_blur">Force enable Docker background blur</string>
+    <string name="force_enable_launcher_high_level">Force flagship animations &amp; blur (DEVICE_LEVEL_HIGH)</string>
+    <string name="force_enable_launcher_high_level_summary">Injects flagship tier flags to unlock desktop background blur, spring animations, and recents vibration on realme and ColorOS devices</string>
     <string name="remove_docker_max_number_limit">Remove max number limit for Docker</string>
     <string name="remove_docker_max_number_limit_summary">Same number of columns as desktop layout</string>
     <string name="launcher_layout_row_colume">Sets the maximum number of rows and columns supported by the desktop layout</string>
