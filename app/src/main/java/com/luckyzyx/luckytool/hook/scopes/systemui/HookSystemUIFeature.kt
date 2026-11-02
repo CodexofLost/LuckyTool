@@ -32,6 +32,10 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         loadHooker(HookGlobalSystemProperties)
         loadHooker(HookGlobalFeatureProvider(dexKitBridge))
 
+        if (preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
+            loadHooker(ForceEnableSystemUIDynamicBlur)
+        }
+
         loadHooker(HookFeatureOption)
 //        if (osCode >= 34) loadHooker(HookFeatureFlags)
         if (osCode < 34) loadHooker(HookStatusBarFeature)

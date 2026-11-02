@@ -26,7 +26,7 @@ synced_at: "2026-11-02T15:50:18Z"
 | **Global Feature Interceptors** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookAppFeatureProvider.kt` | Intercepts ColorOS `AppFeatureProvider` & `FeatureConfigManager` queries in real-time. |
 | **System Properties Injection** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalSystemProperties.kt` | Hooks `SystemProperties.get` / `SystemProperties.getBoolean` for animation/blur flags. |
 | **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks grid size, dock blur, `DEVICE_LEVEL_HIGH`, spring animations, and recents gestures. |
-| **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookSystemUI.kt` | Controls status bar clock, network traffic, notification styling, and QS panel layouts. |
+| **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookSystemUI.kt` | Controls status bar clock, network traffic, notification styling, dynamic blur, and QS panel layouts. |
 | **Metis (Fluid Cloud)** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookMetis.kt` | Customizes ColorOS / realme UI Dynamic Island / Fluid Cloud card routing and app redirection. |
 | **Core Signature Patching** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookCorePatch.kt` | Package manager hook to allow app downgrades and unsigned/mismatched signature installs. |
 | **Compose UI & Settings** | `app/src/main/java/com/luckyzyx/luckytool/ui/compose/MainActivity.kt` | User preference interface supporting Material 3 and Miuix-styled design systems. |
