@@ -45,15 +45,15 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : YukiBaseHooker() 
             if (customAlpha < 0) return
 
             //Source OplusVolumeDialogView
-            "com.oplus.systemui.volume.view.OplusVolumeDialogView".toClass().resolve().apply {
-                firstMethod { name = "initDialog" }.hook {
+            "com.oplus.systemui.volume.view.OplusVolumeDialogView".toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull { name = "initDialog" }?.hook {
                     after {
                         if (customAlpha < 0) return@after
                         val value = customAlpha * 25
 
-                        firstField { name = "mMoreRowStreamLl" }.of(instance).get<View>()
+                        firstFieldOrNull { name = "mMoreRowStreamLl" }?.of(instance)?.get<View>()
                             ?.background?.alpha = 255 - value
-                        firstField { name = "mAppVolumeAdjustFl" }.of(instance).get<View>()
+                        firstFieldOrNull { name = "mAppVolumeAdjustFl" }?.of(instance)?.get<View>()
                             ?.background?.alpha = 255 - value
                     }
                 }
@@ -65,11 +65,11 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : YukiBaseHooker() 
                     after {
                         if (customAlpha < 0) return@after
                         val seekBar = instance<Any>()
-                        seekBar.asResolver().firstMethod {
+                        seekBar.asResolver().firstMethodOrNull {
                             name = "setProgressColor"
                             parameters(ColorStateList::class)
                             superclass()
-                        }.invoke(
+                        }?.invoke(
                             ColorStateList.valueOf(
                                 formatColorAlpha(Color.WHITE, 0.5F)
                             )
@@ -89,31 +89,30 @@ class VolumeDialogBackground(val dexKitBridge: DexKitBridge) : YukiBaseHooker() 
                             drawable.setBlurRadius(value.dp)
                         }
                     }
-                } ?: run {
-                    firstMethod { name = "getVolumeBarBackground" }.hook {
-                        after {
-                            if (customAlpha < 0) return@after
-                            val value = customAlpha * 25
-                            val drawable = result<Drawable>()
-                            if (drawable is LayerDrawable) {
-                                val blurDrawable = drawable.getDrawable(0)
-                                if (blurDrawable is BackgroundBlurDrawable) {
-                                    blurDrawable.setBlurRadius(value.dp)
-                                }
-                                drawable.getDrawable(1)?.alpha = value
-                            } else drawable?.alpha = value
-                        }
-                    }
-                    firstMethod { name = "getVolumePanelBackground" }.hook {
-                        after {
-                            if (customAlpha < 0) return@after
-                            val value = customAlpha * 25
-                            val drawable = result<Drawable>()
-                            if (drawable is BackgroundBlurDrawable) {
-                                drawable.setBlurRadius(value.dp)
-                            } else {
-                                drawable?.alpha = value
+                }
+                firstMethodOrNull { name = "getVolumeBarBackground" }?.hook {
+                    after {
+                        if (customAlpha < 0) return@after
+                        val value = customAlpha * 25
+                        val drawable = result<Drawable>()
+                        if (drawable is LayerDrawable) {
+                            val blurDrawable = drawable.getDrawable(0)
+                            if (blurDrawable is BackgroundBlurDrawable) {
+                                blurDrawable.setBlurRadius(value.dp)
                             }
+                            drawable.getDrawable(1)?.alpha = value
+                        } else drawable?.alpha = value
+                    }
+                }
+                firstMethodOrNull { name = "getVolumePanelBackground" }?.hook {
+                    after {
+                        if (customAlpha < 0) return@after
+                        val value = customAlpha * 25
+                        val drawable = result<Drawable>()
+                        if (drawable is BackgroundBlurDrawable) {
+                            drawable.setBlurRadius(value.dp)
+                        } else {
+                            drawable?.alpha = value
                         }
                     }
                 }

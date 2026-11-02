@@ -25,6 +25,7 @@ import com.highcapable.kavaref.extension.classOf
 import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.intercept
 import com.highcapable.yukihookapi.extension.kavaref.toClass
+import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.YLog
 import com.luckyzyx.luckytool.hook.utils.sysui.AbsSettingsValueProxyUtils
@@ -32,6 +33,7 @@ import com.luckyzyx.luckytool.hook.utils.sysui.WifiStandardIconDrawable
 import com.luckyzyx.luckytool.hook.utils.sysui.WifiUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.getOSVersionCode
+import kotlinx.coroutines.flow.flowOf
 import org.lsposed.lsparanoid.Obfuscate
 import java.lang.ref.WeakReference
 
@@ -39,7 +41,10 @@ import java.lang.ref.WeakReference
 object WiFiDataIconRelated : YukiBaseHooker() {
     override fun onHook() {
         when (getOSVersionCode) {
-            in 34..Int.MAX_VALUE -> loadHooker(WiFiDataIcon)
+            in 34..Int.MAX_VALUE -> {
+                loadHooker(WiFiDataIcon)
+                loadHooker(WiFiDataIconModern)
+            }
             else -> loadHooker(WiFiDataIconV14)
         }
     }
@@ -294,6 +299,45 @@ object WiFiDataIconRelated : YukiBaseHooker() {
     }
 
     @Obfuscate
+    object WiFiDataIconModern : YukiBaseHooker() {
+        override fun onHook() {
+            val removeInout = preferences(ModulePrefs).getBoolean("remove_wifi_data_inout", false)
+            if (!removeInout) return
+
+            // Source WifiViewModel (Modern status bar pipeline)
+            "com.android.systemui.statusbar.pipeline.wifi.ui.viewmodel.WifiViewModel".toClassOrNull()
+                ?.resolve()?.apply {
+                    firstMethodOrNull { name = "isActivityContainerVisible" }?.hook {
+                        intercept(flowOf(false))
+                    }
+                    firstMethodOrNull { name = "isActivityInViewVisible" }?.hook {
+                        intercept(flowOf(false))
+                    }
+                    firstMethodOrNull { name = "isActivityOutViewVisible" }?.hook {
+                        intercept(flowOf(false))
+                    }
+                }
+
+            // Source OplusModernStatusBarWifiView / ModernStatusBarWifiView
+            VariousClass(
+                "com.oplus.systemui.statusbar.phone.signal.widget.OplusModernStatusBarWifiView",
+                "com.android.systemui.statusbar.pipeline.wifi.ui.view.ModernStatusBarWifiView"
+            ).toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull { name = "dispatchDraw" }?.hook {
+                    before {
+                        if (!removeInout) return@before
+                        val view = instance<ViewGroup>()
+                        val inoutId = view.context.resources.getIdentifier("inout_container", "id", packageName)
+                        if (inoutId != 0) {
+                            view.findViewById<View>(inoutId)?.isVisible = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Obfuscate
     object WiFiDataIconV14 : YukiBaseHooker() {
         override fun onHook() {
             val removeInout = preferences(ModulePrefs).getBoolean("remove_wifi_data_inout", false)
@@ -302,18 +346,18 @@ object WiFiDataIconRelated : YukiBaseHooker() {
             VariousClass(
                 "com.oplusos.systemui.statusbar.OplusStatusBarWifiView",
                 "com.oplus.systemui.statusbar.phone.signal.OplusStatusBarWifiViewExImpl"
-            ).toClass().resolve().apply {
-                firstMethod { name = "initViewState" }.hook {
+            ).toClassOrNull()?.resolve()?.apply {
+                firstMethodOrNull { name = "initViewState" }?.hook {
                     after {
                         if (!removeInout) return@after
-                        firstField { name = "mWifiActivity" }.of(instance).get<View>()?.isVisible =
+                        firstFieldOrNull { name = "mWifiActivity" }?.of(instance)?.get<View>()?.isVisible =
                             false
                     }
                 }
-                firstMethod { name = "updateState" }.hook {
+                firstMethodOrNull { name = "updateState" }?.hook {
                     after {
                         if (!removeInout) return@after
-                        firstField { name = "mWifiActivity" }.of(instance).get<View>()?.isVisible =
+                        firstFieldOrNull { name = "mWifiActivity" }?.of(instance)?.get<View>()?.isVisible =
                             false
                     }
                 }
