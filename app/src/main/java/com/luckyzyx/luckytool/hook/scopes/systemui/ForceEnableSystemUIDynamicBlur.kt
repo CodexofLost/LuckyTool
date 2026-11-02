@@ -153,24 +153,15 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                 }?.hook {
                     before {
                         val reason = args.getOrNull(0) as? String ?: ""
+                        if (reason.contains("should not blur")) {
+                            result = null
+                            return@before
+                        }
                         val isExpanding = runCatching {
                             instance.asResolver().firstFieldOrNull { name = "isExpanding"; optional() }?.get<Boolean>()
                         }.getOrNull() == true
 
-                        val scrimController = runCatching {
-                            instance.asResolver().firstMethodOrNull { name = "getScrimController"; optional() }?.invoke<Any>()
-                                ?.asResolver()?.firstMethodOrNull { name = "get"; optional() }?.invoke<Any>()
-                        }.getOrNull()
-
-                        val panelFraction = runCatching {
-                            scrimController?.asResolver()?.firstMethodOrNull { name = "getPanelExpansionFraction"; optional() }?.invoke<Float>()
-                        }.getOrNull() ?: 0f
-
-                        val qsExpansion = runCatching {
-                            scrimController?.asResolver()?.firstMethodOrNull { name = "getQsExpansion"; optional() }?.invoke<Float>()
-                        }.getOrNull() ?: 0f
-
-                        if (isExpanding || panelFraction > 0.001f || qsExpansion > 0.001f || reason.contains("should not blur")) {
+                        if (isExpanding) {
                             result = null
                         }
                     }
@@ -223,12 +214,7 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                     optional()
                 }?.hook {
                     before {
-                        val scrimController = instance.asResolver().firstMethodOrNull { name = "getScrimController"; optional() }?.invoke<Any>()
-                        val state = scrimController?.asResolver()?.firstMethodOrNull { name = "getState"; optional() }?.invoke<Any>()
-                        val stateName = state?.toString()
-                        if (stateName == "UNLOCKED" || stateName == null) {
-                            result = 0
-                        }
+                        result = 0
                     }
                 }
             }
