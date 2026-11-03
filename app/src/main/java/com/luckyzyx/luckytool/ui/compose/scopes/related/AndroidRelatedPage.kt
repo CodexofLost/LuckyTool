@@ -6,8 +6,8 @@ import com.luckyzyx.luckytool.ui.compose.scopes.ScopePageSpec
 import com.luckyzyx.luckytool.utils.CommandUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
-import com.luckyzyx.luckytool.utils.ShellUtils
 import com.luckyzyx.luckytool.utils.arraySummaryLine
+import com.topjohnwu.superuser.ShellUtils
 
 /**
  * Android 系统动画与高斯模糊页：全局动画等级、高斯模糊等级、SystemUI 高斯模糊与实时表面模糊开关。
