@@ -56,6 +56,19 @@ object AndroidRelatedPage {
             title = c.getString(R.string.disable_long_press_home_key_start_speech_asssist),
             summary = c.getString(R.string.need_restart_system),
         )
+        category(c.getString(R.string.category_blur_and_animation))
+        list(
+            key = "customized_anim_level",
+            title = c.getString(R.string.customized_anim_level),
+            entries = c.resources.getStringArray(R.array.customized_anim_level_entries),
+            entryValues = arrayOf("-1", "1", "2", "3", "4"),
+            default = "-1",
+            summary = arraySummaryLine(
+                c.getString(R.string.current_mode) + ": %s",
+                c.getString(R.string.customized_anim_level_summary),
+                c.getString(R.string.need_restart_system),
+            ),
+        )
         list(
             key = "customized_gaussian_blur_effect_level",
             title = c.getString(R.string.customized_gaussian_blur_effect_level),
@@ -64,6 +77,30 @@ object AndroidRelatedPage {
             default = "-1",
             summary = arraySummaryLine(
                 c.getString(R.string.current_mode) + ": %s",
+                c.getString(R.string.need_restart_system),
+            ),
+        )
+        list(
+            key = "customized_systemui_gaussblur_level",
+            title = c.getString(R.string.customized_systemui_gaussblur_level),
+            entries = c.resources.getStringArray(R.array.customized_systemui_gaussblur_level_entries),
+            entryValues = arrayOf("-1", "1", "2", "3"),
+            default = "-1",
+            summary = arraySummaryLine(
+                c.getString(R.string.current_mode) + ": %s",
+                c.getString(R.string.customized_systemui_gaussblur_level_summary),
+                c.getString(R.string.need_restart_system),
+            ),
+        )
+        list(
+            key = "customized_systemui_dynamic_blur",
+            title = c.getString(R.string.customized_systemui_dynamic_blur),
+            entries = c.resources.getStringArray(R.array.customized_systemui_dynamic_blur_entries),
+            entryValues = arrayOf("-1", "1", "0"),
+            default = "-1",
+            summary = arraySummaryLine(
+                c.getString(R.string.current_mode) + ": %s",
+                c.getString(R.string.customized_systemui_dynamic_blur_summary),
                 c.getString(R.string.need_restart_system),
             ),
         )

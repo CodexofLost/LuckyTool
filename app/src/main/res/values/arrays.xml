@@ -422,4 +422,31 @@
         <item>响铃 静音</item>
     </string-array>
 
+    <string-array name="customized_anim_level_entries">
+        <item>@string/none_default</item>
+        <item>@string/anim_level_1_flagship</item>
+        <item>@string/anim_level_2_high</item>
+        <item>@string/anim_level_3_mid</item>
+        <item>@string/anim_level_4_low</item>
+    </string-array>
+
+    <string-array name="customized_systemui_gaussblur_level_entries">
+        <item>@string/none_default</item>
+        <item>@string/gaussblur_level_1_high</item>
+        <item>@string/gaussblur_level_2_mid</item>
+        <item>@string/gaussblur_level_3_low</item>
+    </string-array>
+
+    <string-array name="customized_systemui_dynamic_blur_entries">
+        <item>@string/none_default</item>
+        <item>@string/enable</item>
+        <item>@string/disable</item>
+    </string-array>
+
+    <string-array name="customized_shade_blur_mode_entries">
+        <item>@string/none_default</item>
+        <item>@string/shade_blur_mode_dynamic</item>
+        <item>@string/shade_blur_mode_wallpaper</item>
+    </string-array>
+
 </resources>

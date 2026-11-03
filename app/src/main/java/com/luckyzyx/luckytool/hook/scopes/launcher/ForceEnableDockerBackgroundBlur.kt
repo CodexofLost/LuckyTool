@@ -1,5 +1,8 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
+import android.view.ViewGroup
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
@@ -9,23 +12,80 @@ import org.lsposed.lsparanoid.Obfuscate
 @Obfuscate
 object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
     override fun onHook() {
-        // 在 setDockerBackground() 调用栈内把模糊分支条件强制为 true，让宿主走原生模糊路径：
-        // OplusHotseat: (isSupportNewBlur && hasLargeDisplayFeatures()) ? createBlurDrawable() : ExpandUtils.getHotseatNormalBgDrawable()
-        val forcingBlur = ThreadLocal<Boolean>()
-
-        //Source OplusHotseat
+        // 1. OplusHotseat: 强制调用原生 createBlurDrawable() 设置 Dock 模糊背景，杜绝回退到普通纯灰底图
         "com.android.launcher3.OplusHotseat".toClassOrNull()?.resolve()?.apply {
             firstMethodOrNull { name = "setDockerBackground"; emptyParameters(); optional() }?.hook {
-                before {
-                    forcingBlur.set(true)
-                }
-                after {
-                    forcingBlur.remove()
+                replaceUnit {
+                    runCatching {
+                        val inst = instance ?: return@replaceUnit
+                        val shortcutsAndWidgetsField = inst.javaClass.getDeclaredField("mShortcutsAndWidgets").apply { isAccessible = true }
+                        val shortcutsAndWidgets = shortcutsAndWidgetsField.get(inst) as? ViewGroup ?: return@replaceUnit
+                        if (shortcutsAndWidgets.childCount == 0) {
+                            shortcutsAndWidgets.setBackgroundResource(0)
+                            return@replaceUnit
+                        }
+                        val createBlurMethod = inst.javaClass.getDeclaredMethod("createBlurDrawable").apply { isAccessible = true }
+                        val blurDrawable = createBlurMethod.invoke(inst) as? Drawable
+                        if (blurDrawable != null) {
+                            shortcutsAndWidgets.background = blurDrawable
+                        }
+                        val bgVisibleField = inst.javaClass.getDeclaredField("mBackgroundVisible").apply { isAccessible = true }
+                        val bgVisible = (bgVisibleField.get(inst) as? Boolean) ?: true
+                        val setBgAlphaMethod = inst.javaClass.getDeclaredMethod("setBackgroundAlpha", Float::class.javaPrimitiveType).apply { isAccessible = true }
+                        setBgAlphaMethod.invoke(inst, if (bgVisible) 1.0f else 0.0f)
+                    }
                 }
             }
         }
 
-        //Source OplusBlurProperties (class & companion)
+        // 2. ExpandUtils: 兜底拦截普通 Dock 背景，防止任何途径返回 hotseat_bg 灰色底图
+        "com.android.launcher3.hotseat.expand.ExpandUtils".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull { name = "getHotseatNormalBgDrawable"; optional() }?.hook {
+                before {
+                    result = null
+                }
+            }
+            firstMethodOrNull { name = "isSupportDockerExpandScreen"; emptyParameters(); optional() }?.hook {
+                before {
+                    result = true
+                }
+            }
+        }
+
+        // 3. LayerBlurDrawable: 彻底消除默认灰色底图 (mDefaultDrawable) 遮挡模糊层的问题
+        // 当状态切换或文件夹打开时 setBlurAlpha(0.0f) 会将 mDefaultAlpha 设为 1.0f，导致纯灰底色完全遮盖模糊
+        "com.android.launcher3.uioverrides.states.blurdrawable.LayerBlurDrawable".toClassOrNull()
+            ?.resolve()?.apply {
+                firstMethodOrNull { name = "setBlurAlpha"; parameterCount = 1; optional() }?.hook {
+                    after {
+                        runCatching {
+                            val inst = instance ?: return@after
+                            inst.javaClass.getDeclaredField("mDefaultAlpha").apply { isAccessible = true }.set(inst, 0.0f)
+                            inst.javaClass.getDeclaredField("mBlurAlpha").apply { isAccessible = true }.set(inst, 1.0f)
+                            val defDrawable = inst.javaClass.getDeclaredField("mDefaultDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                            defDrawable?.alpha = 0
+                            val wholeAlpha = (inst.javaClass.getDeclaredField("mWholeAlpha").apply { isAccessible = true }.get(inst) as? Float) ?: 1.0f
+                            val blurDrawable = inst.javaClass.getDeclaredField("mBlurDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                            blurDrawable?.alpha = (255 * wholeAlpha).toInt()
+                        }
+                    }
+                }
+                firstMethodOrNull { name = "updateLayerDrawableAlpha"; emptyParameters(); optional() }?.hook {
+                    after {
+                        runCatching {
+                            val inst = instance ?: return@after
+                            inst.javaClass.getDeclaredField("mDefaultAlpha").apply { isAccessible = true }.set(inst, 0.0f)
+                            val defDrawable = inst.javaClass.getDeclaredField("mDefaultDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                            defDrawable?.alpha = 0
+                            val wholeAlpha = (inst.javaClass.getDeclaredField("mWholeAlpha").apply { isAccessible = true }.get(inst) as? Float) ?: 1.0f
+                            val blurDrawable = inst.javaClass.getDeclaredField("mBlurDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                            blurDrawable?.alpha = (255 * wholeAlpha).toInt()
+                        }
+                    }
+                }
+            }
+
+        // 4. OplusBlurProperties: 强制全局材质模糊全开 (桌面文件夹、Dock、抽屉背景等)
         "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties".toClassOrNull()
             ?.resolve()?.apply {
                 firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
@@ -34,6 +94,16 @@ object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
                     }
                 }
                 firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                    before {
+                        result = true
+                    }
+                }
+                firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                    before {
+                        result = true
+                    }
+                }
+                firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
                     before {
                         result = true
                     }
@@ -52,37 +122,84 @@ object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
                         result = true
                     }
                 }
-            }
-
-        //Source ScreenUtils - 仅在 setDockerBackground() 调用期间拦截 hasLargeDisplayFeatures 为 true
-        // 从而避免非折叠屏设备全局布局或分屏逻辑被污染
-        "com.android.common.util.ScreenUtils".toClassOrNull()?.resolve()?.apply {
-            firstMethodOrNull { name = "hasLargeDisplayFeatures"; emptyParameters(); optional() }?.hook {
-                before {
-                    if (forcingBlur.get() == true) {
+                firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                    before {
+                        result = true
+                    }
+                }
+                firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
+                    before {
                         result = true
                     }
                 }
             }
-            firstMethodOrNull { name = "isSupportDockerExpandScreen"; emptyParameters(); optional() }?.hook {
+
+        // 5. FolderIcon & OplusPreviewBackground: 文件夹图标与背景永久保持模糊，阻止回收销毁
+        "com.android.launcher3.folder.FolderIcon".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
                 before {
                     result = true
                 }
             }
         }
 
-        //Source ExpandUtils (兜底防止回退到纯灰背景 hotseat_bg)
-        "com.android.launcher3.hotseat.expand.ExpandUtils".toClassOrNull()?.resolve()?.apply {
-            firstMethodOrNull { name = "getHotseatNormalBgDrawable"; optional() }?.hook {
+        "com.android.launcher3.folder.OplusPreviewBackground".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull { name = "isBgSupportNewBlur"; optional() }?.hook {
                 before {
-                    if (forcingBlur.get() == true) {
-                        result = null
-                    }
+                    result = true
+                }
+            }
+            firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
+                before {
+                    result = true
+                }
+            }
+            firstMethodOrNull { name = "recycleBlurBackground"; optional() }?.hook {
+                before {
+                    intercept()
                 }
             }
         }
 
-        //Source AppFeatureUtils (disable light OS animation restrictions to unlock launcher blur)
+        "com.android.launcher3.folder.PreviewBackground".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
+                before {
+                    result = true
+                }
+            }
+            firstMethodOrNull { name = "recycleBlurBackground"; optional() }?.hook {
+                before {
+                    intercept()
+                }
+            }
+        }
+
+        // 6. PlatformLevelUtils: 锁定最高平台等级 (避免 isBlurUnavailable 判断为 true 时回退灰色背景)
+        "com.android.common.util.PlatformLevelUtils".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull { name = "isBlurUnavailable"; optional() }?.hook {
+                before { result = false }
+            }
+            firstMethodOrNull { name = "isDynamicBlurAvailable"; optional() }?.hook {
+                before { result = true }
+            }
+            firstMethodOrNull { name = "isDynamicBlurUnavailable"; optional() }?.hook {
+                before { result = false }
+            }
+            firstMethodOrNull { name = "isHighLevelAnimation"; optional() }?.hook {
+                before { result = true }
+            }
+            firstMethodOrNull { name = "isLowLevelAnimation"; optional() }?.hook {
+                before { result = false }
+            }
+            firstMethodOrNull { name = "getAnimationLevelOS14"; optional() }?.hook {
+                before { result = 1 }
+            }
+            firstMethodOrNull { name = "getGaussianLevel"; optional() }?.hook {
+                before { result = 3 }
+            }
+        }
+
+        // 7. AppFeatureUtils: 解除 LightOS 动画限制并解锁模糊特性
         "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
             firstMethodOrNull { name = "isLightOSAnimation"; emptyParameters(); optional() }?.hook {
                 before {
@@ -90,6 +207,50 @@ object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
                 }
             }
             firstMethodOrNull { name = "getSupportDockerBg"; emptyParameters(); optional() }?.hook {
+                before {
+                    result = true
+                }
+            }
+            firstMethodOrNull { name = "getAllowLauncherBlur"; optional() }?.hook {
+                before {
+                    result = true
+                }
+            }
+            firstMethodOrNull { name = "isSupportDynamicBlur"; optional() }?.hook {
+                before {
+                    result = true
+                }
+            }
+            firstMethodOrNull { name = "isUpgradeMaterialBlur"; optional() }?.hook {
+                before {
+                    result = true
+                }
+            }
+            firstMethodOrNull { name = "isLowGaussianBlur"; optional() }?.hook {
+                before {
+                    result = false
+                }
+            }
+            firstMethodOrNull { name = "isAllAppsDisableBlur"; optional() }?.hook {
+                before {
+                    result = false
+                }
+            }
+            firstMethodOrNull { name = "isRecentsDisableBlur"; optional() }?.hook {
+                before {
+                    result = false
+                }
+            }
+            firstMethodOrNull { name = "isDisableWidgetBlurBackground"; optional() }?.hook {
+                before {
+                    result = false
+                }
+            }
+        }
+
+        // 8. ScreenUtils: 支持 Docker 扩展屏特性
+        "com.android.common.util.ScreenUtils".toClassOrNull()?.resolve()?.apply {
+            firstMethodOrNull { name = "isSupportDockerExpandScreen"; emptyParameters(); optional() }?.hook {
                 before {
                     result = true
                 }

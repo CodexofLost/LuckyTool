@@ -40,3 +40,6 @@ vcs.xml
 .dsh-ops-update-*.lock
 .dsh-ops/
 dist/
+
+.filesforfindinghooks/
+/.filesforfindinghooks

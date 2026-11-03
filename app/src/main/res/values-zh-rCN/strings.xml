@@ -1452,4 +1452,24 @@
     <string name="metis_rule_heytap_http_summary">目标为 com.heytap.browser 且链接是合法 http(s) 的卡片参与重定向</string>
     <string name="metis_rule_browser_card">其他浏览器 http(s) 卡片（实验性）</string>
     <string name="metis_rule_browser_card_summary">目标为其他浏览器且链接是合法 http(s) 的卡片参与重定向。实验性：需要自身应用处理链接的卡片可能受影响</string>
+    <!-- 动效与模糊级别定制 -->
+    <string name="category_blur_and_animation">动效与模糊级别</string>
+    <string name="none_default">无（默认 / 保持原生）</string>
+    <string name="customized_anim_level">设备动效与模糊级别 (anim_level)</string>
+    <string name="customized_anim_level_summary">调整 ColorOS 全局桌面与系统界面动效及模糊分级。选择“无”保持系统默认</string>
+    <string name="anim_level_1_flagship">级别 1 - 旗舰 (A+ 档：动态模糊与流体物理动效)</string>
+    <string name="anim_level_2_high">级别 2 - 高端 (A 档：标准高斯模糊与完整动效)</string>
+    <string name="anim_level_3_mid">级别 3 - 中端 (B+ 档：轻量级动效)</string>
+    <string name="anim_level_4_low">级别 4 - 入门 (B 档：纯色灰色底色 / 极致省电)</string>
+    <string name="customized_systemui_gaussblur_level">系统界面高斯模糊级别</string>
+    <string name="customized_systemui_gaussblur_level_summary">调整 SystemUI 高斯模糊质量分级。选择“无”保持系统默认</string>
+    <string name="gaussblur_level_1_high">级别 1 - 高质量高斯模糊</string>
+    <string name="gaussblur_level_2_mid">级别 2 - 中等高斯模糊</string>
+    <string name="gaussblur_level_3_low">级别 3 - 低质量高斯模糊</string>
+    <string name="customized_systemui_dynamic_blur">系统界面动态表面模糊</string>
+    <string name="customized_systemui_dynamic_blur_summary">强制开启或关闭 SystemUI 实时硬件背景模糊。选择“无”保持系统默认</string>
+    <string name="customized_shade_blur_mode">通知与控制中心面板模糊模式</string>
+    <string name="customized_shade_blur_mode_summary">选择下拉通知中心与快捷设置控制中心时的背景模糊方式</string>
+    <string name="shade_blur_mode_dynamic">实时动态背景模糊 (Dynamic Live Blur)</string>
+    <string name="shade_blur_mode_wallpaper">静态壁纸高斯模糊</string>
 </resources>

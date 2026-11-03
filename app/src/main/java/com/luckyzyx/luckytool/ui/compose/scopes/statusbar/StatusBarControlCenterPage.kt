@@ -168,6 +168,19 @@ object StatusBarControlCenterPage {
             key = "remove_notification_cleanup_button",
             title = c.getString(R.string.remove_notification_cleanup_button),
         )
+        list(
+            key = "customized_shade_blur_mode",
+            title = c.getString(R.string.customized_shade_blur_mode),
+            entries = c.resources.getStringArray(R.array.customized_shade_blur_mode_entries),
+            entryValues = arrayOf("0", "1", "2"),
+            default = "0",
+            summary = arraySummaryLine(
+                c.getString(R.string.current_mode) + ": %s",
+                c.getString(R.string.customized_shade_blur_mode_summary),
+                c.getString(R.string.need_restart_scope),
+            ),
+            notify = true,
+        )
         // 滑动条相关
         if (osCode in 26..33) {
             category(c.getString(R.string.ControlCenter_Silder_Related))

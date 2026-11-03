@@ -1,5 +1,6 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
+import android.graphics.drawable.Drawable
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
@@ -24,7 +25,8 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     @Obfuscate
     object HookLauncherDynamicBlur : YukiBaseHooker() {
         override fun onHook() {
-            val enableBlur = preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false) ||
+            val enableBlur = preferences(ModulePrefs).getString("customized_anim_level", "-1") == "1" ||
+                preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false) ||
                 preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
                 preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false) ||
                 preferences(ModulePrefs).getBoolean("enable_docker_background", false)
@@ -173,7 +175,7 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             }
 
             // 6. 解锁桌面文件夹模糊：OplusPreviewBackground 与 FolderIcon 强制启用动态模糊背景
-            // 杜绝回退到 LayerNormalDrawable 纯灰底色
+            // 杜绝回退到 LayerNormalDrawable 纯灰底色，阻止回收销毁模糊对象
             runCatching {
                 "com.android.launcher3.folder.OplusPreviewBackground".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "isBgSupportNewBlur"; optional() }?.hook {
@@ -182,12 +184,57 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                     firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
                         before { result = true }
                     }
+                    firstMethodOrNull { name = "recycleBlurBackground"; optional() }?.hook {
+                        before { intercept() }
+                    }
+                }
+                "com.android.launcher3.folder.PreviewBackground".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "recycleBlurBackground"; optional() }?.hook {
+                        before { intercept() }
+                    }
                 }
                 "com.android.launcher3.folder.FolderIcon".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
                         before { result = true }
                     }
                 }
+            }
+
+            // 6.1 LayerBlurDrawable 消除默认灰色底图 (mDefaultDrawable) 遮盖模糊
+            runCatching {
+                "com.android.launcher3.uioverrides.states.blurdrawable.LayerBlurDrawable".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "setBlurAlpha"; parameterCount = 1; optional() }?.hook {
+                            after {
+                                runCatching {
+                                    val inst = instance ?: return@after
+                                    inst.javaClass.getDeclaredField("mDefaultAlpha").apply { isAccessible = true }.set(inst, 0.0f)
+                                    inst.javaClass.getDeclaredField("mBlurAlpha").apply { isAccessible = true }.set(inst, 1.0f)
+                                    val defDrawable = inst.javaClass.getDeclaredField("mDefaultDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                                    defDrawable?.alpha = 0
+                                    val wholeAlpha = (inst.javaClass.getDeclaredField("mWholeAlpha").apply { isAccessible = true }.get(inst) as? Float) ?: 1.0f
+                                    val blurDrawable = inst.javaClass.getDeclaredField("mBlurDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                                    blurDrawable?.alpha = (255 * wholeAlpha).toInt()
+                                }
+                            }
+                        }
+                        firstMethodOrNull { name = "updateLayerDrawableAlpha"; emptyParameters(); optional() }?.hook {
+                            after {
+                                runCatching {
+                                    val inst = instance ?: return@after
+                                    inst.javaClass.getDeclaredField("mDefaultAlpha").apply { isAccessible = true }.set(inst, 0.0f)
+                                    val defDrawable = inst.javaClass.getDeclaredField("mDefaultDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                                    defDrawable?.alpha = 0
+                                    val wholeAlpha = (inst.javaClass.getDeclaredField("mWholeAlpha").apply { isAccessible = true }.get(inst) as? Float) ?: 1.0f
+                                    val blurDrawable = inst.javaClass.getDeclaredField("mBlurDrawable").apply { isAccessible = true }.get(inst) as? Drawable
+                                    blurDrawable?.alpha = (255 * wholeAlpha).toInt()
+                                }
+                            }
+                        }
+                    }
             }
 
             // 7. 解锁打开文件夹动效：禁用低端简易动画，启用完整高斯壁纸模糊展开

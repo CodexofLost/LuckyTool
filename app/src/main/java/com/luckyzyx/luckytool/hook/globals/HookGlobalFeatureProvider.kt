@@ -148,7 +148,8 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             }
 
             //Source Launcher Flagship Device Level & Blur
-            if (preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
+            if (preferences(ModulePrefs).getString("customized_anim_level", "-1") == "1" ||
+                preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
                 preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false) ||
                 preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
                 put("com.android.launcher.DEVICE_LEVEL_HIGH", true)

@@ -1637,4 +1637,24 @@
     <string name="metis_rule_heytap_http_summary">Redirect cards that point to com.heytap.browser with a valid http(s) link</string>
     <string name="metis_rule_browser_card">Other browser http(s) cards (experimental)</string>
     <string name="metis_rule_browser_card_summary">Redirect cards that point to another browser with a valid http(s) link. Experimental: cards that need their own app to handle the link may break</string>
+    <!-- Animation & Blur Customization -->
+    <string name="category_blur_and_animation">Blur &amp; Animation Tier</string>
+    <string name="none_default">None (Default / Stock)</string>
+    <string name="customized_anim_level">Device Animation Level (anim_level)</string>
+    <string name="customized_anim_level_summary">Select ColorOS global animation &amp; blur level across Launcher and SystemUI. None keeps stock system default</string>
+    <string name="anim_level_1_flagship">Level 1 - Flagship (A+ Tier: Dynamic Blur &amp; Physics)</string>
+    <string name="anim_level_2_high">Level 2 - High (A Tier: Standard Blur &amp; Animations)</string>
+    <string name="anim_level_3_mid">Level 3 - Mid (B+ Tier: Light Animations)</string>
+    <string name="anim_level_4_low">Level 4 - Low (B Tier: Flat Grey Tint / Power Saver)</string>
+    <string name="customized_systemui_gaussblur_level">SystemUI Gaussian Blur Level</string>
+    <string name="customized_systemui_gaussblur_level_summary">Select SystemUI Gaussian blur quality level. None keeps system default</string>
+    <string name="gaussblur_level_1_high">Level 1 - High Gaussian Blur</string>
+    <string name="gaussblur_level_2_mid">Level 2 - Middle Gaussian Blur</string>
+    <string name="gaussblur_level_3_low">Level 3 - Low Gaussian Blur</string>
+    <string name="customized_systemui_dynamic_blur">SystemUI Dynamic Surface Blur</string>
+    <string name="customized_systemui_dynamic_blur_summary">Enable or disable real-time hardware backdrop blur in SystemUI. None keeps stock default</string>
+    <string name="customized_shade_blur_mode">Notification &amp; QS Shade Blur Mode</string>
+    <string name="customized_shade_blur_mode_summary">Select backdrop blur method for Notification and Quick Settings shades</string>
+    <string name="shade_blur_mode_dynamic">Dynamic Live Backdrop Blur</string>
+    <string name="shade_blur_mode_wallpaper">Static Wallpaper Gaussian Blur</string>
 </resources>
