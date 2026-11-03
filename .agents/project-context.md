@@ -1,7 +1,7 @@
 ---
-context_version: 1.0.7
-synced_commit: "f4182ed78"
-synced_at: "2026-11-03T14:05:00Z"
+context_version: 1.0.8
+synced_commit: "5c6dbb3ce"
+synced_at: "2026-11-03T14:52:00Z"
 ---
 
 # Project Context: LuckyTool
@@ -15,21 +15,20 @@ synced_at: "2026-11-03T14:05:00Z"
 | **Toolchain & Prerequisites** | JDK 21, Gradle, Android NDK (target `arm64-v8a`), LSPosed / LibXposed runtime |
 | **Environment & Config** | `gradle.properties`, `app/version.properties`, `local.properties` |
 | **Core Stack** | Jetpack Compose, YukiHookAPI 1.5.0, LibXposed API 102.0.0, DexKit (`org.luckypray.dexkit`), Kotlin Serialization |
-| **Security & Auth** | LSParanoid string obfuscation, signature verification bypass (`CorePatch` integration) |
-| **Primary Commands** | `Build: ./gradlew assembleDebug` \| `Release: ./gradlew assembleRelease` \| `Test: ./gradlew test` |
+| **Core Focus Scope** | QS & Notification Shade dynamic blur, Launcher dock/folder dynamic blur, Flagship parallel/fluid animations |
+| **Primary Commands** | `Build: fast-gradlew assembleDebug` \| `Release: fast-gradlew assembleRelease` \| `CI: gh workflow run build.yml` |
 
 ## 2. Component Ownership & Architecture Map
 
 | Subsystem / Layer | God Node / Entrypoint (`repo-relative-path`) | Public Contract & Core Responsibility |
 | :--- | :--- | :--- |
-| **Hook Core Engine** | `app/src/main/java/com/luckyzyx/luckytool/hook/MainHook.kt` | `MainHook`: Entrypoint for LSPosed/LibXposed; dispatches process packages to hookers. |
-| **Global Feature Interceptors** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookAppFeatureProvider.kt` | Intercepts ColorOS `AppFeatureProvider` & `FeatureConfigManager` queries in real-time. |
-| **System Properties Injection** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalSystemProperties.kt` | Hooks `SystemProperties.get` / `SystemProperties.getBoolean` for animation/blur flags. |
-| **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks grid size, dock blur, `DEVICE_LEVEL_HIGH`, spring animations, and recents gestures. |
-| **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookSystemUI.kt` | Controls status bar clock, network traffic, notification styling, dynamic blur, and QS panel layouts. |
-| **Metis (Fluid Cloud)** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookMetis.kt` | Customizes ColorOS / realme UI Dynamic Island / Fluid Cloud card routing and app redirection. |
-| **Core Signature Patching** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookCorePatch.kt` | Package manager hook to allow app downgrades and unsigned/mismatched signature installs. |
-| **Compose UI & Settings** | `app/src/main/java/com/luckyzyx/luckytool/ui/compose/MainActivity.kt` | User preference interface supporting Material 3 and Miuix-styled design systems. |
+| **Hook Core Engine** | `app/src/main/java/com/luckyzyx/luckytool/hook/MainHook.kt` | `MainHook`: Entrypoint for LSPosed/LibXposed; filtered strictly to `system`, `com.android.systemui`, and `com.android.launcher`. |
+| **Global Feature Interceptors** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalFeatureProvider.kt` | Intercepts ColorOS `AppFeatureProvider` queries (`DEVICE_LEVEL_HIGH`, `support_upgrade_anim_material_blur`, etc.). |
+| **System Properties Injection** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalSystemProperties.kt` | Injects animation levels (`persist.sys.oplus.anim_level=2`, `upgrade_anim_level`), `ro.oplus.gaussianlevel`, SurfaceFlinger blur flags. |
+| **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks dynamic dock blur (`ForceEnableDockerBackgroundBlur`), folder live blur, recents card-stack physics. |
+| **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookSystemUI.kt` | Notification & QS shade dynamic live Gaussian blur (`ForceEnableSystemUIDynamicBlur`) and wallpaper blur mode. |
+| **Compose UI & Settings** | `app/src/main/java/com/luckyzyx/luckytool/ui/compose/MainActivity.kt` | Focused 3-page tree: `android_related`, `statusbar_control_center`, `launcher`. |
+| **Bluryy Module Blueprint** | `.agents/bluryy-module-analysis.md` | Full reverse-engineering spec of `BlurryAnimations v2.9` Magisk module (properties, XML features). |
 
 ### Critical Execution Traces
 * **Hook Initialization:** `Zygote / App Launch` → `MainHook.onHook()` → `Package Matching` → `Specific Hookers (Launcher/SystemUI/Android)`
