@@ -337,7 +337,7 @@ internal fun ScopePageHost(
                     onClick = { showRestartScope = true },
                     contentDescription = stringResource(R.string.menu_reboot),
                     materialIcon = Icons.Filled.PowerSettingsNew,
-                    miuixIcon = MiuixIcons.Close2,
+                    miuixIcon = MiuixIcons.Update,
                 )
             }
             topActions.forEach { action ->

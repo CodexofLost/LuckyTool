@@ -1639,9 +1639,63 @@
     <string name="metis_rule_browser_card_summary">Redirect cards that point to another browser with a valid http(s) link. Experimental: cards that need their own app to handle the link may break</string>
     <!-- Animation & Blur Customization -->
     <string name="category_blur_and_animation">Blur &amp; Animation Tier</string>
+    <string name="category_scope_management">Scope Operations</string>
+    <string name="restart_launcher">Restart Launcher</string>
+    <string name="restart_launcher_summary">Force stop and restart desktop to apply launcher changes</string>
+    <string name="restart_systemui">Restart SystemUI</string>
+    <string name="restart_systemui_summary">Restart status bar and notification shade to apply SystemUI changes</string>
+    <string name="soft_reboot_framework">Soft Reboot (Restart Zygote)</string>
+    <string name="soft_reboot_framework_summary">Restart Android system server and framework to apply system properties</string>
+    <string name="reboot_device">Reboot Device</string>
+    <string name="reboot_device_summary">Full device reboot</string>
+    <string name="reload_hooker_page">Reload Module Hooks</string>
+    <string name="reload_hooker_page_summary">Request YukiHook to hot-reload hooks for this scope</string>
+
     <string name="none_default">None (Default / Stock)</string>
-    <string name="customized_anim_level">Device Animation Level (anim_level)</string>
-    <string name="customized_anim_level_summary">Select ColorOS global animation &amp; blur level across Launcher and SystemUI. None keeps stock system default</string>
+    <string name="customized_framework_anim_level">Framework Animation Level (ro.oplus.animationlevel)</string>
+    <string name="customized_framework_anim_level_summary">Controls Android framework WindowManager transition timing and system curves. Level 3 is Flagship High</string>
+    <string name="framework_anim_level_1_low">Level 1 - Low (Linear Transitions)</string>
+    <string name="framework_anim_level_2_mid">Level 2 - Middle (Standard Curves)</string>
+    <string name="framework_anim_level_3_high">Level 3 - High (Flagship Top Tier)</string>
+
+    <string name="customized_launcher_anim_level">Launcher Animation Tier (persist.sys.oplus.anim_level)</string>
+    <string name="customized_launcher_anim_level_summary">Select ColorOS desktop motion physics and gesture responsiveness</string>
+    <string name="launcher_anim_tier_a_plus">Tier A+ (Level 1: Ultra Flagship 120Hz &amp; Recents Physics)</string>
+    <string name="launcher_anim_tier_a">Tier A (Level 2: Fluid UI Parallel Animation Engine - Recommended)</string>
+    <string name="launcher_anim_tier_b_plus">Tier B+ (Level 3: Mid-Range Transitions)</string>
+    <string name="launcher_anim_tier_b">Tier B (Level 4: Low-End Simple Animations)</string>
+
+    <string name="sf_blurs_are_expensive_bypass">Bypass GPU Blur Penalty</string>
+    <string name="sf_blurs_are_expensive_bypass_summary">Forces ro.sf.blurs_are_expensive=0 to prevent SurfaceFlinger from dropping blur render passes on mid-range GPUs</string>
+    <string name="enable_spring_overscroll">Bouncy Spring Overscroll</string>
+    <string name="enable_spring_overscroll_summary">Enables physical bouncy spring rebound at the edge of scrollable lists and views across the OS</string>
+    <string name="enable_parallel_gesture_animation">Interruptible Parallel Gestures</string>
+    <string name="enable_parallel_gesture_animation_summary">Allows continuous swipe and tap gestures to interrupt running animations without dropped frames</string>
+    <string name="enable_adaptive_smooth_animation">Adaptive 120Hz Smooth Animation</string>
+    <string name="enable_adaptive_smooth_animation_summary">Enables dynamic high-refresh-rate curve matching for app opening and closing transitions</string>
+
+    <string name="enable_folder_material_blur">Folder Dynamic Material Blur</string>
+    <string name="enable_folder_material_blur_summary">Enables real-time dynamic glass blur on desktop folder previews and open folder dialogs</string>
+    <string name="enable_wallpaper_zoom_animation">Live Wallpaper Depth Zooming</string>
+    <string name="enable_wallpaper_zoom_animation_summary">Enables wallpaper scale expansion and depth zooming when opening apps, unlocking, and returning home</string>
+    <string name="enable_recents_vibration_physics">Recents Card Stack &amp; Tactile Physics</string>
+    <string name="enable_recents_vibration_physics_summary">Enables flagship card bounce physics and tactile vibration feedback in Recent Apps overview</string>
+    <string name="enable_spring_app_launch">Spring App Launch Curves</string>
+    <string name="enable_spring_app_launch_summary">Enables physics-based spring acceleration curves when opening apps from home screen</string>
+    <string name="disable_launcher_low_mem_limits">Disable Low-Memory Launcher Simplifications</string>
+    <string name="disable_launcher_low_mem_limits_summary">Prevents Launcher from falling back to light animations or disabling blurs during memory pressure</string>
+
+    <string name="enable_qs_tile_elastic_deformation">Quick Settings Tile Elastic Morphing</string>
+    <string name="enable_qs_tile_elastic_deformation_summary">Enables liquid pill morphing physics when dragging or toggling quick settings tiles</string>
+    <string name="enable_media_player_blur">Media Player Live Blur Background</string>
+    <string name="enable_media_player_blur_summary">Renders a live hardware Gaussian blur background directly behind the ongoing media notification card</string>
+    <string name="enable_bouncer_blur_scrim">Lockscreen Bouncer Scrim Blur</string>
+    <string name="enable_bouncer_blur_scrim_summary">Keeps the background blurred when entering PIN, pattern, or fingerprint on the lockscreen</string>
+    <string name="enable_panoramic_aod">Panoramic AOD to Lockscreen Transition</string>
+    <string name="enable_panoramic_aod_summary">Enables seamless zoom and fade transition from Always-On Display to Lockscreen</string>
+
+    <string name="customized_anim_level">Legacy Animation Level (anim_level)</string>
+    <string name="customized_anim_level_summary">Legacy combined animation level</string>
     <string name="anim_level_1_flagship">Level 1 - Flagship (A+ Tier: Dynamic Blur &amp; Physics)</string>
     <string name="anim_level_2_high">Level 2 - High (A Tier: Standard Blur &amp; Animations)</string>
     <string name="anim_level_3_mid">Level 3 - Mid (B+ Tier: Light Animations)</string>
@@ -1657,4 +1711,5 @@
     <string name="customized_shade_blur_mode_summary">Select backdrop blur method for Notification and Quick Settings shades</string>
     <string name="shade_blur_mode_dynamic">Dynamic Live Backdrop Blur</string>
     <string name="shade_blur_mode_wallpaper">Static Wallpaper Gaussian Blur</string>
+    <string name="shade_blur_mode_scrim">Live Scrim Backdrop Blur</string>
 </resources>
