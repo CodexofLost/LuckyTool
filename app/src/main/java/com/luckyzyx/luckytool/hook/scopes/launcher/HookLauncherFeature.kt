@@ -15,6 +15,8 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         loadHooker(HookLauncherAnimationTier)
         loadHooker(HookLauncherDynamicBlurShield)
         loadHooker(HookLauncherFolderBlur)
+        loadHooker(HookLauncherDrawerBlur)
+        loadHooker(HookLauncherRecentsStack)
         loadHooker(HookLauncherMotion)
     }
 
@@ -95,23 +97,6 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             if (!sysuiDynamic && !shadeBlurMode && !sysuiBlur) return
 
             runCatching {
-                "com.android.common.util.PlatformLevelUtils".toClassOrNull()?.resolve()?.apply {
-                    firstMethodOrNull { name = "isBlurUnavailable"; optional() }?.hook {
-                        before { result = false }
-                    }
-                    firstMethodOrNull { name = "isDynamicBlurAvailable"; optional() }?.hook {
-                        before { result = true }
-                    }
-                    firstMethodOrNull { name = "isDynamicBlurUnavailable"; optional() }?.hook {
-                        before { result = false }
-                    }
-                    firstMethodOrNull { name = "isStaticBlurScene"; optional() }?.hook {
-                        before { result = false }
-                    }
-                }
-            }
-
-            runCatching {
                 "com.android.launcher.views.OplusStaticBlurView".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "init"; optional() }?.hook {
                         after {
@@ -180,12 +165,6 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                             firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
                                 before { result = true }
                             }
-                            firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
-                                before { result = true }
-                            }
-                            firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
-                                before { result = true }
-                            }
                         }
                     }
                 "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties\$Companion".toClassOrNull()
@@ -201,12 +180,6 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                                 before { result = true }
                             }
                             firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
-                                before { result = true }
-                            }
-                            firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
-                                before { result = true }
-                            }
-                            firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
                                 before { result = true }
                             }
                         }
@@ -275,6 +248,85 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     }
 
     /**
+     * 3b. 抽屉背景动态高斯模糊 (OplusBlurProperties.isSupportDrawerBlur / isSupportDrawerBtnBlur)
+     */
+    @Obfuscate
+    object HookLauncherDrawerBlur : YukiBaseHooker() {
+        override fun onHook() {
+            val prefs = preferences(ModulePrefs)
+            if (!prefs.getBoolean("enable_drawer_dynamic_blur", false)) return
+
+            runCatching {
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                    }
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties\$Companion".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                    }
+            }
+        }
+    }
+
+    /**
+     * 3c. 最近任务层叠卡片视图 (OplusStackRecentsConfig / CommonSettingsValueProxy)
+     */
+    @Obfuscate
+    object HookLauncherRecentsStack : YukiBaseHooker() {
+        override fun onHook() {
+            val prefs = preferences(ModulePrefs)
+            if (!prefs.getBoolean("force_enable_recents_stack_layout", false)) return
+
+            runCatching {
+                "com.oplus.quickstep.layout.stack.OplusStackRecentsConfig".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isAnimLevelSupportedStack"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isStackSupported"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isStackRecentsFeatureSupport"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+                "com.oplus.quickstep.common.settingsvalue.CommonSettingsValueProxy\$Companion".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isStackLayout"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+                "com.oplus.quickstep.common.settingsvalue.CommonSettingsValueProxy".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isStackLayout"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * 4. 桌面动效特性与内存限制解除
      */
     @Obfuscate
@@ -284,6 +336,7 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             val disableLowMem = prefs.getBoolean("disable_launcher_low_mem_limits", false)
             val dockerBlur = prefs.getBoolean("force_enable_docker_background_blur", false)
             val folderBlur = prefs.getBoolean("enable_folder_material_blur", false)
+            val drawerBlur = prefs.getBoolean("enable_drawer_dynamic_blur", false)
             val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
 
             runCatching {
@@ -296,7 +349,7 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                             before { result = false }
                         }
                     }
-                    if (dockerBlur || folderBlur || launcherHigh) {
+                    if (dockerBlur || folderBlur || drawerBlur || launcherHigh) {
                         firstMethodOrNull { name = "isSupportDynamicBlur"; optional() }?.hook {
                             before { result = true }
                         }

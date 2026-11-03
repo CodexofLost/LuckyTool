@@ -1712,4 +1712,8 @@
     <string name="shade_blur_mode_dynamic">Dynamic Live Backdrop Blur</string>
     <string name="shade_blur_mode_wallpaper">Static Wallpaper Gaussian Blur</string>
     <string name="shade_blur_mode_scrim">Live Scrim Backdrop Blur</string>
+    <string name="enable_drawer_dynamic_blur">App Drawer Dynamic Gaussian Blur</string>
+    <string name="enable_drawer_dynamic_blur_summary">Force real-time Gaussian backdrop blur when opening the app drawer</string>
+    <string name="force_enable_recents_stack_layout">Recents Card Stack View</string>
+    <string name="force_enable_recents_stack_layout_summary">Force flagship card stacked overview in recent tasks instead of standard horizontal cards</string>
 </resources>

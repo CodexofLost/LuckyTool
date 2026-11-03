@@ -56,6 +56,15 @@ object LauncherRelatedPage {
         )
 
         switch(
+            key = "enable_drawer_dynamic_blur",
+            title = c.getString(R.string.enable_drawer_dynamic_blur),
+            summary = arraySummaryLine(
+                c.getString(R.string.enable_drawer_dynamic_blur_summary),
+                c.getString(R.string.need_restart_scope),
+            ),
+        )
+
+        switch(
             key = "enable_wallpaper_zoom_animation",
             title = c.getString(R.string.enable_wallpaper_zoom_animation),
             summary = arraySummaryLine(
@@ -69,6 +78,15 @@ object LauncherRelatedPage {
             title = c.getString(R.string.enable_recents_vibration_physics),
             summary = arraySummaryLine(
                 c.getString(R.string.enable_recents_vibration_physics_summary),
+                c.getString(R.string.need_restart_scope),
+            ),
+        )
+
+        switch(
+            key = "force_enable_recents_stack_layout",
+            title = c.getString(R.string.force_enable_recents_stack_layout),
+            summary = arraySummaryLine(
+                c.getString(R.string.force_enable_recents_stack_layout_summary),
                 c.getString(R.string.need_restart_scope),
             ),
         )

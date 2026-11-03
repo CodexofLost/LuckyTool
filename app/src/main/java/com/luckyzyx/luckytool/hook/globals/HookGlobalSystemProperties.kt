@@ -21,11 +21,8 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
 
             // Framework Animation Level (ro.oplus.animationlevel: 1=Low, 2=Middle, 3=High)
             val frameworkAnimLevel = prefs.getString("customized_framework_anim_level", "-1")
-            val legacyAnimLevel = prefs.getString("customized_anim_level", "-1")
             val effectiveFrameworkLevel = if (frameworkAnimLevel != "-1") {
                 frameworkAnimLevel.toIntOrNull()
-            } else if (legacyAnimLevel != "-1") {
-                legacyAnimLevel.toIntOrNull()
             } else {
                 null
             }
@@ -40,8 +37,6 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
                 launcherAnimTier.toIntOrNull()
             } else if (launcherHighLevel) {
                 2
-            } else if (legacyAnimLevel != "-1") {
-                legacyAnimLevel.toIntOrNull()
             } else {
                 null
             }
