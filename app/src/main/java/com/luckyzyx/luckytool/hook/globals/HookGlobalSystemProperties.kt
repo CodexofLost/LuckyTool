@@ -24,13 +24,23 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             val sysuiBlurFeature = preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)
             val shadeBlurMode = preferences(ModulePrefs).getString("customized_shade_blur_mode", "0")
 
-            if (animLevelPref != "-1") {
-                val lvl = animLevelPref.toIntOrNull() ?: 1
-                put("persist.sys.oplus.anim_level", lvl)
-                put("ro.oplus.animationlevel", if (lvl <= 2) 1 else lvl)
+            val effectiveAnimLevel = if (animLevelPref != "-1") {
+                animLevelPref.toIntOrNull() ?: 2
             } else if (launcherHighLevel || sysuiBlurFeature || shadeBlurMode != "0") {
-                put("persist.sys.oplus.anim_level", 1)
-                put("ro.oplus.animationlevel", 1)
+                2
+            } else {
+                -1
+            }
+
+            if (effectiveAnimLevel != -1) {
+                put("persist.sys.oplus.anim_level", effectiveAnimLevel)
+                put("ro.oplus.animationlevel", effectiveAnimLevel)
+                put("persist.sys.oplus.upgrade_anim_level", effectiveAnimLevel)
+                put("ro.launcher.blur.appLaunch", 0)
+                put("vendor.display.enable_rounded_corner", 1)
+                put("persist.sys.wallpaperanimation.enable", "true")
+                put("ro.oplus.ltw.ability_level", "full")
+                put("oplus_customize_settings_zoom_wallpaper_enable", 1)
             }
 
             val sysuiGaussBlurPref = preferences(ModulePrefs).getString("customized_systemui_gaussblur_level", "-1")
@@ -41,19 +51,21 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             }
 
             val sysuiDynamicBlurPref = preferences(ModulePrefs).getString("customized_systemui_dynamic_blur", "-1")
-            if (sysuiDynamicBlurPref == "1") {
-                put("persist.sys.oplus.systemui.dynamic_blur", "true")
+            val isBlurActive = sysuiDynamicBlurPref == "1" || sysuiBlurFeature || shadeBlurMode != "0" || launcherHighLevel
+
+            if (isBlurActive) {
                 put("ro.surface_flinger.supports_background_blur", true)
+                put("ro.surface_flinger.media_panel_bg_blur", 1)
+                put("ro.sf.blurs_are_caro", 1)
+                put("ro.sf.blurs_are_expensive", 0)
+                put("disable_window_blurs", 1)
                 put("persist.sys.sf.disable_blurs", false)
                 put("persist.sysui.disableBlur", false)
+                if (sysuiDynamicBlurPref != "0") {
+                    put("persist.sys.oplus.systemui.dynamic_blur", "true")
+                }
             } else if (sysuiDynamicBlurPref == "0") {
                 put("persist.sys.oplus.systemui.dynamic_blur", "false")
-            } else if (sysuiBlurFeature || shadeBlurMode == "1") {
-                put("ro.surface_flinger.supports_background_blur", true)
-                put("persist.sys.sf.disable_blurs", false)
-                put("ro.oplus.gaussianlevel", 3)
-                put("persist.sys.oplus.systemui.dynamic_blur", "true")
-                put("persist.sysui.disableBlur", false)
             }
         }
         loadHooker(HookSystemProperties(list))

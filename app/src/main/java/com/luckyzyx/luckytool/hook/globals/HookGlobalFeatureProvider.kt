@@ -125,17 +125,28 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.launcher.APP_NAME_SHOW_IN_TWO_LINES", true)
 //                put("com.android.launcher.two_lines_all_show_textheightdp", -1)
             }
-            //Source SystemUI Flagship Dynamic Blur & Feature Flags
-            if (preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
+            //Source SystemUI & Launcher Flagship Dynamic Blur & Feature Flags
+            val animLevelPref = preferences(ModulePrefs).getString("customized_anim_level", "-1")
+            val launcherHighLevel = preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
+                    preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false)
+            val sysuiBlurFeature = preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)
+            val shadeBlurMode = preferences(ModulePrefs).getString("customized_shade_blur_mode", "0")
+            val isAnimOrBlurActive = animLevelPref != "-1" || launcherHighLevel || sysuiBlurFeature || shadeBlurMode != "0"
+
+            if (isAnimOrBlurActive) {
+                put("com.oplus.blur.support_upgrade_anim_material_blur", true)
+                put("com.android.launcher.upgrade_material_blur", true)
+                put("com.android.launcher.support_dynamic_blur", true)
+                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
+                put("com.android.systemui.DEVICE_LEVEL_HIGH", true)
+                put("com.android.systemui.qs_deform_enable", true)
+                put("com.oplus.systemui.panoramic_aod.enable", true)
+                put("com.realme.systemui.low_mem_glass_mode_on", false)
                 put("com.android.systemui.gauss_blur_disabled", false)
                 put("com.android.systemui.pan_view_gauss_blur_disabled", false)
                 put("com.android.systemui.wallpaper_blur_disabled", false)
                 put("com.android.systemui.disable_bouncer_blur_scrim", false)
                 put("com.android.systemui.enable_bouncer_wallpaper_blur", false)
-                put("com.android.systemui.DEVICE_LEVEL_HIGH", true)
-                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
-                put("com.android.launcher.support_dynamic_blur", true)
-                put("com.android.launcher.upgrade_material_blur", true)
                 put("com.android.launcher.light_animator", false)
                 put("com.android.launcher.minimum_memory_support", false)
                 put("com.android.launcher.recent_disable_blur", false)
@@ -144,15 +155,6 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.launcher.start_app_disable_blur", false)
                 put("com.android.launcher.toggle_bar_disable_blur", false)
                 put("com.android.launcher.page_preview_disable_blur", false)
-                put("com.realme.systemui.low_mem_glass_mode_on", false)
-            }
-
-            //Source Launcher Flagship Device Level & Blur
-            if (preferences(ModulePrefs).getString("customized_anim_level", "-1") == "1" ||
-                preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
-                preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false) ||
-                preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
-                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
                 put("com.android.launcher.support_spring_animation_app_start", true)
                 put("com.android.launcher.NEW_RECENTS_VIBRATION", true)
                 put("oplus.software.support_fluid_entry", true)

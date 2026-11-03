@@ -32,6 +32,7 @@ object LauncherRelatedPage {
             switch(
                 key = "force_enable_docker_background_blur",
                 title = c.getString(R.string.force_enable_docker_background_blur),
+                summary = c.getString(R.string.need_restart_scope),
             )
         }
     }
