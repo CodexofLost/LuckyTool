@@ -25,7 +25,9 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     object HookLauncherDynamicBlur : YukiBaseHooker() {
         override fun onHook() {
             val enableBlur = preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false) ||
-                preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false)
+                preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
+                preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false) ||
+                preferences(ModulePrefs).getBoolean("enable_docker_background", false)
             if (!enableBlur) return
 
             // 1. 强制 Launcher 平台能力等级判断为最高级旗舰：
@@ -99,6 +101,133 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                         before {
                             intercept()
                         }
+                    }
+                }
+            }
+
+            // 4. 解锁 Launcher 动画等级与能力开关 (旗舰 Tier-1 等级，驱动模糊与解锁物理动效)
+            runCatching {
+                "com.android.common.util.LauncherAnimConfig".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isLevelAOrAPlus"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isLevelAPlus"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isLevelBPlusOrHigher"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isLevelBOrBPlus"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isAdaptiveAnimation"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+            }
+
+            // 5. 解锁 OplusBlurProperties，强制全场景材料模糊可用 (文件夹图标、抽屉背景、Dock等)
+            runCatching {
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                    }
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties\$Companion".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                    }
+            }
+
+            // 6. 解锁桌面文件夹模糊：OplusPreviewBackground 与 FolderIcon 强制启用动态模糊背景
+            // 杜绝回退到 LayerNormalDrawable 纯灰底色
+            runCatching {
+                "com.android.launcher3.folder.OplusPreviewBackground".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isBgSupportNewBlur"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+                "com.android.launcher3.folder.FolderIcon".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isSupportNewBlurLocal"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+            }
+
+            // 7. 解锁打开文件夹动效：禁用低端简易动画，启用完整高斯壁纸模糊展开
+            runCatching {
+                "com.android.launcher3.anim.light.FolderAnimUtil".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isLightFolderAnim"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isLightOrSuperLightFolderAnim"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isSuperLightFolderAnim"; optional() }?.hook {
+                        before { result = false }
+                    }
+                }
+            }
+
+            // 8. 解锁 AppFeatureUtils 动画与模糊特性
+            runCatching {
+                "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isLightFolderAnimation"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isFolderBlurDisabled"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isUpgradeMaterialBlur"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isSupportDynamicBlur"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isMixColorsDisable"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "getSupportDockerBg"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isLightOSAnimation"; optional() }?.hook {
+                        before { result = false }
                     }
                 }
             }

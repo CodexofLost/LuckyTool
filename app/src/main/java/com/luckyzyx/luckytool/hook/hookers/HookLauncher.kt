@@ -111,8 +111,12 @@ object HookLauncher : YukiBaseHooker() {
             if (osCode >= 26) loadHooker(EnableDockerBackground)
         }
         //强制启用Docker背景模糊
-        if (preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false)) {
-            if (osCode >= 37) loadHooker(ForceEnableDockerBackgroundBlur)
+        if (preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false) ||
+            preferences(ModulePrefs).getBoolean("enable_docker_background", false) ||
+            preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false) ||
+            preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false)
+        ) {
+            if (osCode >= 34) loadHooker(ForceEnableDockerBackgroundBlur)
         }
         //允许锁定或解锁已排除活动
         if (preferences(ModulePrefs).getBoolean("allow_locking_unlocking_of_excluded_activity", false)) {
