@@ -37,10 +37,7 @@ object StatusBarControlCenterPage {
         switch(
             key = "force_enable_systemui_blur_feature",
             title = c.getString(R.string.force_enable_systemui_blur_feature),
-            summary = arraySummaryLine(
-                c.getString(R.string.force_enable_systemui_blur_feature_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
+            summary = c.getString(R.string.need_restart_scope),
             notify = true,
         )
 
