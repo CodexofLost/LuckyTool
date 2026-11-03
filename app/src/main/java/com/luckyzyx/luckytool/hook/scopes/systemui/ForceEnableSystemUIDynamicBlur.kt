@@ -34,8 +34,6 @@ import org.lsposed.lsparanoid.Obfuscate
  * 5. 消除解锁状态下下拉通知/快捷设置时的纯灰底色遮罩：
  *    - 拦截 ScrimControllerExImp.getNotificationScrimBgColor()、ScrimState.getBehindTint()、
  *      以及 ScrimViewExImp.updateColorWithTint()，确保底色遮罩固定为 0（透明）。
- * 6. 保持解锁状态下拉通知/快捷设置时桌面壁纸图层合成（FLAG_SHOW_WALLPAPER）：
- *    - 拦截 OplusNotificationShadeWindowControllerExImpl.shouldShowWallpaper，在下拉展开或面板可见时返回 true。
  */
 @Obfuscate
 object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
@@ -355,37 +353,6 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                         runCatching {
                             val scrimView = instance.asResolver().firstMethodOrNull { name = "getScrimView"; optional() }?.invoke<Any>()
                             scrimView?.asResolver()?.firstFieldOrNull { name = "mTintColor"; optional() }?.set(0)
-                        }
-                    }
-                }
-            }
-        }
-
-        // 11. 保持解锁状态下拉通知/快捷设置时桌面壁纸图层合成（FLAG_SHOW_WALLPAPER）：
-        // 在桌面透明背景下，Launcher 仅绘制图标与 Dock，壁纸由 ImageWallpaper 独立图层承载。
-        // ColorOS 的 OplusNotificationShadeWindowControllerExImpl.shouldShowWallpaper 在解锁状态下拉时默认返回 false，
-        // 导致 NotificationShadeWindowControllerImpl 清除 FLAG_SHOW_WALLPAPER，SurfaceFlinger 无法捕获壁纸底衬。
-        // 拦截 shouldShowWallpaper，当下拉展开或面板可见时返回 true，确保壁纸与桌面图标、应用、PiP 视频统一参与硬件动态高斯模糊。
-        runCatching {
-            "com.oplus.systemui.shade.OplusNotificationShadeWindowControllerExImpl".toClassOrNull()?.resolve()?.apply {
-                firstMethodOrNull {
-                    name = "shouldShowWallpaper"
-                    optional()
-                }?.hook {
-                    after {
-                        val state = args.getOrNull(1)
-                        val panelVisible = runCatching {
-                            state?.asResolver()?.firstFieldOrNull { name = "panelVisible"; optional() }?.get<Boolean>()
-                        }.getOrNull() == true
-                        val shadeOrQsExpanded = runCatching {
-                            state?.asResolver()?.firstFieldOrNull { name = "shadeOrQsExpanded"; optional() }?.get<Boolean>()
-                        }.getOrNull() == true
-                        val keyguardShowing = runCatching {
-                            state?.asResolver()?.firstFieldOrNull { name = "keyguardShowing"; optional() }?.get<Boolean>()
-                        }.getOrNull() == true
-
-                        if (!keyguardShowing && (panelVisible || shadeOrQsExpanded)) {
-                            result = true
                         }
                     }
                 }

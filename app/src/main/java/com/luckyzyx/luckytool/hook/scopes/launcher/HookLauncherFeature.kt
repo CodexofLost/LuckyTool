@@ -1,5 +1,6 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
+import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.toClass
@@ -16,7 +17,92 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         val osCode = getOSVersionCode
         loadHooker(HookFeatureOption)
         loadHooker(HookLauncherSettings(dexKitBridge))
+        loadHooker(HookLauncherDynamicBlur)
         if (osCode >= 34) loadHooker(HookAppFeature)
+    }
+
+    @Obfuscate
+    object HookLauncherDynamicBlur : YukiBaseHooker() {
+        override fun onHook() {
+            val enableBlur = preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false) ||
+                preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false)
+            if (!enableBlur) return
+
+            // 1. 强制 Launcher 平台能力等级判断为最高级旗舰：
+            // 避免 isBlurUnavailable 判断为 true 时回退为 popup_no_blur_background 灰色背景
+            runCatching {
+                "com.android.common.util.PlatformLevelUtils".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isBlurUnavailable"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isDynamicBlurAvailable"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isDynamicBlurUnavailable"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "getAnimationLevelOS14"; optional() }?.hook {
+                        before { result = 1 }
+                    }
+                    firstMethodOrNull { name = "getGaussianLevel"; optional() }?.hook {
+                        before { result = 3 }
+                    }
+                    firstMethodOrNull { name = "isHighLevelAnimation"; optional() }?.hook {
+                        before { result = true }
+                    }
+                    firstMethodOrNull { name = "isLowLevelAnimation"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isMiddleLevelAnimation"; optional() }?.hook {
+                        before { result = false }
+                    }
+                    firstMethodOrNull { name = "isStaticBlurScene"; optional() }?.hook {
+                        before { result = false }
+                    }
+                }
+            }
+
+            // 2. 彻底屏蔽 Launcher 的 OplusStaticBlurView 纯灰底色及静态壁纸缓存：
+            // 下拉通知栏或负一屏时，保证 Launcher 桌面与图标完整保留，由 SystemUI 动态高斯模糊硬件抓取
+            runCatching {
+                "com.android.launcher.views.OplusStaticBlurView".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "init"; optional() }?.hook {
+                        after {
+                            runCatching {
+                                instance<View>().background = null
+                                instance<View>().visibility = View.GONE
+                            }
+                        }
+                    }
+                    firstMethodOrNull { name = "setBackground"; optional() }?.hook {
+                        before {
+                            args[0] = null
+                        }
+                    }
+                    firstMethodOrNull { name = "onBlurBitmapChanged"; optional() }?.hook {
+                        before {
+                            intercept()
+                        }
+                    }
+                    firstMethodOrNull { name = "setAlpha"; optional() }?.hook {
+                        before {
+                            intercept()
+                        }
+                    }
+                }
+            }
+
+            // 3. 拦截 Launcher 的 addStaticBlurView，阻止静态遮罩视图挂载
+            runCatching {
+                "com.android.launcher.Launcher".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "addStaticBlurView"; optional() }?.hook {
+                        before {
+                            intercept()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     @Obfuscate
