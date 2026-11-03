@@ -38,7 +38,7 @@ object LauncherRelatedPage {
             ),
         )
 
-        if (osCode >= 37) {
+        if (osCode >= 34) {
             switch(
                 key = "force_enable_docker_background_blur",
                 title = c.getString(R.string.force_enable_docker_background_blur),

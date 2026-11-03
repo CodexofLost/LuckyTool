@@ -148,24 +148,26 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             val disableLowMem = preferences(ModulePrefs).getBoolean("disable_launcher_low_mem_limits", false)
             val wallpaperZoom = preferences(ModulePrefs).getBoolean("enable_wallpaper_zoom_animation", false)
 
-            if (dockerBlur || launcherHighLevel) {
+            if (launcherHighLevel) {
+                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
+            }
+            if (dockerBlur) {
                 put("com.android.launcher.support_dynamic_blur", true)
             }
-            if (folderBlur || launcherHighLevel) {
+            if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)
                 put("com.android.launcher.upgrade_material_blur", true)
             }
-            if (recentsVibration || launcherHighLevel) {
+            if (recentsVibration) {
                 put("com.android.launcher.NEW_RECENTS_VIBRATION", true)
             }
-            if (springAppLaunch || launcherHighLevel) {
+            if (springAppLaunch) {
                 put("com.android.launcher.support_spring_animation_app_start", true)
             }
             if (wallpaperZoom) {
                 put("oplus.software.zoom_wallpaper", true)
             }
-            if (disableLowMem || launcherHighLevel) {
-                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
+            if (disableLowMem) {
                 put("com.android.launcher.light_animator", false)
                 put("com.android.launcher.minimum_memory_support", false)
                 put("com.android.launcher.recent_disable_blur", false)

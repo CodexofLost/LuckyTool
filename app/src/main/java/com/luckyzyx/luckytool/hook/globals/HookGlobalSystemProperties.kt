@@ -66,16 +66,15 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             // SurfaceFlinger GPU Blur Penalty Bypass & SystemUI Blur Flags
             val sysuiBlurFeature = prefs.getBoolean("force_enable_systemui_blur_feature", false)
             val shadeBlurMode = prefs.getString("customized_shade_blur_mode", "0")
-            val dockerBlur = prefs.getBoolean("force_enable_docker_background_blur", false)
             val sfBlurBypass = prefs.getBoolean("sf_blurs_are_expensive_bypass", false)
             val sysuiDynamicBlurPref = prefs.getString("customized_systemui_dynamic_blur", "-1")
 
-            val shouldUnblockSfBlurs = sfBlurBypass || sysuiBlurFeature || shadeBlurMode != "0" || dockerBlur || sysuiDynamicBlurPref == "1"
+            val shouldUnblockSfBlurs = sfBlurBypass || sysuiBlurFeature || shadeBlurMode != "0" || sysuiDynamicBlurPref == "1"
             if (shouldUnblockSfBlurs) {
                 put("ro.surface_flinger.supports_background_blur", true)
                 put("ro.sf.blurs_are_caro", 1)
                 put("ro.sf.blurs_are_expensive", 0)
-                put("disable_window_blurs", 1)
+                put("disable_window_blurs", 0)
                 put("persist.sys.sf.disable_blurs", false)
                 put("persist.sysui.disableBlur", false)
                 put("vendor.display.enable_rounded_corner", 1)

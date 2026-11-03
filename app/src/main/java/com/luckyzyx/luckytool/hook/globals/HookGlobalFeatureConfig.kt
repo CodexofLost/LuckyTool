@@ -14,20 +14,19 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
             val springOverscroll = prefs.getBoolean("enable_spring_overscroll", false)
             val parallelGestures = prefs.getBoolean("enable_parallel_gesture_animation", false)
             val adaptiveSmooth = prefs.getBoolean("enable_adaptive_smooth_animation", false)
-            val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
 
-            if (springOverscroll || launcherHigh) {
+            if (springOverscroll) {
                 put("oplus.software.view.spring_over_scroller", true)
             }
 
-            if (parallelGestures || launcherHigh) {
+            if (parallelGestures) {
                 put("oplus.software.support_blockable_animation", true)
                 put("oplus.software.support_quick_launchapp", true)
                 put("oplus.software.support_fluid_entry", true)
                 put("oplus.software.fluid_replace_ntf", true)
             }
 
-            if (adaptiveSmooth || launcherHigh) {
+            if (adaptiveSmooth) {
                 put("oplus.software.adaptive_smooth_animation", true)
             }
 

@@ -1,9 +1,7 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureConfig
 import com.luckyzyx.luckytool.hook.globals.HookGlobalFeatureProvider
-import com.luckyzyx.luckytool.hook.globals.HookGlobalSystemProperties
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
@@ -12,8 +10,6 @@ import org.luckypray.dexkit.DexKitBridge
 class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
 
     override fun onHook() {
-        loadHooker(HookGlobalFeatureConfig)
-        loadHooker(HookGlobalSystemProperties)
         loadHooker(HookGlobalFeatureProvider(dexKitBridge))
 
         val shadeBlurMode = preferences(ModulePrefs).getString("customized_shade_blur_mode", "0")

@@ -1,7 +1,7 @@
 ---
-context_version: 1.1.0
-synced_commit: "640aa7ea5"
-synced_at: "2026-11-03T16:07:00Z"
+context_version: 1.2.0
+synced_commit: "7a1fbbc7d"
+synced_at: "2026-11-03T17:07:00Z"
 ---
 
 # Project Context: LuckyTool
@@ -48,6 +48,9 @@ synced_at: "2026-11-03T16:07:00Z"
 * **Fail-Safe Exception Isolation:** Every hook must be guarded by try-catch or YukiHook logging to avoid unhandled exceptions causing SystemUI or SystemServer crash loops.
 
 ### Known Landmines & Anti-Hallucination Guardrails
+* `TRAP: Setting disable_window_blurs = 1 in system properties` → `RISK: Globally disables window blurs in Android WindowManager across OS` → `FIX: Set disable_window_blurs = 0 or omit entirely.`
+* `TRAP: Bundling launcherHigh into all feature toggles or gating all launcher hooks under single boolean` → `RISK: Cross-feature interference, overriding user tier choices, un-applied switches` → `FIX: Fully decouple sub-hookers and check dedicated preference keys.`
+* `TRAP: Hardcoding getPlatformAnimationLevel = 1 in SystemUI` → `RISK: Demotes SystemUI animations to LEVEL_LOW (1) in ColorOS` → `FIX: Return user configured framework animation level (default 3 = LEVEL_HIGH).`
 * `TRAP: Direct method reflection by hardcoded name on ColorOS classes` → `RISK: MethodNotFoundException and feature silent failure on minor OTA updates` → `FIX: Always use DexKitBridge string pattern or parameter type matching.`
 * `TRAP: Blind directory bind mounts over /my_product or /my_stock` → `RISK: Masks carrier, memory, and telephony XMLs causing bootloops` → `FIX: Intercept feature providers via HookAppFeatureProvider in RAM.`
 * `TRAP: Reading SharedPreferences synchronously from foreign process hooks` → `RISK: SecurityException / Permission denial on Android 12+` → `FIX: Use YukiHookAPI preferences(ModulePrefs) bridge.`
