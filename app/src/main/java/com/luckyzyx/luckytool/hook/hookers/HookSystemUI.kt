@@ -8,32 +8,8 @@ import org.lsposed.lsparanoid.Obfuscate
 @Obfuscate
 object HookSystemUI : YukiBaseHooker() {
     override fun onHook() {
-
         DexkitUtils.create(appInfo.sourceDir) { dexKitBridge ->
-            //系统界面Feature
             loadHooker(HookSystemUIFeature(dexKitBridge))
-
-            //状态栏功能
-            loadHooker(HookSystemUIStatusBar(dexKitBridge))
-
-            //全面屏手势相关
-            loadHooker(HookSystemUIGesture(dexKitBridge))
         }
-
-        //锁屏
-        loadHooker(HookSystemUILockScreen)
-
-        //对话框相关
-        loadHooker(HookSystemUIDialog)
-
-        //指纹相关
-        loadHooker(HookSystemUIFingerPrint)
-
-        //杂项
-        loadHooker(HookSystemUiMiscellaneous)
-
-        //自启
-        loadHooker(HookSystemUIAutoStart)
-
     }
 }

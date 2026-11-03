@@ -58,12 +58,9 @@ internal fun rowSummary(index: List<PrefIndexItem>): String? =
 
 internal val categoryBadges: Map<String, CategoryBadge> = mapOf(
     "android_related" to CategoryBadge(Icons.Filled.Android, Color(0xFF3DDC84)),
+    "statusbar_control_center" to CategoryBadge(Icons.Filled.SignalCellularAlt, Color(0xFF4285F4)),
     "statusbar" to CategoryBadge(Icons.Filled.SignalCellularAlt, Color(0xFF4285F4)),
     "launcher" to CategoryBadge(Icons.Filled.Home, Color(0xFFFF9800)),
-    "aod" to CategoryBadge(Icons.Filled.BrightnessMedium, Color(0xFF9C27B0)),
-    "lock_screen" to CategoryBadge(Icons.Filled.Lock, Color(0xFF00BCD4)),
-    "application" to CategoryBadge(Icons.Filled.Apps, Color(0xFF3F51B5)),
-    "miscellaneous" to CategoryBadge(Icons.Filled.MoreHoriz, Color(0xFF607D8B)),
 )
 
 /** 页标题：登记在覆盖表的页取固定字符串资源，其余取宿主 App 标签（android_related 取 "android" 的标签） */

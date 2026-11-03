@@ -2,15 +2,11 @@ package com.luckyzyx.luckytool.ui.compose.scopes.related
 
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.ui.compose.scopes.ScopePageSpec
-import com.luckyzyx.luckytool.utils.A12
 import com.luckyzyx.luckytool.utils.ModulePrefs
-import com.luckyzyx.luckytool.utils.SDK
 import com.luckyzyx.luckytool.utils.arraySummaryLine
 
 /**
- * Android 系统页：system 作用域下的系统级开关（GMS 用量限制、root 状态检测、触摸、
- * 高斯模糊等级、LTPO 等）。
- * 每项都显式声明键、默认值与条件可见性（SDK = Android API 级别）。
+ * Android 系统动画与高斯模糊页：全局动画等级、高斯模糊等级、SystemUI 高斯模糊与实时表面模糊开关。
  */
 object AndroidRelatedPage {
 
@@ -23,39 +19,7 @@ object AndroidRelatedPage {
         restartEnabled = true,
     ) {
         val c = requireNotNull(context) { "ScopeScreen 未注入 Context" }
-        switch(
-            key = "remove_gms_usage_restrictions",
-            title = c.getString(R.string.remove_gms_usage_restrictions),
-            summary = arraySummaryLine(c.getString(R.string.need_restart_system)),
-        )
-        if (state.getBoolean("remove_gms_usage_restrictions", false)) {
-            editText(
-                key = "custom_remote_provisioning_hostname",
-                title = c.getString(R.string.custom_remote_provisioning_hostname),
-                dialogMessage = arraySummaryLine(
-                    c.getString(R.string.custom_remote_provisioning_hostname_summary),
-                    c.getString(R.string.need_restart_system),
-                ),
-                default = "remoteprovisioning.grapheneos.org",
-            )
-        }
-        if (SDK >= A12) {
-            switch(
-                key = "replace_system_root_state_detection",
-                title = c.getString(R.string.replace_system_root_state_detection),
-                summary = c.getString(R.string.need_restart_system),
-            )
-            switch(
-                key = "allow_untrusted_touch",
-                title = c.getString(R.string.allow_untrusted_touch),
-                summary = c.getString(R.string.allow_untrusted_touch_summary),
-            )
-        }
-        switch(
-            key = "disable_long_press_home_key_start_speech_asssist",
-            title = c.getString(R.string.disable_long_press_home_key_start_speech_asssist),
-            summary = c.getString(R.string.need_restart_system),
-        )
+
         category(c.getString(R.string.category_blur_and_animation))
         list(
             key = "customized_anim_level",
@@ -104,27 +68,5 @@ object AndroidRelatedPage {
                 c.getString(R.string.need_restart_system),
             ),
         )
-        category("LTPO")
-        list(
-            key = "set_ltpo_refresh_rate_mode",
-            title = c.getString(R.string.set_ltpo_refresh_rate_mode),
-            entries = c.resources.getStringArray(R.array.set_ltpo_refresh_rate_mode_entries),
-            entryValues = arrayOf("0", "1", "2"),
-            default = "0",
-            summary = arraySummaryLine(
-                c.getString(R.string.current_mode) + ": %s",
-                c.getString(R.string.need_restart_system),
-            ),
-        )
-        if (state.getString("set_ltpo_refresh_rate_mode", "0") == "1") {
-            switch(
-                key = "enable_full_brightness_refresh_rate_minimum_one",
-                title = c.getString(R.string.enable_full_brightness_refresh_rate_minimum_one),
-                summary = arraySummaryLine(
-                    c.getString(R.string.enable_full_brightness_refresh_rate_minimum_one_summary),
-                    c.getString(R.string.need_restart_system),
-                ),
-            )
-        }
     }
 }
