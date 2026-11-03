@@ -28,13 +28,13 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             val launcherAnimTier = prefs.getString("customized_launcher_anim_level", "-1")
             val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
 
-            val tier = if (launcherAnimTier != "-1") {
+            val tier: Int = (if (launcherAnimTier != "-1") {
                 launcherAnimTier.toIntOrNull()
             } else if (launcherHigh) {
                 1
             } else {
                 null
-            } ?: return
+            }) ?: return
 
             // tier: 1=A+, 2=A, 3=B+, 4=B
             val isLevelAOrAPlus = tier <= 2
