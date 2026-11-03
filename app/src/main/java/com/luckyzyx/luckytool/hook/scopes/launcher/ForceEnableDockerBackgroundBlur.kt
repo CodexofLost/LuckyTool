@@ -3,7 +3,6 @@ package com.luckyzyx.luckytool.hook.scopes.launcher
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import android.view.ViewGroup
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
@@ -13,78 +12,11 @@ import org.lsposed.lsparanoid.Obfuscate
 @Obfuscate
 object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
     override fun onHook() {
-        // 1. OplusHotseat: 强制调用原生 createBlurDrawable() 设置 Dock 模糊背景，杜绝回退到普通纯灰底图
+        // 1. OplusHotseat: 阻止回收销毁模糊材质属性，防止关闭文件夹或返回桌面时背景销毁
         "com.android.launcher3.OplusHotseat".toClassOrNull()?.resolve()?.apply {
-            firstMethodOrNull { name = "setDockerBackground"; emptyParameters(); optional() }?.hook {
-                replaceUnit {
-                    runCatching {
-                        val inst = instance ?: return@replaceUnit
-                        val saw = runCatching {
-                            inst.javaClass.getMethod("getShortcutsAndWidgets").invoke(inst) as? ViewGroup
-                        }.getOrNull() ?: runCatching {
-                            var clazz: Class<*>? = inst.javaClass
-                            var field: java.lang.reflect.Field? = null
-                            while (clazz != null && field == null) {
-                                field = runCatching { clazz!!.getDeclaredField("mShortcutsAndWidgets").apply { isAccessible = true } }.getOrNull()
-                                clazz = clazz.superclass
-                            }
-                            field?.get(inst) as? ViewGroup
-                        }.getOrNull() ?: return@replaceUnit
-
-                        if (saw.childCount == 0) {
-                            saw.setBackgroundResource(0)
-                            return@replaceUnit
-                        }
-                        val createBlurMethod = inst.javaClass.getDeclaredMethod("createBlurDrawable").apply { isAccessible = true }
-                        val blurDrawable = createBlurMethod.invoke(inst) as? Drawable
-                        if (blurDrawable != null) {
-                            saw.background = blurDrawable
-                        }
-                        val bgVisible = runCatching {
-                            val bgVisibleField = inst.javaClass.getDeclaredField("mBackgroundVisible").apply { isAccessible = true }
-                            bgVisibleField.get(inst) as? Boolean
-                        }.getOrNull() ?: true
-                        runCatching {
-                            val setBgAlphaMethod = inst.javaClass.getMethod("setBackgroundAlpha", Float::class.javaPrimitiveType)
-                            setBgAlphaMethod.invoke(inst, if (bgVisible) 1.0f else 0.0f)
-                        }
-                    }
-                }
-            }
-
-            firstMethodOrNull { name = "updateDockerBgIfNecessary"; optional() }?.hook {
-                replaceUnit {
-                    runCatching {
-                        val inst = instance ?: return@replaceUnit
-                        val saw = runCatching {
-                            inst.javaClass.getMethod("getShortcutsAndWidgets").invoke(inst) as? ViewGroup
-                        }.getOrNull() ?: return@replaceUnit
-                        if (saw.background == null && saw.childCount > 0) {
-                            val setDockerBg = inst.javaClass.getMethod("setDockerBackground")
-                            setDockerBg.invoke(inst)
-                        }
-                    }
-                }
-            }
-
             firstMethodOrNull { name = "recycleBlurBackground"; optional() }?.hook {
                 before {
                     intercept()
-                }
-            }
-
-            firstMethodOrNull { name = "onDraw"; optional() }?.hook {
-                before {
-                    runCatching {
-                        val inst = instance ?: return@before
-                        val saw = runCatching {
-                            inst.javaClass.getMethod("getShortcutsAndWidgets").invoke(inst) as? ViewGroup
-                        }.getOrNull() ?: return@before
-                        if (saw.background == null && saw.childCount > 0) {
-                            val setDockerBg = inst.javaClass.getMethod("setDockerBackground")
-                            setDockerBg.invoke(inst)
-                        }
-                    }
                 }
             }
         }
@@ -272,11 +204,6 @@ object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
                     result = false
                 }
             }
-            firstMethodOrNull { name = "getSupportDockerBg"; emptyParameters(); optional() }?.hook {
-                before {
-                    result = true
-                }
-            }
             firstMethodOrNull { name = "getAllowLauncherBlur"; optional() }?.hook {
                 before {
                     result = true
@@ -310,51 +237,6 @@ object ForceEnableDockerBackgroundBlur : YukiBaseHooker() {
             firstMethodOrNull { name = "isDisableWidgetBlurBackground"; optional() }?.hook {
                 before {
                     result = false
-                }
-            }
-        }
-
-        // 8. ScreenUtils: 支持 Docker 扩展屏特性与大屏特性
-        "com.android.common.util.ScreenUtils".toClassOrNull()?.resolve()?.apply {
-            firstMethodOrNull { name = "isSupportDockerExpandScreen"; emptyParameters(); optional() }?.hook {
-                before {
-                    result = true
-                }
-            }
-            firstMethodOrNull { name = "isSupportDockerExpandScreenByActivity"; optional() }?.hook {
-                before {
-                    result = true
-                }
-            }
-            firstMethodOrNull { name = "hasLargeDisplayFeatures"; optional() }?.hook {
-                before {
-                    result = true
-                }
-            }
-        }
-
-        // 9. Realme 品牌 Docker 背景开关支持与假玻璃拦截
-        "com.android.launcher.custom.LiquidGlassImpl".toClassOrNull()?.resolve()?.apply {
-            firstMethodOrNull { name = "drawDockerBack"; optional() }?.hook {
-                before {
-                    intercept()
-                }
-            }
-            firstMethodOrNull { name = "isSupportDockerBg"; optional() }?.hook {
-                before {
-                    result = true
-                }
-            }
-        }
-        "com.android.launcher.custom.OplusToolUtils".toClassOrNull()?.resolve()?.apply {
-            firstMethodOrNull { name = "drawDockerBack"; optional() }?.hook {
-                before {
-                    intercept()
-                }
-            }
-            firstMethodOrNull { name = "isSupportDockerBg"; optional() }?.hook {
-                before {
-                    result = true
                 }
             }
         }
