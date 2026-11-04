@@ -133,15 +133,16 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             }
 
             //Source Launcher Decoupled Features
+            val launcherAnimTier = preferences(ModulePrefs).getString("customized_launcher_anim_level", "-1")
             val launcherHighLevel = preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false)
+            val isTierAOrAPlus = (launcherAnimTier in arrayOf("1", "2")) || (launcherAnimTier == "-1" && launcherHighLevel)
+
             val dockerBlur = preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false)
             val folderBlur = preferences(ModulePrefs).getBoolean("enable_folder_material_blur", false)
-            val recentsVibration = preferences(ModulePrefs).getBoolean("enable_recents_vibration_physics", false)
-            val springAppLaunch = preferences(ModulePrefs).getBoolean("enable_spring_app_launch", false)
             val disableLowMem = preferences(ModulePrefs).getBoolean("disable_launcher_low_mem_limits", false)
             val wallpaperZoom = preferences(ModulePrefs).getBoolean("enable_wallpaper_zoom_animation", false)
 
-            if (launcherHighLevel) {
+            if (isTierAOrAPlus) {
                 put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
             }
             if (dockerBlur) {
@@ -150,12 +151,6 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)
                 put("com.android.launcher.upgrade_material_blur", true)
-            }
-            if (recentsVibration) {
-                put("com.android.launcher.NEW_RECENTS_VIBRATION", true)
-            }
-            if (springAppLaunch) {
-                put("com.android.launcher.support_spring_animation_app_start", true)
             }
             if (wallpaperZoom) {
                 put("oplus.software.zoom_wallpaper", true)

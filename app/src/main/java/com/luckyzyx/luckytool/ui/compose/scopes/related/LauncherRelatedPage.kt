@@ -74,28 +74,10 @@ object LauncherRelatedPage {
         )
 
         switch(
-            key = "enable_recents_vibration_physics",
-            title = c.getString(R.string.enable_recents_vibration_physics),
-            summary = arraySummaryLine(
-                c.getString(R.string.enable_recents_vibration_physics_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
-        )
-
-        switch(
             key = "force_enable_recents_stack_layout",
             title = c.getString(R.string.force_enable_recents_stack_layout),
             summary = arraySummaryLine(
                 c.getString(R.string.force_enable_recents_stack_layout_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
-        )
-
-        switch(
-            key = "enable_spring_app_launch",
-            title = c.getString(R.string.enable_spring_app_launch),
-            summary = arraySummaryLine(
-                c.getString(R.string.enable_spring_app_launch_summary),
                 c.getString(R.string.need_restart_scope),
             ),
         )
@@ -107,12 +89,6 @@ object LauncherRelatedPage {
                 c.getString(R.string.disable_launcher_low_mem_limits_summary),
                 c.getString(R.string.need_restart_scope),
             ),
-        )
-
-        switch(
-            key = "force_enable_launcher_high_level",
-            title = c.getString(R.string.force_enable_launcher_high_level),
-            summary = c.getString(R.string.force_enable_launcher_high_level_summary),
         )
 
         category(c.getString(R.string.category_scope_management))

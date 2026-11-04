@@ -33,7 +33,7 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             val tier: Int = (if (launcherAnimTier != "-1") {
                 launcherAnimTier.toIntOrNull()
             } else if (launcherHigh) {
-                1
+                2
             } else {
                 null
             }) ?: return
@@ -47,7 +47,7 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             runCatching {
                 "com.android.common.util.PlatformLevelUtils".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "getAnimationLevelOS14"; optional() }?.hook {
-                        before { result = if (isLevelAOrAPlus) 2 else if (isLevelBPlusOrHigher) 1 else 0 }
+                        before { result = tier }
                     }
                     firstMethodOrNull { name = "isHighLevelAnimation"; optional() }?.hook {
                         before { result = isLevelAOrAPlus }
@@ -336,11 +336,14 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             val dockerBlur = prefs.getBoolean("force_enable_docker_background_blur", false)
             val folderBlur = prefs.getBoolean("enable_folder_material_blur", false)
             val drawerBlur = prefs.getBoolean("enable_drawer_dynamic_blur", false)
+            val launcherAnimTier = prefs.getString("customized_launcher_anim_level", "-1")
             val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
+            val isTierAOrAPlus = (launcherAnimTier in arrayOf("1", "2")) || (launcherAnimTier == "-1" && launcherHigh)
+            val wallpaperZoom = prefs.getBoolean("enable_wallpaper_zoom_animation", false)
 
             runCatching {
                 "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
-                    if (disableLowMem || launcherHigh) {
+                    if (disableLowMem || isTierAOrAPlus) {
                         firstMethodOrNull { name = "isLightOSAnimation"; optional() }?.hook {
                             before { result = false }
                         }
@@ -348,9 +351,30 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                             before { result = false }
                         }
                     }
-                    if (dockerBlur || folderBlur || drawerBlur || launcherHigh) {
+                    if (dockerBlur || folderBlur || drawerBlur || isTierAOrAPlus) {
                         firstMethodOrNull { name = "isSupportDynamicBlur"; optional() }?.hook {
                             before { result = true }
+                        }
+                    }
+                }
+            }
+
+            if (wallpaperZoom) {
+                runCatching {
+                    "com.android.common.util.LauncherAnimConfig".toClassOrNull()?.resolve()?.apply {
+                        firstMethodOrNull { name = "isWallpaperAnimDisable"; optional() }?.hook {
+                            before { result = false }
+                        }
+                        firstMethodOrNull { name = "isNewWallPaperAnimationEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                    }
+                    "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
+                        firstMethodOrNull { name = "isDisableNewWallpaperAnimation"; optional() }?.hook {
+                            before { result = false }
+                        }
+                        firstMethodOrNull { name = "isDisableUnlockAnim"; optional() }?.hook {
+                            before { result = false }
                         }
                     }
                 }
