@@ -354,7 +354,8 @@ object RestartMenuUtils {
         }.getOrDefault(emptyList())
         runCatching {
             targets.filter {
-                scopes.contains(it.processName.substringBefore(":"))
+                val proc = it.processName.substringBefore(":")
+                scopes.contains(proc) || ((scopes.contains("system") || scopes.contains("android")) && (proc == "system_server" || proc == "android"))
             }.forEach { target ->
                 // skippedIfUpToDate = false：不做「代码已是最新」的跳过，无论目标进程的 jar 是否变化都重新加载
                 reload.request(target, skippedIfUpToDate = false) { result ->

@@ -131,6 +131,32 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                     }
                 }
             }
+
+            // 桌面后台暂停隔离：阻止桌面进入后台 (BACKGROUND_APP) 时向全局 com.oplus.blur 发送 pauseWindowBlur
+            runCatching {
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "pauseBlurService"; parameterCount = 2; optional() }?.hook {
+                            before {
+                                val pause = args.getOrNull(1) as? Boolean ?: false
+                                if (pause) {
+                                    intercept()
+                                }
+                            }
+                        }
+                    }
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties\$Companion".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "pauseBlurService"; parameterCount = 2; optional() }?.hook {
+                            before {
+                                val pause = args.getOrNull(1) as? Boolean ?: false
+                                if (pause) {
+                                    intercept()
+                                }
+                            }
+                        }
+                    }
+            }
         }
     }
 

@@ -22,7 +22,7 @@ synced_at: "2026-11-04T11:09:00Z"
 
 | Subsystem / Layer | God Node / Entrypoint (`repo-relative-path`) | Public Contract & Core Responsibility |
 | :--- | :--- | :--- |
-| **Hook Core Engine** | `app/src/main/java/com/luckyzyx/luckytool/hook/MainHook.kt` | `MainHook`: Entrypoint for LSPosed/LibXposed; filtered strictly to `system`, `com.android.systemui`, and `com.android.launcher`. |
+| **Hook Core Engine** | `app/src/main/java/com/luckyzyx/luckytool/hook/MainHook.kt` | `MainHook`: Entrypoint for LSPosed/LibXposed; filtered strictly to `android`, `system`, `com.android.systemui`, and `com.android.launcher`. |
 | **Global Feature Interceptors** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalFeatureProvider.kt` | Intercepts decoupled ColorOS `AppFeatureProvider` queries (`DEVICE_LEVEL_HIGH`, `support_upgrade_anim_material_blur`, `panoramic_aod.enable`, etc.). |
 | **System Properties Injection** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalSystemProperties.kt` | Injects decoupled animation levels (Framework Level 1–3, Launcher Tier A+/A/B+/B), `ro.oplus.gaussianlevel`, SurfaceFlinger blur flags, media panel blur. |
 | **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks launcher dynamic material live blur, recents card-stack physics, wallpaper depth/zoom animations, and decoupled animation tiers (A+/A/B+/B). |

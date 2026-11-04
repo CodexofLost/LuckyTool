@@ -23,18 +23,19 @@ import org.lsposed.lsparanoid.Obfuscate
  *    - 绕过 PlatformBlurManagerImpl 对 isBAnimLevel 的跳过判断，直接调用 Blur.resumeWindowBlur(context)
  *      与 Blur.setBlurFrequency(context, 120)，主动唤醒 com.oplus.blur 进程生成硬件模糊流。
  * 2. 锁定高斯模糊与动画能力为旗舰最高级：
- *    - isHighGaussianLevel = true, getAnimLevel = 1, getPlatformGaussianLevel = 3, getPlatformAnimationLevel = 1。
+ *    - isHighGaussianLevel = true, getAnimLevel = 1, getPlatformGaussianLevel = 3, getPlatformAnimationLevel = 3。
  * 3. 动态模糊管线与超时防护：
  *    - 拦截 PlatformBlurManagerImpl.useMotionBlur() 固定为 true。
  *    - 拦截 PlatformBlurManagerImpl.handleTimeoutPauseBlur() 阻止超时自动暂停动态模糊。
  *    - 拦截 MaterialBlurStateManager.enableMaterialBlur() 固定为 true。
- *    - 拦截 pauseBlur("unsupportBlur") 与 pauseBlur("should not blur")，使用 intercept() 阻止暂停。
+ *    - 放开 pauseBlur()，允许 isBlurResumed 状态机自然流转，休眠省电且避免重开时死锁。
+ *    - 面板展开时确保 Blur.resumeWindowBlur(context) 与 Blur.setBlurPreemptive(context, true) 维持高优先级硬件模糊流。
  * 4. 强制 scrim_behind 使用 AutoBlurDrawable (ContinuousBlurDrawable)：
  *    - 拦截 ScrimControllerExImp.refreshBehindDrawable()，杜绝降级回退为 WallpaperBlurDrawable。
  *    - 拦截 ScrimControllerExImp.adjudgeScrimBehindBlurType()，锁定 BlurTypePlatformStatic。
- * 5. 消除解锁状态下下拉通知/快捷设置时的纯灰底色遮罩：
- *    - 拦截 ScrimControllerExImp.getNotificationScrimBgColor()、ScrimState.getBehindTint()、
- *      以及 ScrimViewExImp.updateColorWithTint()，确保底色遮罩固定为 0（透明）。
+ * 5. 原生旗舰遮罩：
+ *    - 平台等级设定为 Tier 3 后，ColorOS 原生选择 notification_scrim_bg_mask_color (#ff000000 半透明黑玻璃)。
+ *    - 摒弃破坏性的 tint=0 抹除，杜绝灰底或纯透明透视。
  */
 @Obfuscate
 object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
@@ -160,8 +161,8 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                 }
                 firstMethodOrNull { name = "getPlatformAnimationLevel"; optional() }?.hook {
                     before {
-                        val level = preferences(ModulePrefs).getString("customized_framework_anim_level", "3").toIntOrNull() ?: 3
-                        result = level
+                        val configured = preferences(ModulePrefs).getString("customized_framework_anim_level", "-1")?.toIntOrNull() ?: -1
+                        result = if (configured in 1..3) configured else 3
                     }
                 }
                 firstMethodOrNull { name = "getPlatformLevel"; optional() }?.hook {
@@ -223,28 +224,7 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                         }
                     }
                 }
-                // 拦截通知栏/快捷设置下拉过程中的强制 pauseBlur 调用
-                firstMethodOrNull {
-                    name = "pauseBlur"
-                    parameterCount = 1
-                    optional()
-                }?.hook {
-                    before {
-                        val reason = args.getOrNull(0) as? String ?: ""
-                        if (reason.contains("should not blur") || reason.contains("unsupportBlur")) {
-                            intercept()
-                            return@before
-                        }
-                        val isExpanding = runCatching {
-                            instance.asResolver().firstFieldOrNull { name = "isExpanding"; optional() }?.get<Boolean>()
-                        }.getOrNull() == true
-
-                        if (isExpanding) {
-                            intercept()
-                        }
-                    }
-                }
-                // 面板展开时持续维持 resumeBlur 唤醒状态
+                // 面板展开时持续维持 resumeBlur 唤醒状态并设置高优先级抢占
                 firstMethodOrNull {
                     name = "updatePlatformBlurState"
                     parameterCount = 1
@@ -265,9 +245,12 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                             val ctx = instance.asResolver().firstFieldOrNull { name = "context"; optional() }?.get<Context>()
                             if (ctx != null) {
                                 runCatching {
-                                    "com.oplus.posteffect.Blur".toClassOrNull()?.resolve()
-                                        ?.firstMethodOrNull { name = "resumeWindowBlur"; optional() }
-                                        ?.invoke<Unit>(null, ctx)
+                                    "com.oplus.posteffect.Blur".toClassOrNull()?.resolve()?.apply {
+                                        firstMethodOrNull { name = "resumeWindowBlur"; optional() }
+                                            ?.invoke<Unit>(null, ctx)
+                                        firstMethodOrNull { name = "setBlurPreemptive"; optional() }
+                                            ?.invoke<Unit>(null, ctx, true)
+                                    }
                                 }
                             }
                         }
@@ -319,45 +302,6 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                                 viewBlurProxy.asResolver().firstMethodOrNull { name = "setBlurType"; optional() }
                                     ?.invoke<Unit>(platformStaticType)
                             }
-                        }
-                    }
-                }
-                firstMethodOrNull {
-                    name = "getNotificationScrimBgColor"
-                    parameterCount = 1
-                    optional()
-                }?.hook {
-                    before {
-                        result = 0
-                    }
-                }
-            }
-        }
-
-        // 10. 消除解锁状态下下拉通知/快捷设置时的纯灰底色遮罩
-        runCatching {
-            "com.android.systemui.statusbar.phone.ScrimState".toClassOrNull()?.resolve()?.apply {
-                firstMethodOrNull {
-                    name = "getBehindTint"
-                    emptyParameters()
-                    optional()
-                }?.hook {
-                    after {
-                        if (instance.toString() == "UNLOCKED") {
-                            result = 0
-                        }
-                    }
-                }
-            }
-        }
-
-        runCatching {
-            "com.oplus.systemui.scrim.ScrimViewExImp".toClassOrNull()?.resolve()?.apply {
-                firstMethodOrNull { name = "updateColorWithTint"; optional() }?.hook {
-                    before {
-                        runCatching {
-                            val scrimView = instance.asResolver().firstMethodOrNull { name = "getScrimView"; optional() }?.invoke<Any>()
-                            scrimView?.asResolver()?.firstFieldOrNull { name = "mTintColor"; optional() }?.set(0)
                         }
                     }
                 }

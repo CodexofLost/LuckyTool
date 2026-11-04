@@ -11,20 +11,27 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
         val list = ArrayMap<String, Any>().apply {
             val prefs = preferences(ModulePrefs)
 
-            // Source Android OplusPlatformLevelUtils GaussianLevel
-            when (prefs.getString("customized_gaussian_blur_effect_level", "-1")) {
-                "0" -> put("ro.oplus.gaussianlevel", 0)
-                "1" -> put("ro.oplus.gaussianlevel", 1)
-                "2" -> put("ro.oplus.gaussianlevel", 2)
-                "3" -> put("ro.oplus.gaussianlevel", 3)
+            val sysuiBlurFeature = prefs.getBoolean("force_enable_systemui_blur_feature", false)
+            val adaptiveSmooth = prefs.getBoolean("enable_adaptive_smooth_animation", false)
+
+            // Source Android OplusPlatformLevelUtils GaussianLevel (-1 = untouched stock ROM default)
+            val userGaussianLevel = prefs.getString("customized_gaussian_blur_effect_level", "-1")
+            val effectiveGaussianLevel = when {
+                userGaussianLevel == "0" -> 0 // Explicit user disable strictly respected
+                userGaussianLevel != "-1" -> userGaussianLevel.toIntOrNull() ?: 3
+                sysuiBlurFeature -> 3 // Baseline requirement when SystemUI dynamic blur is enabled
+                else -> null // -1 and blur OFF -> untouched
+            }
+            if (effectiveGaussianLevel != null) {
+                put("ro.oplus.gaussianlevel", effectiveGaussianLevel)
             }
 
             // Framework Animation Level (ro.oplus.animationlevel: 1=Low, 2=Middle, 3=High)
             val frameworkAnimLevel = prefs.getString("customized_framework_anim_level", "-1")
-            val effectiveFrameworkLevel = if (frameworkAnimLevel != "-1") {
-                frameworkAnimLevel.toIntOrNull()
-            } else {
-                null
+            val effectiveFrameworkLevel = when {
+                frameworkAnimLevel != "-1" -> frameworkAnimLevel.toIntOrNull() ?: 3
+                sysuiBlurFeature -> 3
+                else -> null
             }
             if (effectiveFrameworkLevel != null) {
                 put("ro.oplus.animationlevel", effectiveFrameworkLevel)
@@ -33,12 +40,10 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             // Launcher Animation Tier (persist.sys.oplus.anim_level: 1=A+, 2=A, 3=B+, 4=B)
             val launcherAnimTier = prefs.getString("customized_launcher_anim_level", "-1")
             val launcherHighLevel = prefs.getBoolean("force_enable_launcher_high_level", false)
-            val effectiveLauncherTier = if (launcherAnimTier != "-1") {
-                launcherAnimTier.toIntOrNull()
-            } else if (launcherHighLevel) {
-                2
-            } else {
-                null
+            val effectiveLauncherTier = when {
+                launcherAnimTier != "-1" -> launcherAnimTier.toIntOrNull()
+                launcherHighLevel || sysuiBlurFeature || adaptiveSmooth -> 1
+                else -> null
             }
             if (effectiveLauncherTier != null) {
                 put("persist.sys.oplus.anim_level", effectiveLauncherTier)

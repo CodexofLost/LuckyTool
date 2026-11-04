@@ -1,13 +1,35 @@
 package com.luckyzyx.luckytool.ui.compose.scopes.related
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.service.PowerService
 import com.luckyzyx.luckytool.ui.compose.scopes.ScopePageSpec
+import com.luckyzyx.luckytool.ui.theme.LocalUiMode
+import com.luckyzyx.luckytool.ui.theme.UiMode
 import com.luckyzyx.luckytool.utils.CommandUtils
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
 import com.luckyzyx.luckytool.utils.arraySummaryLine
 import com.topjohnwu.superuser.ShellUtils
+import top.yukonga.miuix.kmp.basic.ButtonDefaults
+import top.yukonga.miuix.kmp.basic.Text as MiuixText
+import top.yukonga.miuix.kmp.basic.TextButton as MiuixTextButton
+import top.yukonga.miuix.kmp.overlay.OverlayDialog
 
 /**
  * Android 系统动画与高斯模糊页：全局动画等级、高斯模糊等级、SystemUI 高斯模糊与实时表面模糊开关。
@@ -48,6 +70,90 @@ object AndroidRelatedPage {
                 c.getString(R.string.need_restart_system),
             ),
         )
+
+        custom(
+            key = "customized_gaussian_blur_conflict_dialog",
+            title = "",
+        ) {
+            val gaussianLevel by state.stringFlow("customized_gaussian_blur_effect_level", "-1")
+                .collectAsStateWithLifecycle()
+            val sysuiBlurActive by state.booleanFlow("force_enable_systemui_blur_feature", false)
+                .collectAsStateWithLifecycle()
+            var showConflictDialog by remember { mutableStateOf(false) }
+
+            LaunchedEffect(gaussianLevel, sysuiBlurActive) {
+                if (gaussianLevel == "0" && sysuiBlurActive) {
+                    showConflictDialog = true
+                }
+            }
+
+            if (showConflictDialog) {
+                when (LocalUiMode.current) {
+                    UiMode.Miuix -> OverlayDialog(
+                        title = stringResource(R.string.gaussian_blur_disabled_conflict_title),
+                        show = true,
+                        onDismissRequest = {
+                            showConflictDialog = false
+                            state.set("customized_gaussian_blur_effect_level", "-1")
+                        },
+                    ) {
+                        MiuixText(
+                            text = stringResource(R.string.gaussian_blur_disabled_conflict_message),
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            MiuixTextButton(
+                                text = stringResource(android.R.string.cancel),
+                                onClick = {
+                                    showConflictDialog = false
+                                    state.set("customized_gaussian_blur_effect_level", "-1")
+                                },
+                                modifier = Modifier.weight(1f),
+                            )
+                            MiuixTextButton(
+                                text = stringResource(android.R.string.ok),
+                                onClick = {
+                                    showConflictDialog = false
+                                    state.set("force_enable_systemui_blur_feature", false)
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.textButtonColorsPrimary(),
+                            )
+                        }
+                    }
+
+                    UiMode.Material -> AlertDialog(
+                        onDismissRequest = {
+                            showConflictDialog = false
+                            state.set("customized_gaussian_blur_effect_level", "-1")
+                        },
+                        title = { Text(stringResource(R.string.gaussian_blur_disabled_conflict_title)) },
+                        text = { Text(stringResource(R.string.gaussian_blur_disabled_conflict_message)) },
+                        dismissButton = {
+                            TextButton(onClick = {
+                                showConflictDialog = false
+                                state.set("customized_gaussian_blur_effect_level", "-1")
+                            }) {
+                                Text(stringResource(android.R.string.cancel))
+                            }
+                        },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                showConflictDialog = false
+                                state.set("force_enable_systemui_blur_feature", false)
+                            }) {
+                                Text(stringResource(android.R.string.ok))
+                            }
+                        },
+                    )
+                }
+            }
+        }
         switch(
             key = "sf_blurs_are_expensive_bypass",
             title = c.getString(R.string.sf_blurs_are_expensive_bypass),

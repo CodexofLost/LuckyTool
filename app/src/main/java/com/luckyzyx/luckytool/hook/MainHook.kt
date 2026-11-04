@@ -17,6 +17,7 @@ import java.io.File
     targetApiVersion = 102,
     hotReload = YukiHookLibXposedEntry.HotReload.AUTO,
     scope = [
+        "android",
         "system",
         "com.android.systemui",
         "com.android.launcher",

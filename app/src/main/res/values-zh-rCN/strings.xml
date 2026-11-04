@@ -1522,4 +1522,7 @@
     <string name="customized_systemui_dynamic_blur_summary">强制开启或关闭 SystemUI 实时硬件背景模糊。选择“无”保持系统默认</string>
     <string name="force_enable_recents_stack_layout">最近任务层叠卡片视图</string>
     <string name="force_enable_recents_stack_layout_summary">强制启用多任务后台多层叠卡片流体视图，替代标准平铺网格视图</string>
+    <string name="gaussian_blur_disabled_conflict_title">高斯模糊冲突提示</string>
+    <string name="gaussian_blur_disabled_conflict_message">将系统高斯模糊级别设置为“已禁用”将同步关闭“通知与控制中心动态模糊”，否则会导致背景显示纯黑或无模糊。\n\n是否确认关闭并继续？</string>
+    <string name="systemui_blur_requires_gaussian_message">启用通知与控制中心动态模糊需要系统高斯模糊处于开启状态。“Android 系统”页的高斯模糊效果级别已重置为默认 (-1)。</string>
 </resources>

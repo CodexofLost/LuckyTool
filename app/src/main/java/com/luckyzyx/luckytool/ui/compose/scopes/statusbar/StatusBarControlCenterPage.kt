@@ -5,6 +5,7 @@ import com.luckyzyx.luckytool.ui.compose.scopes.ScopePageSpec
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
 import com.luckyzyx.luckytool.utils.arraySummaryLine
+import com.luckyzyx.luckytool.utils.showToast
 
 /**
  * 控制中心与通知栏模糊页：QS 与通知中心背景动态模糊 / 壁纸模糊模式开关与调节。
@@ -29,6 +30,15 @@ object StatusBarControlCenterPage {
                 c.getString(R.string.need_restart_scope),
             ),
             notify = true,
+            onChange = { newValue ->
+                if (newValue) {
+                    val gaussianLevel = state.getString("customized_gaussian_blur_effect_level", "-1")
+                    if (gaussianLevel == "0") {
+                        state.set("customized_gaussian_blur_effect_level", "-1")
+                        c.showToast(c.getString(R.string.systemui_blur_requires_gaussian_message))
+                    }
+                }
+            },
         )
 
         switch(

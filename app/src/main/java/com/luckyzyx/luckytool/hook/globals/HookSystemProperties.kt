@@ -3,7 +3,7 @@ package com.luckyzyx.luckytool.hook.globals
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.hookAll
-import com.highcapable.yukihookapi.extension.kavaref.toClass
+import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import org.lsposed.lsparanoid.Obfuscate
 
@@ -16,7 +16,7 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
             "android.os.SystemProperties",
             "com.oplus.wrapper.os.SystemProperties"
         ).forEach {
-            it.toClass().resolve().apply {
+            it.toClassOrNull()?.resolve()?.apply {
                 method { name = "get"; returnType = String::class }.hookAll {
                     before {
                         val key = firstArg().get<String>()
