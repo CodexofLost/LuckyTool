@@ -458,11 +458,4 @@
         <item>@string/disable</item>
     </string-array>
 
-    <string-array name="customized_shade_blur_mode_entries">
-        <item>@string/none_default</item>
-        <item>@string/shade_blur_mode_dynamic</item>
-        <item>@string/shade_blur_mode_wallpaper</item>
-        <item>@string/shade_blur_mode_scrim</item>
-    </string-array>
-
 </resources>

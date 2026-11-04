@@ -43,7 +43,7 @@ object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
                     firstMethod { name = "draw";parameterCount = 2 }.hook {
                         before {
                             if (customAlpha < 0 || enableBlur) return@before
-                            val alphaValue = customAlpha * 25
+                            val alphaValue = (customAlpha.coerceIn(0, 100) * 255) / 100
                             val mBackground = lastArg().get<Drawable>() ?: return@before
                             mBackground.alpha = alphaValue
                         }
@@ -55,8 +55,9 @@ object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
                 .resolve().apply {
                     firstMethod { name = "getOplusStyle";superclass() }.hook {
                         before {
-                            if (customAlpha < 0) return@before
-                            result = if (enableBlur) true else false
+                            if (enableBlur) {
+                                result = true
+                            }
                         }
                     }
                 }
@@ -66,9 +67,10 @@ object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
                 .resolve().apply {
                     firstMethod { name = "updateBackgroundForGroupState" }.hook {
                         before {
-                            if (customAlpha < 0 || !enableBlur) return@before
-                            firstField { name = "mShowGroupBackgroundWhenExpanded" }.of(instance)
-                                .set(true)
+                            if (enableBlur) {
+                                firstField { name = "mShowGroupBackgroundWhenExpanded" }.of(instance)
+                                    .set(true)
+                            }
                         }
                     }
                 }

@@ -91,10 +91,9 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             val prefs = preferences(ModulePrefs)
             val sysuiDynamic = prefs.getString("customized_systemui_dynamic_blur", "-1") == "1"
-            val shadeBlurMode = prefs.getString("customized_shade_blur_mode", "0") != "0"
             val sysuiBlur = prefs.getBoolean("force_enable_systemui_blur_feature", false)
 
-            if (!sysuiDynamic && !shadeBlurMode && !sysuiBlur) return
+            if (!sysuiDynamic && !sysuiBlur) return
 
             runCatching {
                 "com.android.launcher.views.OplusStaticBlurView".toClassOrNull()?.resolve()?.apply {

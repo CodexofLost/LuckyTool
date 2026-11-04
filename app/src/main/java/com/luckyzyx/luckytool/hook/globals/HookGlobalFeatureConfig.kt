@@ -32,8 +32,7 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
 
             // Source SystemUI 强制启用高斯模糊
             val sysuiBlurFeature = prefs.getBoolean("force_enable_systemui_blur_feature", false)
-            val shadeBlurMode = prefs.getString("customized_shade_blur_mode", "0")
-            if (sysuiBlurFeature || shadeBlurMode != "0") {
+            if (sysuiBlurFeature) {
                 put("oplus.software.display.osie_aisdr2hdr_support", false)
             }
         }

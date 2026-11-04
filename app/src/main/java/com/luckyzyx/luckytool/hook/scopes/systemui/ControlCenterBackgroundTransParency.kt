@@ -23,15 +23,15 @@ object ControlCenterBackgroundTransParency : YukiBaseHooker() {
             firstMethod { name = "updateScrimColor" }.hook {
                 before {
                     if (customAlpha < 0) return@before
-                    val value = customAlpha / 10.0F
+                    val ratio = customAlpha.coerceIn(0, 100) / 100.0F
                     val view = firstArg().get<View>() ?: return@before
                     val alpha = arg(1).get<Float>() ?: return@before
                     val name = safeOfNull { view.resources.getResourceEntryName(view.id) }
                         ?: return@before
                     when (name) {
                         "scrim_in_front" -> {}
-                        "scrim_behind" -> if (alpha > value) arg(1).set(value)
-                        "scrim_notifications" -> if (alpha > value) arg(1).set(value)
+                        "scrim_behind" -> if (alpha > 0f) arg(1).set(alpha * ratio)
+                        "scrim_notifications" -> if (alpha > 0f) arg(1).set(alpha * ratio)
                     }
                 }
             }

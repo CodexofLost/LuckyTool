@@ -105,17 +105,15 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
             }
         }
 
-        val enableBouncerBlur = preferences(ModulePrefs).getBoolean("enable_bouncer_blur_scrim", false)
-        if (enableBouncerBlur) {
-            runCatching {
-                "com.oplusos.systemui.common.feature.KeyguardFeatureOption".toClassOrNull()?.resolve()?.apply {
-                    firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
-                    firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
-                    firstMethodOrNull { name = "loadAppFeature"; optional() }?.hook {
-                        after {
-                            firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
-                            firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
-                        }
+        // 4.1 Bouncer (PIN/Pattern lock) blur scrim
+        runCatching {
+            "com.oplusos.systemui.common.feature.KeyguardFeatureOption".toClassOrNull()?.resolve()?.apply {
+                firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
+                firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
+                firstMethodOrNull { name = "loadAppFeature"; optional() }?.hook {
+                    after {
+                        firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
+                        firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
                     }
                 }
             }

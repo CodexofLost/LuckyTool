@@ -337,7 +337,9 @@
     <string name="remove_notification_cleanup_button">移除通知清理按钮</string>
     <string name="enable_notification_importance_classification">启用通知重要性分类</string>
     <string name="custom_notification_background_transparency">自定义通知背景透明度</string>
+    <string name="custom_notification_background_transparency_summary">调整通知卡片背景不透明度百分比（-1 为系统默认）</string>
     <string name="enable_notification_background_blur_effect">启用通知背景模糊效果</string>
+    <string name="enable_notification_background_blur_effect_summary">在通知卡片背景启用实时毛玻璃动态材质模糊</string>
     <string name="ControlCenter_Silder_Related">控制中心滑动条相关</string>
     <string name="custom_control_center_silder_transparency">自定义控制中心滑动条透明度</string>
     <string name="ControlCenter_UI_Related">控制中心 UI 相关</string>
@@ -361,6 +363,7 @@
     <string name="remove_control_center_networkwarn_dialog_and_text">移除安全警告信息与对话框</string>
     <string name="remove_control_center_networkwarn_summary">连接 VPN 后，将在控制中心底部显示一行文字\n安装 CA 证书后，提示网络可能受到监控</string>
     <string name="custom_control_center_background_transparency">自定义控制中心背景透明度</string>
+    <string name="custom_control_center_background_transparency_summary">调整控制中心展开面板背景不透明度百分比（-1 为系统默认）</string>
     <!--StatusBar Tiles-->
     <string name="StatusBarTiles">状态栏磁贴</string>
     <string name="enable_nfc_delay_shutdown">启用 NFC 延迟关闭</string>
@@ -712,7 +715,8 @@
     <string name="open_battery_health_summary">设置-电池-电池健康</string>
     <string name="disable_volume_bar_thickness_effect">禁用音量条粗细效果</string>
     <string name="set_volume_bar_display_position">设置音量条显示位置</string>
-    <string name="force_enable_systemui_blur_feature">强制启用系统界面模糊特性</string>
+    <string name="force_enable_systemui_blur_feature">通知与控制中心实时动态模糊</string>
+    <string name="force_enable_systemui_blur_feature_summary">在下拉通知中心与快捷控制中心面板强制启用实时硬件级动态高斯模糊</string>
     <string name="force_enable_systemui_blur_feature_tips">前提条件：需要开启选项“强制启用系统模糊特性”\n功能位置：杂项</string>
     <string name="force_enable_systemui_blur_feature_tips_2">注意：当滑动亮度条时通知位置会出现模糊区域，预期行为，无需反馈</string>
     <string name="show_manual_lock_button_power_menu">电源菜单显示手动锁定按钮</string>
@@ -1454,6 +1458,7 @@
     <string name="metis_rule_browser_card_summary">目标为其他浏览器且链接是合法 http(s) 的卡片参与重定向。实验性：需要自身应用处理链接的卡片可能受影响</string>
     <!-- 动效与模糊级别定制 -->
     <string name="category_blur_and_animation">动效与模糊级别</string>
+    <string name="category_notification_background">通知卡片背景</string>
     <string name="category_scope_management">作用域操作</string>
     <string name="restart_launcher">重启系统桌面</string>
     <string name="restart_launcher_summary">强制停止并重启桌面以应用桌面配置更改</string>
@@ -1500,14 +1505,8 @@
     <string name="disable_launcher_low_mem_limits">解除桌面低内存动画降级限制</string>
     <string name="disable_launcher_low_mem_limits_summary">防止桌面在内存压力下退回精简动画或关闭模糊通道</string>
 
-    <string name="enable_qs_tile_elastic_deformation">控制中心磁贴拉伸形变物理</string>
-    <string name="enable_qs_tile_elastic_deformation_summary">拖动或长按快捷设置磁贴时启用流体胶囊拉伸形变动效</string>
-    <string name="enable_media_player_blur">媒体播放器实时模糊背景</string>
-    <string name="enable_media_player_blur_summary">在锁屏与快捷开关媒体控制卡片后方渲染实时高斯模糊背景</string>
-    <string name="enable_bouncer_blur_scrim">锁屏密码键盘背景模糊</string>
-    <string name="enable_bouncer_blur_scrim_summary">在锁屏输入密码或图案时保持背景毛玻璃模糊遮罩</string>
     <string name="enable_panoramic_aod">息屏全景平滑过渡到锁屏</string>
-    <string name="enable_panoramic_aod_summary">开启 AOD 息屏到锁屏的无缝缩放过渡动画</string>
+    <string name="enable_panoramic_aod_summary">开启 AOD 息屏到锁屏的无缝缩放过渡动画 (需设备配备 LTPO 屏幕并在主题商店应用全景息屏壁纸)</string>
 
     <string name="customized_anim_level">旧版动画级别 (anim_level)</string>
     <string name="customized_anim_level_summary">调整 ColorOS 全局桌面与系统界面动效及模糊分级。选择“无”保持系统默认</string>
@@ -1522,11 +1521,6 @@
     <string name="gaussblur_level_3_low">级别 3 - 低质量高斯模糊</string>
     <string name="customized_systemui_dynamic_blur">系统界面动态表面模糊</string>
     <string name="customized_systemui_dynamic_blur_summary">强制开启或关闭 SystemUI 实时硬件背景模糊。选择“无”保持系统默认</string>
-    <string name="customized_shade_blur_mode">通知与控制中心面板模糊模式</string>
-    <string name="customized_shade_blur_mode_summary">选择下拉通知中心与快捷设置控制中心时的背景模糊方式</string>
-    <string name="shade_blur_mode_dynamic">实时动态背景模糊 (Dynamic Live Blur)</string>
-    <string name="shade_blur_mode_wallpaper">静态壁纸高斯模糊</string>
-    <string name="shade_blur_mode_scrim">实时遮罩模糊 (Scrim Blur)</string>
     <string name="enable_drawer_dynamic_blur">抽屉背景动态高斯模糊</string>
     <string name="enable_drawer_dynamic_blur_summary">上滑进入抽屉界面时，强制启用桌面壁纸与背景的实时高斯模糊</string>
     <string name="force_enable_recents_stack_layout">最近任务层叠卡片视图</string>

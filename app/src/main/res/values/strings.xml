@@ -375,7 +375,9 @@
     <string name="remove_notification_cleanup_button">Remove notification cleanup button</string>
     <string name="enable_notification_importance_classification">Enable notification importance classification</string>
     <string name="custom_notification_background_transparency">Custom notification background transparency</string>
+    <string name="custom_notification_background_transparency_summary">Adjusts the opacity percentage of notification card backgrounds (-1 for default)</string>
     <string name="enable_notification_background_blur_effect">Enable notification background blur effect</string>
+    <string name="enable_notification_background_blur_effect_summary">Renders a real-time frosted glass material blur directly on notification cards</string>
     
     <string name="ControlCenter_Silder_Related">Control Center Silder Related</string>
     <string name="custom_control_center_silder_transparency">Customize control center slider transparency</string>
@@ -401,6 +403,7 @@
     <string name="remove_control_center_networkwarn_dialog_and_text">Remove security warning message and dialogs</string>
     <string name="remove_control_center_networkwarn_summary">After connecting to VPN, A line of text will appear at the bottom of Control Center\nAfter installing the CA certificate, it shows that the network may be monitored</string>
     <string name="custom_control_center_background_transparency">Custom control center background transparency</string>
+    <string name="custom_control_center_background_transparency_summary">Adjusts the backdrop opacity percentage of the expanded control center (-1 for default)</string>
     
     <!--StatusBar Tiles-->
     <string name="StatusBarTiles">StatusBar Tiles</string>
@@ -798,7 +801,8 @@
     <string name="open_battery_health_summary">Settings - Battery - Battery Health</string>
     <string name="disable_volume_bar_thickness_effect">Disable volume bar thickness effect</string>
     <string name="set_volume_bar_display_position">Set the volume bar display position</string>
-    <string name="force_enable_systemui_blur_feature">Force enable the systemui blur feature</string>
+    <string name="force_enable_systemui_blur_feature">Notification &amp; QS Dynamic Live Blur</string>
+    <string name="force_enable_systemui_blur_feature_summary">Force real-time dynamic hardware Gaussian backdrop blur for Notification and Quick Settings shades</string>
     <string name="force_enable_systemui_blur_feature_tips">Preconditions: You need to turn on the option to “force enable the blur feature of the systemui”\nFunctional location: Miscellaneous</string>
     <string name="force_enable_systemui_blur_feature_tips_2">Note: When you slide the brightness bar, a blurry area will appear at the notification location. This is expected behavior and does not require feedback.</string>
     <string name="show_manual_lock_button_power_menu">Show manual lock button in power menu</string>
@@ -1639,6 +1643,7 @@
     <string name="metis_rule_browser_card_summary">Redirect cards that point to another browser with a valid http(s) link. Experimental: cards that need their own app to handle the link may break</string>
     <!-- Animation & Blur Customization -->
     <string name="category_blur_and_animation">Blur &amp; Animation Tier</string>
+    <string name="category_notification_background">Notification Card Background</string>
     <string name="category_scope_management">Scope Operations</string>
     <string name="restart_launcher">Restart Launcher</string>
     <string name="restart_launcher_summary">Force stop and restart desktop to apply launcher changes</string>
@@ -1685,14 +1690,8 @@
     <string name="disable_launcher_low_mem_limits">Disable Low-Memory Launcher Simplifications</string>
     <string name="disable_launcher_low_mem_limits_summary">Prevents Launcher from falling back to light animations or disabling blurs during memory pressure</string>
 
-    <string name="enable_qs_tile_elastic_deformation">Quick Settings Tile Elastic Morphing</string>
-    <string name="enable_qs_tile_elastic_deformation_summary">Enables liquid pill morphing physics when dragging or toggling quick settings tiles</string>
-    <string name="enable_media_player_blur">Media Player Live Blur Background</string>
-    <string name="enable_media_player_blur_summary">Renders a live hardware Gaussian blur background directly behind the ongoing media notification card</string>
-    <string name="enable_bouncer_blur_scrim">Lockscreen Bouncer Scrim Blur</string>
-    <string name="enable_bouncer_blur_scrim_summary">Keeps the background blurred when entering PIN, pattern, or fingerprint on the lockscreen</string>
     <string name="enable_panoramic_aod">Panoramic AOD to Lockscreen Transition</string>
-    <string name="enable_panoramic_aod_summary">Enables seamless zoom and fade transition from Always-On Display to Lockscreen</string>
+    <string name="enable_panoramic_aod_summary">Enables seamless zoom and fade transition from Always-On Display to Lockscreen (Requires LTPO display and Panoramic AOD wallpaper in Theme Store)</string>
 
     <string name="customized_anim_level">Legacy Animation Level (anim_level)</string>
     <string name="customized_anim_level_summary">Legacy combined animation level</string>
@@ -1707,11 +1706,6 @@
     <string name="gaussblur_level_3_low">Level 3 - Low Gaussian Blur</string>
     <string name="customized_systemui_dynamic_blur">SystemUI Dynamic Surface Blur</string>
     <string name="customized_systemui_dynamic_blur_summary">Enable or disable real-time hardware backdrop blur in SystemUI. None keeps stock default</string>
-    <string name="customized_shade_blur_mode">Notification &amp; QS Shade Blur Mode</string>
-    <string name="customized_shade_blur_mode_summary">Select backdrop blur method for Notification and Quick Settings shades</string>
-    <string name="shade_blur_mode_dynamic">Dynamic Live Backdrop Blur</string>
-    <string name="shade_blur_mode_wallpaper">Static Wallpaper Gaussian Blur</string>
-    <string name="shade_blur_mode_scrim">Live Scrim Backdrop Blur</string>
     <string name="enable_drawer_dynamic_blur">App Drawer Dynamic Gaussian Blur</string>
     <string name="enable_drawer_dynamic_blur_summary">Force real-time Gaussian backdrop blur when opening the app drawer</string>
     <string name="force_enable_recents_stack_layout">Recents Card Stack View</string>

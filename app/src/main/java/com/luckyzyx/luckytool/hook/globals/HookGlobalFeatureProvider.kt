@@ -45,8 +45,7 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
 
             //Source SystemUI 强制启用高斯模糊
             val sysuiBlurFeature = preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)
-            val shadeBlurMode = preferences(ModulePrefs).getString("customized_shade_blur_mode", "0")
-            if (sysuiBlurFeature || shadeBlurMode != "0") {
+            if (sysuiBlurFeature) {
                 put("com.android.systemui.gauss_blur_disabled", false)
                 put("com.android.systemui.pan_view_gauss_blur_disabled", false)
                 put("com.android.systemui.wallpaper_blur_disabled", false)
@@ -129,14 +128,8 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
 //                put("com.android.launcher.two_lines_all_show_textheightdp", -1)
             }
             //Source SystemUI Decoupled Features
-            if (preferences(ModulePrefs).getBoolean("enable_qs_tile_elastic_deformation", false)) {
-                put("com.android.systemui.qs_deform_enable", true)
-            }
             if (preferences(ModulePrefs).getBoolean("enable_panoramic_aod", false)) {
                 put("com.oplus.systemui.panoramic_aod.enable", true)
-            }
-            if (preferences(ModulePrefs).getBoolean("enable_bouncer_blur_scrim", false)) {
-                put("com.android.systemui.disable_bouncer_blur_scrim", false)
             }
 
             //Source Launcher Decoupled Features

@@ -21,54 +21,22 @@ object StatusBarControlCenterPage {
         val c = requireNotNull(context) { "ScopeScreen 未注入 Context" }
 
         category(c.getString(R.string.category_blur_and_animation))
-        list(
-            key = "customized_shade_blur_mode",
-            title = c.getString(R.string.customized_shade_blur_mode),
-            entries = c.resources.getStringArray(R.array.customized_shade_blur_mode_entries),
-            entryValues = arrayOf("0", "1", "2", "3"),
-            default = "0",
-            summary = arraySummaryLine(
-                c.getString(R.string.current_mode) + ": %s",
-                c.getString(R.string.customized_shade_blur_mode_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
-            notify = true,
-        )
-
         switch(
             key = "force_enable_systemui_blur_feature",
             title = c.getString(R.string.force_enable_systemui_blur_feature),
-            summary = c.getString(R.string.need_restart_scope),
-            notify = true,
-        )
-
-        switch(
-            key = "enable_qs_tile_elastic_deformation",
-            title = c.getString(R.string.enable_qs_tile_elastic_deformation),
             summary = arraySummaryLine(
-                c.getString(R.string.enable_qs_tile_elastic_deformation_summary),
+                c.getString(R.string.force_enable_systemui_blur_feature_summary),
                 c.getString(R.string.need_restart_scope),
             ),
             notify = true,
         )
 
-        switch(
-            key = "enable_media_player_blur",
-            title = c.getString(R.string.enable_media_player_blur),
-            summary = arraySummaryLine(
-                c.getString(R.string.enable_media_player_blur_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
-            notify = true,
-        )
-
-        switch(
-            key = "enable_bouncer_blur_scrim",
-            title = c.getString(R.string.enable_bouncer_blur_scrim),
-            summary = arraySummaryLine(
-                c.getString(R.string.enable_bouncer_blur_scrim_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
+        slider(
+            key = "custom_control_center_background_transparency",
+            title = c.getString(R.string.custom_control_center_background_transparency),
+            valueRange = -1..100,
+            default = -1,
+            summary = c.getString(R.string.custom_control_center_background_transparency_summary),
             notify = true,
         )
 
@@ -82,13 +50,13 @@ object StatusBarControlCenterPage {
             notify = true,
         )
 
-        category(c.getString(R.string.enable_notification_background_blur_effect))
+        category(c.getString(R.string.category_notification_background))
         switch(
             key = "enable_notification_background_blur_effect",
             title = c.getString(R.string.enable_notification_background_blur_effect),
             summary = arraySummaryLine(
-                c.getString(R.string.force_enable_systemui_blur_feature_tips),
-                c.getString(R.string.force_enable_systemui_blur_feature_tips_2)
+                c.getString(R.string.enable_notification_background_blur_effect_summary),
+                c.getString(R.string.need_restart_scope),
             ),
             notify = true,
         )
@@ -98,16 +66,7 @@ object StatusBarControlCenterPage {
             title = c.getString(R.string.custom_notification_background_transparency),
             valueRange = -1..100,
             default = -1,
-            summary = c.getString(R.string.force_enable_systemui_blur_feature_tips),
-            notify = true,
-        )
-
-        slider(
-            key = "custom_control_center_background_transparency",
-            title = c.getString(R.string.custom_control_center_background_transparency),
-            valueRange = -1..100,
-            default = -1,
-            summary = c.getString(R.string.force_enable_systemui_blur_feature_tips),
+            summary = c.getString(R.string.custom_notification_background_transparency_summary),
             notify = true,
         )
 
