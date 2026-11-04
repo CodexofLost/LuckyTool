@@ -14,6 +14,7 @@ object ControlCenterBackgroundTransParency : YukiBaseHooker() {
     override fun onHook() {
         var customAlpha =
             preferences(ModulePrefs).getInt("custom_control_center_background_transparency", -1)
+        if (customAlpha < 0) return
         dataChannel.wait<Int>("custom_control_center_background_transparency") {
             customAlpha = it
         }

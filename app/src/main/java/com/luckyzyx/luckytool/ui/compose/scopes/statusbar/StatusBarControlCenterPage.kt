@@ -31,15 +31,6 @@ object StatusBarControlCenterPage {
             notify = true,
         )
 
-        slider(
-            key = "custom_control_center_background_transparency",
-            title = c.getString(R.string.custom_control_center_background_transparency),
-            valueRange = -1..100,
-            default = -1,
-            summary = c.getString(R.string.custom_control_center_background_transparency_summary),
-            notify = true,
-        )
-
         switch(
             key = "enable_panoramic_aod",
             title = c.getString(R.string.enable_panoramic_aod),
@@ -58,15 +49,6 @@ object StatusBarControlCenterPage {
                 c.getString(R.string.enable_notification_background_blur_effect_summary),
                 c.getString(R.string.need_restart_scope),
             ),
-            notify = true,
-        )
-
-        slider(
-            key = "custom_notification_background_transparency",
-            title = c.getString(R.string.custom_notification_background_transparency),
-            valueRange = -1..100,
-            default = -1,
-            summary = c.getString(R.string.custom_notification_background_transparency_summary),
             notify = true,
         )
 

@@ -17,7 +17,9 @@ class HookSystemUIFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
             loadHooker(ForceEnableSystemUIDynamicBlur)
         }
 
-        loadHooker(NotificationBackgroundBlurAlpha)
-        loadHooker(ControlCenterBackgroundTransParency)
+        val enableNotifBlur = preferences(ModulePrefs).getBoolean("enable_notification_background_blur_effect", false)
+        if (enableNotifBlur) {
+            loadHooker(NotificationBackgroundBlurAlpha)
+        }
     }
 }

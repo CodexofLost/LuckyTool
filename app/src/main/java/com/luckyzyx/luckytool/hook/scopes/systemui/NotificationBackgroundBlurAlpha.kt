@@ -1,8 +1,6 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import android.annotation.SuppressLint
-import android.graphics.Canvas
-import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
@@ -28,36 +26,11 @@ object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
     @Obfuscate
     object NotificationBackgroundBlurAlphaV15 : YukiBaseHooker() {
         override fun onHook() {
-            var customAlpha =
-                preferences(ModulePrefs).getInt("custom_notification_background_transparency", -1)
-            dataChannel.wait<Int>("custom_notification_background_transparency") {
-                customAlpha = it
-            }
             var enableBlur =
                 preferences(ModulePrefs).getBoolean("enable_notification_background_blur_effect", false)
             dataChannel.wait<Boolean>("enable_notification_background_blur_effect") {
                 enableBlur = it
             }
-
-            //Source NotificationBackgroundView
-            "com.android.systemui.statusbar.notification.row.NotificationBackgroundView".toClass()
-                .resolve().apply {
-                    firstMethod { name = "onDraw" }.hook {
-                        before {
-                            if (customAlpha < 0) return@before
-                            val alphaValue = (customAlpha.coerceIn(0, 100) * 255) / 100
-                            val canvas = firstArg().get<Canvas>() ?: return@before
-                            val view = instance<View>()
-                            val rect = RectF(0f, 0f, view.width.toFloat(), view.height.toFloat())
-                            canvas.saveLayerAlpha(rect, alphaValue)
-                        }
-                        after {
-                            if (customAlpha < 0) return@after
-                            val canvas = firstArg().get<Canvas>() ?: return@after
-                            canvas.restore()
-                        }
-                    }
-                }
 
             //Source NotificationBackgroundViewExtImp
             "com.oplus.systemui.statusbar.notification.row.NotificationBackgroundViewExtImp".toClass()
