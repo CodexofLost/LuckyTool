@@ -1494,8 +1494,8 @@
     <string name="enable_adaptive_smooth_animation">自适应 120Hz 高刷动效曲线</string>
     <string name="enable_adaptive_smooth_animation_summary">动态匹配应用开启与退出的高刷新率曲线</string>
 
-    <string name="enable_folder_material_blur">文件夹动态材质模糊</string>
-    <string name="enable_folder_material_blur_summary">桌面文件夹图标预览与展开窗口启用实时毛玻璃动态材质模糊</string>
+    <string name="enable_folder_material_blur">桌面动态材质模糊</string>
+    <string name="enable_folder_material_blur_summary">为桌面文件夹、预览图标及桌面界面组件启用实时毛玻璃动态材质模糊</string>
     <string name="enable_wallpaper_zoom_animation">壁纸景深缩放动效</string>
     <string name="enable_wallpaper_zoom_animation_summary">开启解锁、启动应用及返回桌面时的壁纸景深缩放动画</string>
     <string name="enable_recents_vibration_physics">多任务卡片堆叠与触感震动</string>
@@ -1521,8 +1521,6 @@
     <string name="gaussblur_level_3_low">级别 3 - 低质量高斯模糊</string>
     <string name="customized_systemui_dynamic_blur">系统界面动态表面模糊</string>
     <string name="customized_systemui_dynamic_blur_summary">强制开启或关闭 SystemUI 实时硬件背景模糊。选择“无”保持系统默认</string>
-    <string name="enable_drawer_dynamic_blur">抽屉背景动态高斯模糊</string>
-    <string name="enable_drawer_dynamic_blur_summary">上滑进入抽屉界面时，强制启用桌面壁纸与背景的实时高斯模糊</string>
     <string name="force_enable_recents_stack_layout">最近任务层叠卡片视图</string>
     <string name="force_enable_recents_stack_layout_summary">强制启用多任务后台多层叠卡片流体视图，替代标准平铺网格视图</string>
 </resources>

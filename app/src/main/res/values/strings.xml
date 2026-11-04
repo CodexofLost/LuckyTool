@@ -1679,8 +1679,8 @@
     <string name="enable_adaptive_smooth_animation">Adaptive 120Hz Smooth Animation</string>
     <string name="enable_adaptive_smooth_animation_summary">Enables dynamic high-refresh-rate curve matching for app opening and closing transitions</string>
 
-    <string name="enable_folder_material_blur">Folder Dynamic Material Blur</string>
-    <string name="enable_folder_material_blur_summary">Enables real-time dynamic glass blur on desktop folder previews and open folder dialogs</string>
+    <string name="enable_folder_material_blur">Launcher Dynamic Material Blur</string>
+    <string name="enable_folder_material_blur_summary">Enables ColorOS real-time glass material blur across desktop folders, previews, and launcher surfaces</string>
     <string name="enable_wallpaper_zoom_animation">Live Wallpaper Depth Zooming</string>
     <string name="enable_wallpaper_zoom_animation_summary">Enables wallpaper scale expansion and depth zooming when opening apps, unlocking, and returning home</string>
     <string name="enable_recents_vibration_physics">Recents Card Stack &amp; Tactile Physics</string>
@@ -1706,8 +1706,6 @@
     <string name="gaussblur_level_3_low">Level 3 - Low Gaussian Blur</string>
     <string name="customized_systemui_dynamic_blur">SystemUI Dynamic Surface Blur</string>
     <string name="customized_systemui_dynamic_blur_summary">Enable or disable real-time hardware backdrop blur in SystemUI. None keeps stock default</string>
-    <string name="enable_drawer_dynamic_blur">App Drawer Dynamic Gaussian Blur</string>
-    <string name="enable_drawer_dynamic_blur_summary">Force real-time Gaussian backdrop blur when opening the app drawer</string>
     <string name="force_enable_recents_stack_layout">Recents Card Stack View</string>
     <string name="force_enable_recents_stack_layout_summary">Force flagship card stacked overview in recent tasks instead of standard horizontal cards</string>
 </resources>

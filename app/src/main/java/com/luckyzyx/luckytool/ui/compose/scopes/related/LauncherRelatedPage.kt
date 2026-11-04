@@ -56,15 +56,6 @@ object LauncherRelatedPage {
         )
 
         switch(
-            key = "enable_drawer_dynamic_blur",
-            title = c.getString(R.string.enable_drawer_dynamic_blur),
-            summary = arraySummaryLine(
-                c.getString(R.string.enable_drawer_dynamic_blur_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
-        )
-
-        switch(
             key = "enable_wallpaper_zoom_animation",
             title = c.getString(R.string.enable_wallpaper_zoom_animation),
             summary = arraySummaryLine(
