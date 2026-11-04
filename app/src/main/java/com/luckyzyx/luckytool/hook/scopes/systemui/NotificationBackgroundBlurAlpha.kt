@@ -1,6 +1,8 @@
 package com.luckyzyx.luckytool.hook.scopes.systemui
 
 import android.annotation.SuppressLint
+import android.graphics.Canvas
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
@@ -40,12 +42,19 @@ object NotificationBackgroundBlurAlpha : YukiBaseHooker() {
             //Source NotificationBackgroundView
             "com.android.systemui.statusbar.notification.row.NotificationBackgroundView".toClass()
                 .resolve().apply {
-                    firstMethod { name = "draw";parameterCount = 2 }.hook {
+                    firstMethod { name = "onDraw" }.hook {
                         before {
-                            if (customAlpha < 0 || enableBlur) return@before
+                            if (customAlpha < 0) return@before
                             val alphaValue = (customAlpha.coerceIn(0, 100) * 255) / 100
-                            val mBackground = lastArg().get<Drawable>() ?: return@before
-                            mBackground.alpha = alphaValue
+                            val canvas = firstArg().get<Canvas>() ?: return@before
+                            val view = instance<View>()
+                            val rect = RectF(0f, 0f, view.width.toFloat(), view.height.toFloat())
+                            canvas.saveLayerAlpha(rect, alphaValue)
+                        }
+                        after {
+                            if (customAlpha < 0) return@after
+                            val canvas = firstArg().get<Canvas>() ?: return@after
+                            canvas.restore()
                         }
                     }
                 }
