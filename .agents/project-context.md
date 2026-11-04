@@ -1,7 +1,7 @@
 ---
-context_version: 1.2.2
-synced_commit: "e06c28fe5"
-synced_at: "2026-11-04T08:53:00Z"
+context_version: 1.2.3
+synced_commit: "d5aab0b0e"
+synced_at: "2026-11-04T08:57:00Z"
 ---
 
 # Project Context: LuckyTool
