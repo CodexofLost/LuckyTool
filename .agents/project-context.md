@@ -1,7 +1,7 @@
 ---
 context_version: 1.2.4
-synced_commit: "f0b9982fe"
-synced_at: "2026-11-04T10:45:00Z"
+synced_commit: "ad8bbe1de"
+synced_at: "2026-11-04T11:09:00Z"
 ---
 
 # Project Context: LuckyTool
@@ -15,7 +15,7 @@ synced_at: "2026-11-04T10:45:00Z"
 | **Toolchain & Prerequisites** | JDK 21, Gradle, Android NDK (target `arm64-v8a`), LSPosed / LibXposed runtime |
 | **Environment & Config** | `gradle.properties`, `app/version.properties`, `local.properties` |
 | **Core Stack** | Jetpack Compose, YukiHookAPI 1.5.0, LibXposed API 102.0.0, DexKit (`org.luckypray.dexkit`), Kotlin Serialization |
-| **Core Focus Scope** | QS & Notification Shade dynamic blur, Launcher dock/folder dynamic blur, Flagship parallel/fluid animations |
+| **Core Focus Scope** | QS & Notification Shade dynamic blur, Launcher dynamic material blur, Flagship parallel/fluid animations |
 | **Primary Commands** | `Build: fast-gradlew assembleDebug` \| `Release: fast-gradlew assembleRelease` \| `CI: gh workflow run build.yml` |
 
 ## 2. Component Ownership & Architecture Map
@@ -25,7 +25,7 @@ synced_at: "2026-11-04T10:45:00Z"
 | **Hook Core Engine** | `app/src/main/java/com/luckyzyx/luckytool/hook/MainHook.kt` | `MainHook`: Entrypoint for LSPosed/LibXposed; filtered strictly to `system`, `com.android.systemui`, and `com.android.launcher`. |
 | **Global Feature Interceptors** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalFeatureProvider.kt` | Intercepts decoupled ColorOS `AppFeatureProvider` queries (`DEVICE_LEVEL_HIGH`, `support_upgrade_anim_material_blur`, `panoramic_aod.enable`, etc.). |
 | **System Properties Injection** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalSystemProperties.kt` | Injects decoupled animation levels (Framework Level 1–3, Launcher Tier A+/A/B+/B), `ro.oplus.gaussianlevel`, SurfaceFlinger blur flags, media panel blur. |
-| **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks dynamic dock blur (`ForceEnableDockerBackgroundBlur`), launcher material live blur, recents card-stack physics, wallpaper depth/zoom animations, and decoupled animation tiers (A+/A/B+/B). |
+| **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks launcher dynamic material live blur, recents card-stack physics, wallpaper depth/zoom animations, and decoupled animation tiers (A+/A/B+/B). |
 | **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/scopes/systemui/HookSystemUIFeature.kt` | Notification & QS shade dynamic live blur (`ForceEnableSystemUIDynamicBlur` via `force_enable_systemui_blur_feature`), and panoramic AOD unlock (`enable_panoramic_aod`). |
 | **Compose UI & Settings** | `app/src/main/java/com/luckyzyx/luckytool/ui/compose/MainActivity.kt` | Focused 3-page tree: `android_related`, `statusbar_control_center`, `launcher`, each with 1-tap in-page scope reload operations. |
 | **Bluryy Module Blueprint** | `.agents/bluryy-module-analysis.md` | Full reverse-engineering spec of `BlurryAnimations v2.9` Magisk module (properties, XML features). |

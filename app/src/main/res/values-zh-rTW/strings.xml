@@ -632,7 +632,6 @@
     <string name="enable_launcher_indicator_entry">啟用桌面下方按鈕選擇項</string>
     <string name="custom_desktop_default_home_page">自定義桌面預設主頁</string>
     <string name="enable_docker_background">啟用Docker背景顯示</string>
-    <string name="force_enable_docker_background_blur">強制啟用Docker背景模糊</string>
     <string name="remove_docker_max_number_limit">移除Docker最大數量限制</string>
     <string name="remove_docker_max_number_limit_summary">與桌面佈局列數一致</string>
     <string name="launcher_layout_row_colume">設定桌面佈局支援的最大行列數</string>

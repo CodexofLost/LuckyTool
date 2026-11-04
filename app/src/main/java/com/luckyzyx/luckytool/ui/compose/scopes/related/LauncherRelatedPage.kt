@@ -6,10 +6,9 @@ import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
 import com.luckyzyx.luckytool.utils.arraySummaryLine
 import com.luckyzyx.luckytool.utils.checkPackName
-import com.luckyzyx.luckytool.utils.getOSVersionCode
 
 /**
- * 桌面动画与模糊页：Docker 背景高斯模糊、文件夹动态高斯模糊与旗舰动画等级开关。
+ * 桌面动画与模糊页：桌面动态材质模糊、壁纸缩放动效、最近任务层叠视图与旗舰动画等级开关。
  */
 object LauncherRelatedPage {
 
@@ -22,7 +21,6 @@ object LauncherRelatedPage {
         isVisible = { checkPackName("com.android.launcher") },
     ) {
         val c = requireNotNull(context) { "ScopeScreen 未注入 Context" }
-        val osCode = getOSVersionCode
 
         category(c.getString(R.string.category_blur_and_animation))
         list(
@@ -37,14 +35,6 @@ object LauncherRelatedPage {
                 c.getString(R.string.need_restart_scope),
             ),
         )
-
-        if (osCode >= 34) {
-            switch(
-                key = "force_enable_docker_background_blur",
-                title = c.getString(R.string.force_enable_docker_background_blur),
-                summary = c.getString(R.string.need_restart_scope),
-            )
-        }
 
         switch(
             key = "enable_folder_material_blur",

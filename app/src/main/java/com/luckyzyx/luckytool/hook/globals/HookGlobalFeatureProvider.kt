@@ -137,7 +137,6 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             val launcherHighLevel = preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false)
             val isTierAOrAPlus = (launcherAnimTier in arrayOf("1", "2")) || (launcherAnimTier == "-1" && launcherHighLevel)
 
-            val dockerBlur = preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false)
             val folderBlur = preferences(ModulePrefs).getBoolean("enable_folder_material_blur", false)
             val disableLowMem = preferences(ModulePrefs).getBoolean("disable_launcher_low_mem_limits", false)
             val wallpaperZoom = preferences(ModulePrefs).getBoolean("enable_wallpaper_zoom_animation", false)
@@ -145,12 +144,10 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             if (isTierAOrAPlus) {
                 put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
             }
-            if (dockerBlur) {
-                put("com.android.launcher.support_dynamic_blur", true)
-            }
             if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)
                 put("com.android.launcher.upgrade_material_blur", true)
+                put("com.android.launcher.support_dynamic_blur", true)
             }
             if (wallpaperZoom) {
                 put("oplus.software.zoom_wallpaper", true)

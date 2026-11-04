@@ -142,27 +142,24 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             val prefs = preferences(ModulePrefs)
             val folderBlur = prefs.getBoolean("enable_folder_material_blur", false)
-            val dockerBlur = prefs.getBoolean("force_enable_docker_background_blur", false)
 
-            if (!folderBlur && !dockerBlur) return
+            if (!folderBlur) return
 
-            // 基础模糊能力：如果开启了文件夹或 Docker 模糊，OplusBlurProperties.isSupportNewBlur 必须返回 true
+            // 桌面动态材质模糊：OplusBlurProperties 材质模糊能力全开
             runCatching {
                 "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties".toClassOrNull()
                     ?.resolve()?.apply {
                         firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
                             before { result = true }
                         }
-                        if (folderBlur) {
-                            firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
-                                before { result = true }
-                            }
-                            firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
-                                before { result = true }
-                            }
-                            firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
-                                before { result = true }
-                            }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
+                            before { result = true }
                         }
                     }
                 "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties\$Companion".toClassOrNull()
@@ -170,21 +167,17 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                         firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
                             before { result = true }
                         }
-                        if (folderBlur) {
-                            firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
-                                before { result = true }
-                            }
-                            firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
-                                before { result = true }
-                            }
-                            firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
-                                before { result = true }
-                            }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
+                            before { result = true }
                         }
                     }
             }
-
-            if (!folderBlur) return
 
             // 文件夹图标与背景动态模糊
             runCatching {
@@ -288,7 +281,6 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         override fun onHook() {
             val prefs = preferences(ModulePrefs)
             val disableLowMem = prefs.getBoolean("disable_launcher_low_mem_limits", false)
-            val dockerBlur = prefs.getBoolean("force_enable_docker_background_blur", false)
             val folderBlur = prefs.getBoolean("enable_folder_material_blur", false)
             val launcherAnimTier = prefs.getString("customized_launcher_anim_level", "-1")
             val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
@@ -305,7 +297,7 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                             before { result = false }
                         }
                     }
-                    if (dockerBlur || folderBlur || isTierAOrAPlus) {
+                    if (folderBlur || isTierAOrAPlus) {
                         firstMethodOrNull { name = "isSupportDynamicBlur"; optional() }?.hook {
                             before { result = true }
                         }

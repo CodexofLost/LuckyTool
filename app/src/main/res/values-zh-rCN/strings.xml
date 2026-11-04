@@ -571,7 +571,6 @@
     <string name="enable_launcher_indicator_entry">启用桌面下方按钮选择项</string>
     <string name="custom_desktop_default_home_page">自定义桌面默认主页</string>
     <string name="enable_docker_background">启用Docker背景显示</string>
-    <string name="force_enable_docker_background_blur">强制启用Docker背景模糊</string>
     <string name="force_enable_launcher_high_level">强制启用旗舰级桌面动效与模糊 (DEVICE_LEVEL_HIGH)</string>
     <string name="force_enable_launcher_high_level_summary">向系统注入高阶硬件特性，在 realme 及 ColorOS 设备上解锁桌面背景模糊、启动弹性动效与后台触感</string>
     <string name="remove_docker_max_number_limit">移除Docker最大数量限制</string>

@@ -531,7 +531,6 @@
     <string name="enable_launcher_indicator_entry">Masaüstünün altındaki buton seçimlerini etkinleştir</string>
     <string name="custom_desktop_default_home_page">Masaüstü varsayılan ana sayfasını özelleştir</string>
     <string name="enable_docker_background">Dock arka planını etkinleştir</string>
-    <string name="force_enable_docker_background_blur">Docker arka plan bulanıklığını zorla etkinleştir</string>
     <string name="remove_docker_max_number_limit">Dock max uygulama sınırını kaldır</string>
     <string name="remove_docker_max_number_limit_summary">Masaüstü ile aynı sütun sayısını kullanır</string>
     <string name="launcher_layout_row_colume">Masaüstü düzeninin desteklediği maksimum satır ve sütun sayısını ayarlar</string>
