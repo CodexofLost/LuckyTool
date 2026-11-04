@@ -253,9 +253,6 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                     firstMethodOrNull { name = "isLightFolderAnimation"; optional() }?.hook {
                         before { result = false }
                     }
-                    firstMethodOrNull { name = "isFolderBlurDisabled"; optional() }?.hook {
-                        before { result = false }
-                    }
                     firstMethodOrNull { name = "isUpgradeMaterialBlur"; optional() }?.hook {
                         before { result = true }
                     }
@@ -342,6 +339,9 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                         }
                     }
                     "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
+                        firstMethodOrNull { name = "isDisableWallPaperZoomOut"; optional() }?.hook {
+                            before { result = false }
+                        }
                         firstMethodOrNull { name = "isDisableNewWallpaperAnimation"; optional() }?.hook {
                             before { result = false }
                         }

@@ -390,7 +390,7 @@
     
     <string-array name="customized_gaussian_blur_effect_level_entries">
         <item>@string/default_</item>
-        <item>@string/dynamic</item>
+        <item>@string/disable</item>
         <item>@string/low</item>
         <item>@string/middle</item>
         <item>@string/high</item>

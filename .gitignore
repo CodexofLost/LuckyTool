@@ -41,7 +41,6 @@ vcs.xml
 .dsh-ops/
 dist/
 
-.filesforfindinghooks/
-/.filesforfindinghooks
+filesforfindinghooks/
 scratch/
 build_artifacts/

@@ -51,7 +51,6 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.systemui.wallpaper_blur_disabled", false)
                 put("com.android.systemui.notification_light_os_level", 0)
                 put("com.realme.systemui.low_mem_glass_mode_on", false)
-                put("com.android.systemui.DEVICE_LEVEL_HIGH", true)
             }
 
             //Source SystemUI 启用手电筒亮度调节
@@ -146,11 +145,10 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             }
             if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)
-                put("com.android.launcher.upgrade_material_blur", true)
                 put("com.android.launcher.support_dynamic_blur", true)
             }
             if (wallpaperZoom) {
-                put("oplus.software.zoom_wallpaper", true)
+                put("com.oplus.systemui.kg_disable_zoom_wallpaper", false)
             }
             if (disableLowMem) {
                 put("com.android.launcher.light_animator", false)
