@@ -44,3 +44,4 @@ dist/
 .filesforfindinghooks/
 /.filesforfindinghooks
 scratch/
+build_artifacts/
