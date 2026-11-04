@@ -60,7 +60,6 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             }
 
             // SurfaceFlinger GPU Blur Penalty Bypass & SystemUI Blur Flags
-            val sysuiBlurFeature = prefs.getBoolean("force_enable_systemui_blur_feature", false)
             val sfBlurBypass = prefs.getBoolean("sf_blurs_are_expensive_bypass", false)
             val sysuiDynamicBlurPref = prefs.getString("customized_systemui_dynamic_blur", "-1")
 
