@@ -1,69 +1,101 @@
 package com.luckyzyx.luckytool.hook.scopes.launcher
 
-import android.graphics.drawable.Drawable
 import android.view.View
 import com.highcapable.kavaref.KavaRef.Companion.resolve
 import com.highcapable.yukihookapi.extension.kavaref.hook
-import com.highcapable.yukihookapi.extension.kavaref.toClass
 import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
-import com.luckyzyx.luckytool.utils.DexkitUtils.checkDataList
 import com.luckyzyx.luckytool.utils.ModulePrefs
-import com.luckyzyx.luckytool.utils.getOSVersionCode
 import org.lsposed.lsparanoid.Obfuscate
 import org.luckypray.dexkit.DexKitBridge
 
+@Obfuscate
 class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
     override fun onHook() {
-        loadHooker(HookLauncherDynamicBlur)
+        loadHooker(HookLauncherAnimationTier)
+        loadHooker(HookLauncherDynamicBlurShield)
+        loadHooker(HookLauncherFolderBlur)
+        loadHooker(HookLauncherDrawerBlur)
+        loadHooker(HookLauncherRecentsStack)
+        loadHooker(HookLauncherMotion)
     }
 
+    /**
+     * 1. 桌面动画等级与能力开关 (Tier A+ / Tier A / Tier B+ / Tier B)
+     */
     @Obfuscate
-    object HookLauncherDynamicBlur : YukiBaseHooker() {
+    object HookLauncherAnimationTier : YukiBaseHooker() {
         override fun onHook() {
-            val enableBlur = preferences(ModulePrefs).getString("customized_anim_level", "-1") == "1" ||
-                preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false) ||
-                preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
-                preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false) ||
-                preferences(ModulePrefs).getBoolean("enable_docker_background", false)
-            if (!enableBlur) return
+            val prefs = preferences(ModulePrefs)
+            val launcherAnimTier = prefs.getString("customized_launcher_anim_level", "-1")
+            val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
 
-            // 1. 强制 Launcher 平台能力等级判断为最高级旗舰：
-            // 避免 isBlurUnavailable 判断为 true 时回退为 popup_no_blur_background 灰色背景
+            val tier: Int = (if (launcherAnimTier != "-1") {
+                launcherAnimTier.toIntOrNull()
+            } else if (launcherHigh) {
+                1
+            } else {
+                null
+            }) ?: return
+
+            // tier: 1=A+, 2=A, 3=B+, 4=B
+            val isLevelAOrAPlus = tier <= 2
+            val isLevelAPlus = tier == 1
+            val isLevelBPlusOrHigher = tier <= 3
+            val isLevelBOrBPlus = tier >= 3
+
             runCatching {
                 "com.android.common.util.PlatformLevelUtils".toClassOrNull()?.resolve()?.apply {
-                    firstMethodOrNull { name = "isBlurUnavailable"; optional() }?.hook {
-                        before { result = false }
-                    }
-                    firstMethodOrNull { name = "isDynamicBlurAvailable"; optional() }?.hook {
-                        before { result = true }
-                    }
-                    firstMethodOrNull { name = "isDynamicBlurUnavailable"; optional() }?.hook {
-                        before { result = false }
-                    }
                     firstMethodOrNull { name = "getAnimationLevelOS14"; optional() }?.hook {
-                        before { result = 1 }
-                    }
-                    firstMethodOrNull { name = "getGaussianLevel"; optional() }?.hook {
-                        before { result = 3 }
+                        before { result = if (isLevelAOrAPlus) 2 else if (isLevelBPlusOrHigher) 1 else 0 }
                     }
                     firstMethodOrNull { name = "isHighLevelAnimation"; optional() }?.hook {
-                        before { result = true }
-                    }
-                    firstMethodOrNull { name = "isLowLevelAnimation"; optional() }?.hook {
-                        before { result = false }
+                        before { result = isLevelAOrAPlus }
                     }
                     firstMethodOrNull { name = "isMiddleLevelAnimation"; optional() }?.hook {
-                        before { result = false }
+                        before { result = (tier == 3) }
                     }
-                    firstMethodOrNull { name = "isStaticBlurScene"; optional() }?.hook {
-                        before { result = false }
+                    firstMethodOrNull { name = "isLowLevelAnimation"; optional() }?.hook {
+                        before { result = (tier >= 4) }
                     }
                 }
             }
 
-            // 2. 彻底屏蔽 Launcher 的 OplusStaticBlurView 纯灰底色及静态壁纸缓存：
-            // 下拉通知栏或负一屏时，保证 Launcher 桌面与图标完整保留，由 SystemUI 动态高斯模糊硬件抓取
+            runCatching {
+                "com.android.common.util.LauncherAnimConfig".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isLevelAOrAPlus"; optional() }?.hook {
+                        before { result = isLevelAOrAPlus }
+                    }
+                    firstMethodOrNull { name = "isLevelAPlus"; optional() }?.hook {
+                        before { result = isLevelAPlus }
+                    }
+                    firstMethodOrNull { name = "isLevelBPlusOrHigher"; optional() }?.hook {
+                        before { result = isLevelBPlusOrHigher }
+                    }
+                    firstMethodOrNull { name = "isLevelBOrBPlus"; optional() }?.hook {
+                        before { result = isLevelBOrBPlus }
+                    }
+                    firstMethodOrNull { name = "isAdaptiveAnimation"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 2. 桌面静态遮罩防护：当下拉通知栏或控制中心时，屏蔽 OplusStaticBlurView 灰底，交由 SystemUI 动态高斯模糊硬件抓取
+     */
+    @Obfuscate
+    object HookLauncherDynamicBlurShield : YukiBaseHooker() {
+        override fun onHook() {
+            val prefs = preferences(ModulePrefs)
+            val sysuiDynamic = prefs.getString("customized_systemui_dynamic_blur", "-1") == "1"
+            val shadeBlurMode = prefs.getString("customized_shade_blur_mode", "0") != "0"
+            val sysuiBlur = prefs.getBoolean("force_enable_systemui_blur_feature", false)
+
+            if (!sysuiDynamic && !shadeBlurMode && !sysuiBlur) return
+
             runCatching {
                 "com.android.launcher.views.OplusStaticBlurView".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "init"; optional() }?.hook {
@@ -92,7 +124,6 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                 }
             }
 
-            // 3. 拦截 Launcher 的 addStaticBlurView，阻止静态遮罩视图挂载
             runCatching {
                 "com.android.launcher.Launcher".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "addStaticBlurView"; optional() }?.hook {
@@ -102,49 +133,38 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                     }
                 }
             }
+        }
+    }
 
-            // 4. 解锁 Launcher 动画等级与能力开关 (旗舰 Tier-1 等级，驱动模糊与解锁物理动效)
-            runCatching {
-                "com.android.common.util.LauncherAnimConfig".toClassOrNull()?.resolve()?.apply {
-                    firstMethodOrNull { name = "isLevelAOrAPlus"; optional() }?.hook {
-                        before { result = true }
-                    }
-                    firstMethodOrNull { name = "isLevelAPlus"; optional() }?.hook {
-                        before { result = true }
-                    }
-                    firstMethodOrNull { name = "isLevelBPlusOrHigher"; optional() }?.hook {
-                        before { result = true }
-                    }
-                    firstMethodOrNull { name = "isLevelBOrBPlus"; optional() }?.hook {
-                        before { result = false }
-                    }
-                    firstMethodOrNull { name = "isAdaptiveAnimation"; optional() }?.hook {
-                        before { result = true }
-                    }
-                }
-            }
+    /**
+     * 3. 桌面文件夹与材质动态模糊 (OplusBlurProperties / FolderIcon / FolderAnimUtil)
+     */
+    @Obfuscate
+    object HookLauncherFolderBlur : YukiBaseHooker() {
+        override fun onHook() {
+            val prefs = preferences(ModulePrefs)
+            val folderBlur = prefs.getBoolean("enable_folder_material_blur", false)
+            val dockerBlur = prefs.getBoolean("force_enable_docker_background_blur", false)
 
-            // 5. 解锁 OplusBlurProperties，强制全场景材料模糊可用 (文件夹图标、抽屉背景、Dock等)
+            if (!folderBlur && !dockerBlur) return
+
+            // 基础模糊能力：如果开启了文件夹或 Docker 模糊，OplusBlurProperties.isSupportNewBlur 必须返回 true
             runCatching {
                 "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties".toClassOrNull()
                     ?.resolve()?.apply {
                         firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
                             before { result = true }
                         }
-                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
-                            before { result = true }
+                        if (folderBlur) {
+                            firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                                before { result = true }
+                            }
+                            firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                                before { result = true }
+                            }
+                            firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
+                                before { result = true }
+                            }
                         }
                     }
                 "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties\$Companion".toClassOrNull()
@@ -152,26 +172,23 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                         firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
                             before { result = true }
                         }
-                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
-                            before { result = true }
-                        }
-                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
-                            before { result = true }
+                        if (folderBlur) {
+                            firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                                before { result = true }
+                            }
+                            firstMethodOrNull { name = "isMaterialBlurDrawSupported"; optional() }?.hook {
+                                before { result = true }
+                            }
+                            firstMethodOrNull { name = "isMaterialBlurJumpSupported"; optional() }?.hook {
+                                before { result = true }
+                            }
                         }
                     }
             }
 
-            // 6. 解锁桌面文件夹模糊：OplusPreviewBackground 与 FolderIcon 强制启用动态模糊背景
-            // 杜绝回退到 LayerNormalDrawable 纯灰底色，阻止回收销毁模糊对象
+            if (!folderBlur) return
+
+            // 文件夹图标与背景动态模糊
             runCatching {
                 "com.android.launcher3.folder.OplusPreviewBackground".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "isBgSupportNewBlur"; optional() }?.hook {
@@ -199,41 +216,7 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                 }
             }
 
-            // 6.1 LayerBlurDrawable 消除默认灰色底图 (mDefaultDrawable) 遮盖模糊
-            runCatching {
-                "com.android.launcher3.uioverrides.states.blurdrawable.LayerBlurDrawable".toClassOrNull()
-                    ?.resolve()?.apply {
-                        firstMethodOrNull { name = "setBlurAlpha"; parameterCount = 1; optional() }?.hook {
-                            after {
-                                runCatching {
-                                    val inst = instance ?: return@after
-                                    inst.javaClass.getDeclaredField("mDefaultAlpha").apply { isAccessible = true }.set(inst, 0.0f)
-                                    inst.javaClass.getDeclaredField("mBlurAlpha").apply { isAccessible = true }.set(inst, 1.0f)
-                                    val defDrawable = inst.javaClass.getDeclaredField("mDefaultDrawable").apply { isAccessible = true }.get(inst) as? Drawable
-                                    defDrawable?.alpha = 0
-                                    val wholeAlpha = (inst.javaClass.getDeclaredField("mWholeAlpha").apply { isAccessible = true }.get(inst) as? Float) ?: 1.0f
-                                    val blurDrawable = inst.javaClass.getDeclaredField("mBlurDrawable").apply { isAccessible = true }.get(inst) as? Drawable
-                                    blurDrawable?.alpha = (255 * wholeAlpha).toInt()
-                                }
-                            }
-                        }
-                        firstMethodOrNull { name = "updateLayerDrawableAlpha"; emptyParameters(); optional() }?.hook {
-                            after {
-                                runCatching {
-                                    val inst = instance ?: return@after
-                                    inst.javaClass.getDeclaredField("mDefaultAlpha").apply { isAccessible = true }.set(inst, 0.0f)
-                                    val defDrawable = inst.javaClass.getDeclaredField("mDefaultDrawable").apply { isAccessible = true }.get(inst) as? Drawable
-                                    defDrawable?.alpha = 0
-                                    val wholeAlpha = (inst.javaClass.getDeclaredField("mWholeAlpha").apply { isAccessible = true }.get(inst) as? Float) ?: 1.0f
-                                    val blurDrawable = inst.javaClass.getDeclaredField("mBlurDrawable").apply { isAccessible = true }.get(inst) as? Drawable
-                                    blurDrawable?.alpha = (255 * wholeAlpha).toInt()
-                                }
-                            }
-                        }
-                    }
-            }
-
-            // 7. 解锁打开文件夹动效：禁用低端简易动画，启用完整高斯壁纸模糊展开
+            // 文件夹动效（关闭简易/低端动画）
             runCatching {
                 "com.android.launcher3.anim.light.FolderAnimUtil".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "isLightFolderAnim"; optional() }?.hook {
@@ -248,7 +231,6 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                 }
             }
 
-            // 8. 解锁 AppFeatureUtils 动画与模糊特性
             runCatching {
                 "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
                     firstMethodOrNull { name = "isLightFolderAnimation"; optional() }?.hook {
@@ -260,17 +242,117 @@ class HookLauncherFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
                     firstMethodOrNull { name = "isUpgradeMaterialBlur"; optional() }?.hook {
                         before { result = true }
                     }
-                    firstMethodOrNull { name = "isSupportDynamicBlur"; optional() }?.hook {
+                }
+            }
+        }
+    }
+
+    /**
+     * 3b. 抽屉背景动态高斯模糊 (OplusBlurProperties.isSupportDrawerBlur / isSupportDrawerBtnBlur)
+     */
+    @Obfuscate
+    object HookLauncherDrawerBlur : YukiBaseHooker() {
+        override fun onHook() {
+            val prefs = preferences(ModulePrefs)
+            if (!prefs.getBoolean("enable_drawer_dynamic_blur", false)) return
+
+            runCatching {
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                    }
+                "com.android.launcher3.uioverrides.states.blurdrawable.OplusBlurProperties\$Companion".toClassOrNull()
+                    ?.resolve()?.apply {
+                        firstMethodOrNull { name = "isSupportNewBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "getSysMaterialBlurSwitchEnable"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                        firstMethodOrNull { name = "isSupportDrawerBtnBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
+                    }
+            }
+        }
+    }
+
+    /**
+     * 3c. 最近任务层叠卡片视图 (OplusStackRecentsConfig / CommonSettingsValueProxy)
+     */
+    @Obfuscate
+    object HookLauncherRecentsStack : YukiBaseHooker() {
+        override fun onHook() {
+            val prefs = preferences(ModulePrefs)
+            if (!prefs.getBoolean("force_enable_recents_stack_layout", false)) return
+
+            runCatching {
+                "com.oplus.quickstep.layout.stack.OplusStackRecentsConfig".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isAnimLevelSupportedStack"; optional() }?.hook {
                         before { result = true }
                     }
-                    firstMethodOrNull { name = "isMixColorsDisable"; optional() }?.hook {
-                        before { result = false }
-                    }
-                    firstMethodOrNull { name = "getSupportDockerBg"; optional() }?.hook {
+                    firstMethodOrNull { name = "isStackSupported"; optional() }?.hook {
                         before { result = true }
                     }
-                    firstMethodOrNull { name = "isLightOSAnimation"; optional() }?.hook {
-                        before { result = false }
+                    firstMethodOrNull { name = "isStackRecentsFeatureSupport"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+                "com.oplus.quickstep.common.settingsvalue.CommonSettingsValueProxy\$Companion".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isStackLayout"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+                "com.oplus.quickstep.common.settingsvalue.CommonSettingsValueProxy".toClassOrNull()?.resolve()?.apply {
+                    firstMethodOrNull { name = "isStackLayout"; optional() }?.hook {
+                        before { result = true }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 4. 桌面动效特性与内存限制解除
+     */
+    @Obfuscate
+    object HookLauncherMotion : YukiBaseHooker() {
+        override fun onHook() {
+            val prefs = preferences(ModulePrefs)
+            val disableLowMem = prefs.getBoolean("disable_launcher_low_mem_limits", false)
+            val dockerBlur = prefs.getBoolean("force_enable_docker_background_blur", false)
+            val folderBlur = prefs.getBoolean("enable_folder_material_blur", false)
+            val drawerBlur = prefs.getBoolean("enable_drawer_dynamic_blur", false)
+            val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
+
+            runCatching {
+                "com.android.common.util.AppFeatureUtils".toClassOrNull()?.resolve()?.apply {
+                    if (disableLowMem || launcherHigh) {
+                        firstMethodOrNull { name = "isLightOSAnimation"; optional() }?.hook {
+                            before { result = false }
+                        }
+                        firstMethodOrNull { name = "isMixColorsDisable"; optional() }?.hook {
+                            before { result = false }
+                        }
+                    }
+                    if (dockerBlur || folderBlur || drawerBlur || launcherHigh) {
+                        firstMethodOrNull { name = "isSupportDynamicBlur"; optional() }?.hook {
+                            before { result = true }
+                        }
                     }
                 }
             }

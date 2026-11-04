@@ -11,6 +11,7 @@ import com.highcapable.yukihookapi.extension.kavaref.hookAll
 import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
 import com.highcapable.yukihookapi.hook.log.YLog
+import com.luckyzyx.luckytool.utils.ModulePrefs
 import org.lsposed.lsparanoid.Obfuscate
 
 /**
@@ -104,14 +105,17 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
             }
         }
 
-        runCatching {
-            "com.oplusos.systemui.common.feature.KeyguardFeatureOption".toClassOrNull()?.resolve()?.apply {
-                firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
-                firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
-                firstMethodOrNull { name = "loadAppFeature"; optional() }?.hook {
-                    after {
-                        firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
-                        firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
+        val enableBouncerBlur = preferences(ModulePrefs).getBoolean("enable_bouncer_blur_scrim", false)
+        if (enableBouncerBlur) {
+            runCatching {
+                "com.oplusos.systemui.common.feature.KeyguardFeatureOption".toClassOrNull()?.resolve()?.apply {
+                    firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
+                    firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
+                    firstMethodOrNull { name = "loadAppFeature"; optional() }?.hook {
+                        after {
+                            firstFieldOrNull { name = "isDisableBouncerBlurScrim"; optional() }?.set(false)
+                            firstFieldOrNull { name = "isEnableBouncerWallpaperBlur"; optional() }?.set(false)
+                        }
                     }
                 }
             }
@@ -157,7 +161,10 @@ object ForceEnableSystemUIDynamicBlur : YukiBaseHooker() {
                     before { result = 3 }
                 }
                 firstMethodOrNull { name = "getPlatformAnimationLevel"; optional() }?.hook {
-                    before { result = 1 }
+                    before {
+                        val level = preferences(ModulePrefs).getString("customized_framework_anim_level", "3").toIntOrNull() ?: 3
+                        result = level
+                    }
                 }
                 firstMethodOrNull { name = "getPlatformLevel"; optional() }?.hook {
                     before { result = 3 }

@@ -1454,8 +1454,62 @@
     <string name="metis_rule_browser_card_summary">目标为其他浏览器且链接是合法 http(s) 的卡片参与重定向。实验性：需要自身应用处理链接的卡片可能受影响</string>
     <!-- 动效与模糊级别定制 -->
     <string name="category_blur_and_animation">动效与模糊级别</string>
+    <string name="category_scope_management">作用域操作</string>
+    <string name="restart_launcher">重启系统桌面</string>
+    <string name="restart_launcher_summary">强制停止并重启桌面以应用桌面配置更改</string>
+    <string name="restart_systemui">重启系统界面 (SystemUI)</string>
+    <string name="restart_systemui_summary">重启状态栏与通知中心以应用界面更改</string>
+    <string name="soft_reboot_framework">软重启系统 (重启 Zygote)</string>
+    <string name="soft_reboot_framework_summary">重启 Android 系统服务与框架以应用系统属性</string>
+    <string name="reboot_device">重启设备</string>
+    <string name="reboot_device_summary">完全重启手机</string>
+    <string name="reload_hooker_page">重新加载模块钩子</string>
+    <string name="reload_hooker_page_summary">请求 YukiHook 热重载当前作用域钩子</string>
+
     <string name="none_default">无（默认 / 保持原生）</string>
-    <string name="customized_anim_level">设备动效与模糊级别 (anim_level)</string>
+    <string name="customized_framework_anim_level">系统框架动画分级 (ro.oplus.animationlevel)</string>
+    <string name="customized_framework_anim_level_summary">调整 Android 框架窗口过渡动画曲线与系统级编排。级别 3 为旗舰最高档</string>
+    <string name="framework_anim_level_1_low">级别 1 - 入门 (线性过渡)</string>
+    <string name="framework_anim_level_2_mid">级别 2 - 中端 (标准过渡)</string>
+    <string name="framework_anim_level_3_high">级别 3 - 高端 (旗舰流体编排)</string>
+
+    <string name="customized_launcher_anim_level">桌面动画与模糊分级 (persist.sys.oplus.anim_level)</string>
+    <string name="customized_launcher_anim_level_summary">选择 ColorOS 桌面动效物理引擎与手势响应档位</string>
+    <string name="launcher_anim_tier_a_plus">Tier A+ (级别 1: 极致旗舰 120Hz 与多任务卡片物理)</string>
+    <string name="launcher_anim_tier_a">Tier A (级别 2: ColorOS 15 流体云并行动画引擎 - 推荐)</string>
+    <string name="launcher_anim_tier_b_plus">Tier B+ (级别 3: 中端平滑过渡)</string>
+    <string name="launcher_anim_tier_b">Tier B (级别 4: 低端简易动效)</string>
+
+    <string name="sf_blurs_are_expensive_bypass">绕过 GPU 模糊惩罚限制</string>
+    <string name="sf_blurs_are_expensive_bypass_summary">强制 ro.sf.blurs_are_expensive=0，避免 SurfaceFlinger 在中端 GPU 上跳过模糊渲染通道</string>
+    <string name="enable_spring_overscroll">回弹阻尼滚动物理 (Spring Overscroll)</string>
+    <string name="enable_spring_overscroll_summary">开启全局列表与滑动视图触底/触顶物理弹簧回弹效果</string>
+    <string name="enable_parallel_gesture_animation">打断动画流体手势</string>
+    <string name="enable_parallel_gesture_animation_summary">允许在动画执行过程中随时滑动或点击打断，不丢帧卡顿</string>
+    <string name="enable_adaptive_smooth_animation">自适应 120Hz 高刷动效曲线</string>
+    <string name="enable_adaptive_smooth_animation_summary">动态匹配应用开启与退出的高刷新率曲线</string>
+
+    <string name="enable_folder_material_blur">文件夹动态材质模糊</string>
+    <string name="enable_folder_material_blur_summary">桌面文件夹图标预览与展开窗口启用实时毛玻璃动态材质模糊</string>
+    <string name="enable_wallpaper_zoom_animation">壁纸景深缩放动效</string>
+    <string name="enable_wallpaper_zoom_animation_summary">开启解锁、启动应用及返回桌面时的壁纸景深缩放动画</string>
+    <string name="enable_recents_vibration_physics">多任务卡片堆叠与触感震动</string>
+    <string name="enable_recents_vibration_physics_summary">多任务后台卡片滑动时开启物理弹簧阻尼与旗舰触觉震动反馈</string>
+    <string name="enable_spring_app_launch">应用启动弹簧物理曲线</string>
+    <string name="enable_spring_app_launch_summary">点击桌面应用图标时使用物理弹簧加速度放大动效</string>
+    <string name="disable_launcher_low_mem_limits">解除桌面低内存动画降级限制</string>
+    <string name="disable_launcher_low_mem_limits_summary">防止桌面在内存压力下退回精简动画或关闭模糊通道</string>
+
+    <string name="enable_qs_tile_elastic_deformation">控制中心磁贴拉伸形变物理</string>
+    <string name="enable_qs_tile_elastic_deformation_summary">拖动或长按快捷设置磁贴时启用流体胶囊拉伸形变动效</string>
+    <string name="enable_media_player_blur">媒体播放器实时模糊背景</string>
+    <string name="enable_media_player_blur_summary">在锁屏与快捷开关媒体控制卡片后方渲染实时高斯模糊背景</string>
+    <string name="enable_bouncer_blur_scrim">锁屏密码键盘背景模糊</string>
+    <string name="enable_bouncer_blur_scrim_summary">在锁屏输入密码或图案时保持背景毛玻璃模糊遮罩</string>
+    <string name="enable_panoramic_aod">息屏全景平滑过渡到锁屏</string>
+    <string name="enable_panoramic_aod_summary">开启 AOD 息屏到锁屏的无缝缩放过渡动画</string>
+
+    <string name="customized_anim_level">旧版动画级别 (anim_level)</string>
     <string name="customized_anim_level_summary">调整 ColorOS 全局桌面与系统界面动效及模糊分级。选择“无”保持系统默认</string>
     <string name="anim_level_1_flagship">级别 1 - 旗舰 (A+ 档：动态模糊与流体物理动效)</string>
     <string name="anim_level_2_high">级别 2 - 高端 (A 档：标准高斯模糊与完整动效)</string>
@@ -1472,4 +1526,9 @@
     <string name="customized_shade_blur_mode_summary">选择下拉通知中心与快捷设置控制中心时的背景模糊方式</string>
     <string name="shade_blur_mode_dynamic">实时动态背景模糊 (Dynamic Live Blur)</string>
     <string name="shade_blur_mode_wallpaper">静态壁纸高斯模糊</string>
+    <string name="shade_blur_mode_scrim">实时遮罩模糊 (Scrim Blur)</string>
+    <string name="enable_drawer_dynamic_blur">抽屉背景动态高斯模糊</string>
+    <string name="enable_drawer_dynamic_blur_summary">上滑进入抽屉界面时，强制启用桌面壁纸与背景的实时高斯模糊</string>
+    <string name="force_enable_recents_stack_layout">最近任务层叠卡片视图</string>
+    <string name="force_enable_recents_stack_layout_summary">强制启用多任务后台多层叠卡片流体视图，替代标准平铺网格视图</string>
 </resources>
