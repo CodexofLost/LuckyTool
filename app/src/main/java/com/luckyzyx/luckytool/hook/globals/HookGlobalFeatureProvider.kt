@@ -44,15 +44,12 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
             if (volumeBlur > -1) put("com.android.systemui.disable_volume_blur", false)
 
             //Source SystemUI 强制启用高斯模糊
-            val sysuiBlurFeature = preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)
-            val shadeBlurMode = preferences(ModulePrefs).getString("customized_shade_blur_mode", "0")
-            if (sysuiBlurFeature || shadeBlurMode != "0") {
+            if (preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
                 put("com.android.systemui.gauss_blur_disabled", false)
                 put("com.android.systemui.pan_view_gauss_blur_disabled", false)
                 put("com.android.systemui.wallpaper_blur_disabled", false)
                 put("com.android.systemui.notification_light_os_level", 0)
-                put("com.realme.systemui.low_mem_glass_mode_on", false)
-                put("com.android.systemui.DEVICE_LEVEL_HIGH", true)
+                put("com.android.systemui.disable_bouncer_blur_scrim", false)
             }
 
             //Source SystemUI 启用手电筒亮度调节
@@ -128,46 +125,17 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.launcher.APP_NAME_SHOW_IN_TWO_LINES", true)
 //                put("com.android.launcher.two_lines_all_show_textheightdp", -1)
             }
-            //Source SystemUI Decoupled Features
-            if (preferences(ModulePrefs).getBoolean("enable_qs_tile_elastic_deformation", false)) {
-                put("com.android.systemui.qs_deform_enable", true)
-            }
-            if (preferences(ModulePrefs).getBoolean("enable_panoramic_aod", false)) {
-                put("com.oplus.systemui.panoramic_aod.enable", true)
-            }
-            if (preferences(ModulePrefs).getBoolean("enable_bouncer_blur_scrim", false)) {
+            //Source SystemUI Flagship Dynamic Blur & Feature Flags
+            if (preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
+                put("com.android.systemui.gauss_blur_disabled", false)
+                put("com.android.systemui.pan_view_gauss_blur_disabled", false)
+                put("com.android.systemui.wallpaper_blur_disabled", false)
                 put("com.android.systemui.disable_bouncer_blur_scrim", false)
-            }
-
-            //Source Launcher Decoupled Features
-            val launcherHighLevel = preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false)
-            val dockerBlur = preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false)
-            val folderBlur = preferences(ModulePrefs).getBoolean("enable_folder_material_blur", false)
-            val recentsVibration = preferences(ModulePrefs).getBoolean("enable_recents_vibration_physics", false)
-            val springAppLaunch = preferences(ModulePrefs).getBoolean("enable_spring_app_launch", false)
-            val disableLowMem = preferences(ModulePrefs).getBoolean("disable_launcher_low_mem_limits", false)
-            val wallpaperZoom = preferences(ModulePrefs).getBoolean("enable_wallpaper_zoom_animation", false)
-
-            if (launcherHighLevel) {
+                put("com.android.systemui.enable_bouncer_wallpaper_blur", false)
+                put("com.android.systemui.DEVICE_LEVEL_HIGH", true)
                 put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
-            }
-            if (dockerBlur) {
                 put("com.android.launcher.support_dynamic_blur", true)
-            }
-            if (folderBlur) {
-                put("com.oplus.blur.support_upgrade_anim_material_blur", true)
                 put("com.android.launcher.upgrade_material_blur", true)
-            }
-            if (recentsVibration) {
-                put("com.android.launcher.NEW_RECENTS_VIBRATION", true)
-            }
-            if (springAppLaunch) {
-                put("com.android.launcher.support_spring_animation_app_start", true)
-            }
-            if (wallpaperZoom) {
-                put("oplus.software.zoom_wallpaper", true)
-            }
-            if (disableLowMem) {
                 put("com.android.launcher.light_animator", false)
                 put("com.android.launcher.minimum_memory_support", false)
                 put("com.android.launcher.recent_disable_blur", false)
@@ -176,6 +144,19 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.android.launcher.start_app_disable_blur", false)
                 put("com.android.launcher.toggle_bar_disable_blur", false)
                 put("com.android.launcher.page_preview_disable_blur", false)
+                put("com.realme.systemui.low_mem_glass_mode_on", false)
+            }
+
+            //Source Launcher Flagship Device Level & Blur
+            if (preferences(ModulePrefs).getString("customized_anim_level", "-1") == "1" ||
+                preferences(ModulePrefs).getBoolean("force_enable_launcher_high_level", false) ||
+                preferences(ModulePrefs).getBoolean("force_enable_docker_background_blur", false) ||
+                preferences(ModulePrefs).getBoolean("force_enable_systemui_blur_feature", false)) {
+                put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
+                put("com.android.launcher.support_spring_animation_app_start", true)
+                put("com.android.launcher.NEW_RECENTS_VIBRATION", true)
+                put("oplus.software.support_fluid_entry", true)
+                put("oplus.software.zoom_wallpaper", true)
             }
 
             //Source OplusGame  AI辅助

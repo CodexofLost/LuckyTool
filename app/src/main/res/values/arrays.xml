@@ -422,21 +422,6 @@
         <item>响铃 静音</item>
     </string-array>
 
-    <string-array name="customized_framework_anim_level_entries">
-        <item>@string/none_default</item>
-        <item>@string/framework_anim_level_1_low</item>
-        <item>@string/framework_anim_level_2_mid</item>
-        <item>@string/framework_anim_level_3_high</item>
-    </string-array>
-
-    <string-array name="customized_launcher_anim_level_entries">
-        <item>@string/none_default</item>
-        <item>@string/launcher_anim_tier_a_plus</item>
-        <item>@string/launcher_anim_tier_a</item>
-        <item>@string/launcher_anim_tier_b_plus</item>
-        <item>@string/launcher_anim_tier_b</item>
-    </string-array>
-
     <string-array name="customized_anim_level_entries">
         <item>@string/none_default</item>
         <item>@string/anim_level_1_flagship</item>
@@ -462,7 +447,6 @@
         <item>@string/none_default</item>
         <item>@string/shade_blur_mode_dynamic</item>
         <item>@string/shade_blur_mode_wallpaper</item>
-        <item>@string/shade_blur_mode_scrim</item>
     </string-array>
 
 </resources>

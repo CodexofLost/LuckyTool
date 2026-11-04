@@ -127,8 +127,6 @@ object RestartMenuUtils {
                     key = "reload_page_hooker",
                     title = stringResource(R.string.reload_only_this_page_hooker),
                 ),
-                ChoiceItem(key = "fast_reboot", title = stringResource(R.string.fast_reboot)),
-                ChoiceItem(key = "reboot", title = stringResource(R.string.reboot)),
             )
         } else {
             listOf(
@@ -170,16 +168,6 @@ object RestartMenuUtils {
                     if (isSystemPage) {
                         when (item.key) {
                             "reload_hooker" -> showConfirmHooker = true
-                            "fast_reboot" -> {
-                                ShellUtils.fastCmd(CommandUtils.killzygote)
-                                onDismiss()
-                            }
-                            "reboot" -> {
-                                PowerService.get(context) { controller ->
-                                    controller?.reboot(false, null, false)
-                                }
-                                onDismiss()
-                            }
                             else -> {
                                 restartHooker(context, scopes)
                                 onDismiss()
@@ -327,7 +315,7 @@ object RestartMenuUtils {
      * @receiver Context
      * @param scopes Array<String>
      */
-    fun restartScope(context: Context, scopes: Array<String>) {
+    private fun restartScope(context: Context, scopes: Array<String>) {
         val killSystemUI = scopes.contains("com.android.systemui")
         AppUtils(context).getAllAppVerInfo(scopes)
         ActivityManagerService.get(context) { controller ->
@@ -346,7 +334,7 @@ object RestartMenuUtils {
      * @receiver Context
      * @param scopes Array<String>
      */
-    fun restartHooker(context: Context, scopes: Array<String>) {
+    private fun restartHooker(context: Context, scopes: Array<String>) {
         val reload = YukiHook.Module.reload
         if (!reload.isAvailable) return
         val targets = runCatching { reload.targets }.onFailure {

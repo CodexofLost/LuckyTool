@@ -74,7 +74,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.extended.Update
 import top.yukonga.miuix.kmp.icon.extended.Close2
 import top.yukonga.miuix.kmp.overlay.OverlayDialog
 import java.util.Arrays
@@ -338,7 +337,7 @@ internal fun ScopePageHost(
                     onClick = { showRestartScope = true },
                     contentDescription = stringResource(R.string.menu_reboot),
                     materialIcon = Icons.Filled.PowerSettingsNew,
-                    miuixIcon = MiuixIcons.Update,
+                    miuixIcon = MiuixIcons.Close2,
                 )
             }
             topActions.forEach { action ->
