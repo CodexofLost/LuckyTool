@@ -1,7 +1,7 @@
 ---
-context_version: 1.2.3
-synced_commit: "d5aab0b0e"
-synced_at: "2026-11-04T08:57:00Z"
+context_version: 1.2.4
+synced_commit: "380266cfe"
+synced_at: "2026-11-04T09:55:00Z"
 ---
 
 # Project Context: LuckyTool
@@ -25,7 +25,7 @@ synced_at: "2026-11-04T08:57:00Z"
 | **Hook Core Engine** | `app/src/main/java/com/luckyzyx/luckytool/hook/MainHook.kt` | `MainHook`: Entrypoint for LSPosed/LibXposed; filtered strictly to `system`, `com.android.systemui`, and `com.android.launcher`. |
 | **Global Feature Interceptors** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalFeatureProvider.kt` | Intercepts decoupled ColorOS `AppFeatureProvider` queries (`DEVICE_LEVEL_HIGH`, `support_upgrade_anim_material_blur`, `panoramic_aod.enable`, etc.). |
 | **System Properties Injection** | `app/src/main/java/com/luckyzyx/luckytool/hook/globals/HookGlobalSystemProperties.kt` | Injects decoupled animation levels (Framework Level 1–3, Launcher Tier A+/A/B+/B), `ro.oplus.gaussianlevel`, SurfaceFlinger blur flags, media panel blur. |
-| **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks dynamic dock blur (`ForceEnableDockerBackgroundBlur`), folder live blur, recents card-stack physics. |
+| **Launcher Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookLauncher.kt` | Unlocks dynamic dock blur (`ForceEnableDockerBackgroundBlur`), folder live blur, recents card-stack physics, wallpaper depth/zoom animations, and decoupled animation tiers (A+/A/B+/B). |
 | **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/scopes/systemui/HookSystemUIFeature.kt` | Notification & QS shade dynamic live blur (`ForceEnableSystemUIDynamicBlur` via `force_enable_systemui_blur_feature`), and panoramic AOD unlock (`enable_panoramic_aod`). |
 | **Compose UI & Settings** | `app/src/main/java/com/luckyzyx/luckytool/ui/compose/MainActivity.kt` | Focused 3-page tree: `android_related`, `statusbar_control_center`, `launcher`, each with 1-tap in-page scope reload operations. |
 | **Bluryy Module Blueprint** | `.agents/bluryy-module-analysis.md` | Full reverse-engineering spec of `BlurryAnimations v2.9` Magisk module (properties, XML features). |
@@ -50,6 +50,8 @@ synced_at: "2026-11-04T08:57:00Z"
 ### Known Landmines & Anti-Hallucination Guardrails
 * `TRAP: Setting disable_window_blurs = 1 in system properties` → `RISK: Globally disables window blurs in Android WindowManager across OS` → `FIX: Set disable_window_blurs = 0 or omit entirely.`
 * `TRAP: Bundling launcherHigh into all feature toggles or gating all launcher hooks under single boolean` → `RISK: Cross-feature interference, overriding user tier choices, un-applied switches` → `FIX: Fully decouple sub-hookers and check dedicated preference keys.`
+* `TRAP: Inverting ColorOS Launcher getAnimationLevelOS14 mapping or using legacy 0/1/2 indices` → `RISK: validAnimLevel in PlatformLevelUtils expects 1 (A+), 2 (A), 3 (B+), 4 (B). Other values fall back or break animation curves` → `FIX: Return user configured tier directly (1–4) without inversion.`
+* `TRAP: Adding fake AppFeature keys like NEW_RECENTS_VIBRATION or support_spring_animation_app_start` → `RISK: ColorOS launcher does not check them (spring launch is hardcoded to true on ColorOS; recents layout uses CommonSettingsValueProxy)` → `FIX: Inspect disassembled APK bytecode before introducing new feature keys.`
 * `TRAP: Hardcoding getPlatformAnimationLevel = 1 in SystemUI` → `RISK: Demotes SystemUI animations to LEVEL_LOW (1) in ColorOS` → `FIX: Return user configured framework animation level (default 3 = LEVEL_HIGH).`
 * `TRAP: Direct method reflection by hardcoded name on ColorOS classes` → `RISK: MethodNotFoundException and feature silent failure on minor OTA updates` → `FIX: Always use DexKitBridge string pattern or parameter type matching.`
 * `TRAP: Blind directory bind mounts over /my_product or /my_stock` → `RISK: Masks carrier, memory, and telephony XMLs causing bootloops` → `FIX: Intercept feature providers via HookAppFeatureProvider in RAM.`
@@ -69,14 +71,14 @@ synced_at: "2026-11-04T08:57:00Z"
 ## 7. Build, Verification & Diagnostic Recipes
 
 ```bash
-# Local Build / Compilation
-./gradlew assembleDebug
+# Local Build / Compilation (Always fast-gradlew, never ./gradlew)
+fast-gradlew assembleDebug
 
 # Release Compilation
-./gradlew assembleRelease
+fast-gradlew assembleRelease
 
 # Unit Test Execution
-./gradlew test
+fast-gradlew test
 
 # Stream LuckyTool Logs via pidcat
 pidcat com.luckyzyx.luckytool
