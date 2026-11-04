@@ -41,17 +41,6 @@ object StatusBarControlCenterPage {
             notify = true,
         )
 
-        category(c.getString(R.string.category_notification_background))
-        switch(
-            key = "enable_notification_background_blur_effect",
-            title = c.getString(R.string.enable_notification_background_blur_effect),
-            summary = arraySummaryLine(
-                c.getString(R.string.enable_notification_background_blur_effect_summary),
-                c.getString(R.string.need_restart_scope),
-            ),
-            notify = true,
-        )
-
         category(c.getString(R.string.category_scope_management))
         click(
             title = c.getString(R.string.restart_systemui),
