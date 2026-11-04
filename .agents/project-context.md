@@ -1,7 +1,7 @@
 ---
-context_version: 1.2.4
-synced_commit: "ad8bbe1de"
-synced_at: "2026-11-04T11:09:00Z"
+context_version: 1.2.5
+synced_commit: "35721863e"
+synced_at: "2026-11-04T20:01:00Z"
 ---
 
 # Project Context: LuckyTool
@@ -51,7 +51,7 @@ synced_at: "2026-11-04T11:09:00Z"
 * `TRAP: Setting disable_window_blurs = 1 in system properties` → `RISK: Globally disables window blurs in Android WindowManager across OS` → `FIX: Set disable_window_blurs = 0 or omit entirely.`
 * `TRAP: Bundling launcherHigh into all feature toggles or gating all launcher hooks under single boolean` → `RISK: Cross-feature interference, overriding user tier choices, un-applied switches` → `FIX: Fully decouple sub-hookers and check dedicated preference keys.`
 * `TRAP: Inverting ColorOS Launcher getAnimationLevelOS14 mapping or using legacy 0/1/2 indices` → `RISK: validAnimLevel in PlatformLevelUtils expects 1 (A+), 2 (A), 3 (B+), 4 (B). Other values fall back or break animation curves` → `FIX: Return user configured tier directly (1–4) without inversion.`
-* `TRAP: Adding fake AppFeature keys like NEW_RECENTS_VIBRATION or support_spring_animation_app_start` → `RISK: ColorOS launcher does not check them (spring launch is hardcoded to true on ColorOS; recents layout uses CommonSettingsValueProxy)` → `FIX: Inspect disassembled APK bytecode before introducing new feature keys.`
+* `TRAP: Adding fake AppFeature keys like NEW_RECENTS_VIBRATION, oplus.software.zoom_wallpaper, or hooking non-existent methods like isFolderBlurDisabled` → `RISK: ColorOS components do not check them, producing silent failures and phantom entries` → `FIX: Verify presence in disassembled APK DEX (filesforfindinghooks/) before introducing feature keys or method hooks.`
 * `TRAP: Hardcoding getPlatformAnimationLevel = 1 in SystemUI` → `RISK: Demotes SystemUI animations to LEVEL_LOW (1) in ColorOS` → `FIX: Return user configured framework animation level (default 3 = LEVEL_HIGH).`
 * `TRAP: Direct method reflection by hardcoded name on ColorOS classes` → `RISK: MethodNotFoundException and feature silent failure on minor OTA updates` → `FIX: Always use DexKitBridge string pattern or parameter type matching.`
 * `TRAP: Blind directory bind mounts over /my_product or /my_stock` → `RISK: Masks carrier, memory, and telephony XMLs causing bootloops` → `FIX: Intercept feature providers via HookAppFeatureProvider in RAM.`
