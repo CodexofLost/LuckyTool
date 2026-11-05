@@ -1,7 +1,7 @@
 ---
-context_version: 1.2.7
-synced_commit: "03890a4df"
-synced_at: "2026-11-05T11:22:00Z"
+context_version: 1.2.8
+synced_commit: "1c72a1c18"
+synced_at: "2026-11-05T13:55:00Z"
 ---
 
 # Project Context: RUI Tool
