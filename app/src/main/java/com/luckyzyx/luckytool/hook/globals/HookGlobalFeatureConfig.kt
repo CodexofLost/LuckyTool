@@ -36,7 +36,7 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
                 put("oplus.software.display.osie_aisdr2hdr_support", false)
             }
 
-            // Flagship Tier A/A+ Display, AOD & Gaming Features
+            // Flagship Tier A/A+ Display & AOD Features
             val launcherAnimTier = prefs.getString("customized_launcher_anim_level", "-1")
             val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
             val isTierAOrAPlus = (launcherAnimTier in arrayOf("1", "2")) || (launcherAnimTier == "-1" && launcherHigh)
@@ -48,20 +48,6 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
                 put("oplus.software.display.wcg_2.0_support", true)
                 put("oplus.uiengine.support_left_swipe", true)
                 put("oplus.software.display.resolution_switch_support", true)
-
-                // COSA & HyperBoost Gaming Display Capabilities
-                put("oplus.software.display.game.memc_enable", true)
-                put("oplus.software.display.game.support.extreme_insert", true)
-                put("oplus.software.display.game.memc_increase_fps_mode", true)
-                put("oplus.software.display.game.sr_enable", true)
-                put("oplus.software.display.game.sr.fully_enable", true)
-                put("oplus.software.display.game.hdr2.0_enable", true)
-                put("oplus.software.display.game.hdr3.0_enable", true)
-                put("oplus.software.display.game_color_plus_iris_sdr2hdr_support", true)
-                put("oplus.software.support.gt.mode", true)
-                put("oplus.software.game.geek.performance.panel.min.type", true)
-                put("oplus.software.game_lightningstart_preload", true)
-                put("oplus.software.game.cosa_light_selfkill_enable", false)
             }
         }
         loadHooker(HookFeatureConfigManager(list))
