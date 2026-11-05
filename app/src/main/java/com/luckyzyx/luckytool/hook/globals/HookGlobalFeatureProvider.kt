@@ -142,6 +142,17 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
 
             if (isTierAOrAPlus) {
                 put("com.android.launcher.DEVICE_LEVEL_HIGH", true)
+                put("com.oplus.wallpapers.wallpaper_blur", 2)
+                put("com.oplus.wallpapers.LIGHT_WEIGHT_OS_FUNC", false)
+                put("com.oplus.wallpapers.os_version_type", "FULL_WEIGHT")
+                put("oplus.wallpaper.new_anim.disable", false)
+                put("os.personalization.wallpaper.live_wallpaper.disable", false)
+                put("com.oplus.wallpapers.disable_live_wallpaper", false)
+                put("com.oplus.wallpapers.3d_wallpaper", true)
+                put("com.oplus.wallpapers.livephoto_wallpaper", true)
+                put("com.oplus.wallpapers.video_depth", true)
+                put("com.oplus.wallpapers.home_page_reflection_effect", true)
+                put("os.personalization.wallpaper.live.ripple.enable", true)
             }
             if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)

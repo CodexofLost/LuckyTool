@@ -16,7 +16,7 @@ object LauncherRelatedPage {
         pageKey = "launcher",
         prefsName = ModulePrefs,
         packName = "com.android.launcher",
-        scopes = arrayOf("com.android.launcher", "com.oppo.launcher"),
+        scopes = arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers"),
         restartEnabled = true,
         isVisible = { checkPackName("com.android.launcher") },
     ) {
@@ -94,14 +94,14 @@ object LauncherRelatedPage {
             title = c.getString(R.string.restart_launcher),
             summary = c.getString(R.string.restart_launcher_summary),
             onClick = {
-                RestartMenuUtils.restartScope(c, arrayOf("com.android.launcher", "com.oppo.launcher"))
+                RestartMenuUtils.restartScope(c, arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers"))
             },
         )
         click(
             title = c.getString(R.string.reload_hooker_page),
             summary = c.getString(R.string.reload_hooker_page_summary),
             onClick = {
-                RestartMenuUtils.restartHooker(c, arrayOf("com.android.launcher", "com.oppo.launcher"))
+                RestartMenuUtils.restartHooker(c, arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers"))
             },
         )
     }
