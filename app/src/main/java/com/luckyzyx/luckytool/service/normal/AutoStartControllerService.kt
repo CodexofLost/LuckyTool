@@ -54,7 +54,7 @@ class AutoStartControllerService : Service() {
                 val notify = Notification(
                     context = this@AutoStartControllerService, channel = channel
                 ) {
-                    smallIconResId = R.mipmap.ic_launcher_round
+                    smallIconResId = R.drawable.ic_launcher_monochrome
                     contentTitle = getString(R.string.auto_start_service_channel_title)
                     autoCancel(false)
                     ongoing(true)

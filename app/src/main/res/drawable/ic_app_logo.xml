@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Dark slate background -->
+    <path
+        android:fillColor="#14171F"
+        android:pathData="M0,0h108v108h-108z" />
+
+    <!-- Outer accent rim -->
+    <path
+        android:strokeColor="#3C4252"
+        android:strokeWidth="1.5"
+        android:pathData="M 54,23 A 31,31 0 1,0 54,85 A 31,31 0 1,0 54,23 Z" />
+
+    <!-- White base circle -->
+    <path
+        android:fillColor="#F8F9FA"
+        android:pathData="M 54,24 A 30,30 0 1,0 54,84 A 30,30 0 1,0 54,24 Z" />
+
+    <!-- Dark swirl half -->
+    <path
+        android:fillColor="#181A20"
+        android:pathData="M 54,24 A 30,30 0 0,0 54,84 A 15,15 0 0,0 54,54 A 15,15 0 0,1 54,24 Z" />
+
+    <!-- Top dot (dark) inside white swirl -->
+    <path
+        android:fillColor="#181A20"
+        android:pathData="M 54,34 A 5,5 0 1,0 54,44 A 5,5 0 1,0 54,34 Z" />
+
+    <!-- Bottom dot (white) inside dark swirl -->
+    <path
+        android:fillColor="#F8F9FA"
+        android:pathData="M 54,64 A 5,5 0 1,0 54,74 A 5,5 0 1,0 54,64 Z" />
+</vector>

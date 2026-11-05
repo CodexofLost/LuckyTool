@@ -168,7 +168,7 @@ private fun SplashLayer(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center,
     ) {
         Image(
-            painter = painterResource(R.mipmap.ic_launcher),
+            painter = painterResource(R.drawable.ic_app_logo),
             contentDescription = null,
             modifier = Modifier
                 .size(SplashLogoSize)
