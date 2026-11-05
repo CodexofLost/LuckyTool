@@ -41,21 +41,22 @@ jobs:
         run: chmod +x gradlew
 
       - name: Setup Release Keystore
-        if: "${{ secrets.KEYSTORE_BASE64 != '' }}"
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: |
-          mkdir -p keystore
-          echo "$KEYSTORE_BASE64" | base64 -d > keystore/release.jks
-          cat <<EOF > keystore/keystore.properties
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            mkdir -p keystore
+            echo "$KEYSTORE_BASE64" | base64 -d > keystore/release.jks
+            cat <<EOF > keystore/keystore.properties
           storeFile=../keystore/release.jks
           storePassword=$KEYSTORE_PASSWORD
           keyAlias=$KEY_ALIAS
           keyPassword=$KEY_PASSWORD
           EOF
+          fi
 
       - name: Build Debug APK
         if: "${{ github.event.inputs.build_type == 'debug' || github.event_name != 'workflow_dispatch' }}"
