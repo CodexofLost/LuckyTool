@@ -61,9 +61,10 @@ class HookUXDesignFeature(val dexKitBridge: DexKitBridge) : YukiBaseHooker() {
         // 2. Fallback via DexKit for vendor/regional variant ROMs
         runCatching {
             val dynamicClass = dexKitBridge.findClass {
-                searchPackages("com.oplus.uxdesign")
-                usingStrings("persist.sys.oplus.anim_level")
-            }.firstOrNull()?.getClass(appClassLoader)
+                matcher {
+                    usingStrings("persist.sys.oplus.anim_level")
+                }
+            }.firstOrNull()?.name?.toClassOrNull()
             hookClass(dynamicClass)
         }
     }
