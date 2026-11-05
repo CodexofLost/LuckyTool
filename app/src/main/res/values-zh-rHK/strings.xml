@@ -2,7 +2,6 @@
 <resources>
 
     <!-- Application -->
-    <string name="xposeddescription">對 ColorOS 進行擴展最佳化的 Xposed 模組，永久免費\n禁止分享、轉載、盜賣以及其他違規用途\n開發者：憶清鳴、luckyzyx</string>
 
     <!-- Nav Menu -->
     <string name="nav_function">功能</string>

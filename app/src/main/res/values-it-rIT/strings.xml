@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Application -->
-    <string name="xposeddescription">Modulo Xposed per l\'ottimizzazione estesa di ColorOS, gratuito per sempre\nÈ vietato condividere, ristampare, rubare e vendere e altri scopi illegali\nSviluppatore: luckyzyx</string>
     <!-- Nav Menu -->
     <string name="nav_function">Funzione</string>
     <string name="nav_home">Home</string>

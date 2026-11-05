@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name" translatable="false">RUI Tool</string>
     <!-- Application -->
-    <string name="xposeddescription">Xposed module for extended optimization of ColorOS, free forever\nIt is forbidden to share, reprint, steal and sell and other illegal purposes\nDeveloper: luckyzyx</string>
+    <string name="xposeddescription" translatable="false">Developed by CodexofLost out of spite for realme</string>
     <string name="sharedUserLabel" translatable="false">RUI Tool user</string>
     <!-- Nav Menu -->
     <string name="nav_function">Function</string>
