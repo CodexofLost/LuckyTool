@@ -5,6 +5,7 @@ import com.highcapable.yukihookapi.annotation.xposed.YukiHookLibXposedEntry
 import com.highcapable.yukihookapi.hook.factory.configure
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
+import com.luckyzyx.luckytool.hook.hookers.HookAOD
 import com.luckyzyx.luckytool.hook.hookers.HookAndroid
 import com.luckyzyx.luckytool.hook.hookers.HookLauncher
 import com.luckyzyx.luckytool.hook.hookers.HookSystemUI
@@ -28,6 +29,7 @@ import java.io.File
         "com.oplus.wallpapers",
         "com.oplus.uxdesign",
         "com.oplus.uiengine",
+        "com.oplus.aod",
     ],
 )
 @Obfuscate
@@ -75,5 +77,8 @@ class MainHook : YukiHookXposedModule {
 
         // 息屏显示与流体动效 (UIEngine AOD, All-Day Display, Video Portrait AOD)
         loadApp("com.oplus.uiengine", HookUIEngine)
+
+        // 息屏显示设置与配置 (AOD Settings, All-Day Mode Toggle, Inspiration & Portrait AOD)
+        loadApp("com.oplus.aod", HookAOD)
     }
 }
