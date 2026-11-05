@@ -71,12 +71,12 @@
 # 这在JSON实体映射时非常重要，比如fastJson
 -keepattributes Signature
 
-#指定外部模糊字典
--obfuscationdictionary ../keystore/proguard-custom.txt
+#指定外部模糊字典（若有外部字典文件可解除注释）
+#-obfuscationdictionary ../keystore/proguard-custom.txt
 #指定class模糊字典
--classobfuscationdictionary ../keystore/proguard-custom.txt
+#-classobfuscationdictionary ../keystore/proguard-custom.txt
 #指定package模糊字典
--packageobfuscationdictionary ../keystore/proguard-custom.txt
+#-packageobfuscationdictionary ../keystore/proguard-custom.txt
 
 # 崩溃日志手机端显示
 -keep class com.simple.spiderman.** { *; }

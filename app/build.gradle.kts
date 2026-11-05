@@ -53,18 +53,14 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            if (customStoreFile.isNotEmpty() && file(customStoreFile).exists()) {
-                signingConfig = signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             isDebuggable = false
             isMinifyEnabled = false
             //noinspection NotShrinkingResources
             isShrinkResources = false
-            if (customStoreFile.isNotEmpty() && file(customStoreFile).exists()) {
-                signingConfig = signingConfigs.getByName("debug")
-            }
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
