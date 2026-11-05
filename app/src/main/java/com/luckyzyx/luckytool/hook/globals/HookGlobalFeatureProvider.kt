@@ -161,7 +161,6 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.oplus.aod.scene_info_enable", true)
                 put("com.oplus.aod.canvas", true)
                 put("com.oplus.aod.omoji", true)
-                put("com.android.systemui.light_os", false)
             }
             if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)

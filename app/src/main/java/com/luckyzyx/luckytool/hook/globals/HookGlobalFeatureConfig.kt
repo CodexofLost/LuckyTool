@@ -49,6 +49,11 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
                 put("oplus.uiengine.support_left_swipe", true)
                 put("oplus.software.display.resolution_switch_support", true)
             }
+
+            val panoramicAod = prefs.getBoolean("enable_panoramic_aod", false)
+            if (panoramicAod || isTierAOrAPlus) {
+                put("oplus.software.display.aod_ramless_support", false)
+            }
         }
         loadHooker(HookFeatureConfigManager(list))
     }
