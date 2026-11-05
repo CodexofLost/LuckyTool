@@ -44,7 +44,7 @@ class MainHook : YukiHookXposedModule {
     }
 
     companion object {
-        const val TAG = "LuckyTool"
+        const val TAG = "RUI Tool"
 
         @SuppressLint("SdCardPath")
         fun isMasterEnabled(): Boolean {

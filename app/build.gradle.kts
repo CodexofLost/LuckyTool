@@ -20,7 +20,7 @@ android {
     compileSdk = gropify.project.android.compileSdk
 
     defaultConfig {
-        applicationId = gropify.project.groupName
+        applicationId = "com.codexoflost.rui"
 
         minSdk = gropify.project.android.minSdk
         targetSdk = gropify.project.android.targetSdk
@@ -104,7 +104,7 @@ androidComponents {
             val version = "$versionName($versionCode)"
             println("buildVersion -> $version ($buildType)")
 
-            output.outputFileName.set("LuckyTool_v${version}_${buildType}.apk")
+            output.outputFileName.set("RUI_Tool_v${version}_${buildType}.apk")
             println("outputFileName -> ${output.outputFileName.get()}")
         }
     }

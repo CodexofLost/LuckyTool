@@ -110,8 +110,8 @@ internal fun HomeDashboard(
     onUpdate: () -> Unit,
     onStatusLongClick: (() -> Unit)?,
     onCopyDeviceInfo: () -> Unit,
-    onDonate: () -> Unit,
-    onDonateMethods: () -> Unit,
+    onDonate: () -> Unit = {},
+    onDonateMethods: () -> Unit = {},
     onOpenNotice: () -> Unit,
 ) {
     val miuix = LocalUiMode.current == UiMode.Miuix
@@ -170,16 +170,6 @@ internal fun HomeDashboard(
                         onExpandedChange = { detailsExpanded = !detailsExpanded },
                         colors = colors,
                         onCopy = onCopyDeviceInfo,
-                    )
-                }
-                item(key = "support") {
-                    HomeActionCard(
-                        title = stringResource(R.string.donate_tv_title),
-                        summary = "忆清鸣 · luckyzyx",
-                        symbol = HomeSymbol.Support,
-                        colors = colors,
-                        onClick = onDonate,
-                        onLongClick = onDonateMethods,
                     )
                 }
                 if (state.showNotice) {

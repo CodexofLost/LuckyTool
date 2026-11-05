@@ -53,7 +53,6 @@ import com.luckyzyx.luckytool.ui.compose.components.miuix.MiuixBarItem
 import com.luckyzyx.luckytool.ui.compose.components.miuix.MiuixBottomBar
 import com.luckyzyx.luckytool.ui.compose.pages.HomePage
 import com.luckyzyx.luckytool.ui.compose.pages.LogPage
-import com.luckyzyx.luckytool.ui.compose.pages.OtherPage
 import com.luckyzyx.luckytool.ui.compose.pages.SettingPage
 import com.luckyzyx.luckytool.ui.compose.pages.ThemeScreen
 import com.luckyzyx.luckytool.ui.compose.special.AppPermissionContent
@@ -67,7 +66,6 @@ import com.luckyzyx.luckytool.ui.theme.UiMode
 import top.yukonga.miuix.kmp.blur.layerBackdrop
 import top.yukonga.miuix.kmp.blur.rememberLayerBackdrop
 import top.yukonga.miuix.kmp.icon.MiuixIcons
-import top.yukonga.miuix.kmp.icon.extended.GridView
 import top.yukonga.miuix.kmp.icon.extended.Home
 import top.yukonga.miuix.kmp.icon.extended.Notes
 import top.yukonga.miuix.kmp.icon.extended.Settings
@@ -81,9 +79,8 @@ import kotlin.system.exitProcess
 data class FunctionRequest(val pageKey: String, val title: String?)
 
 internal enum class MainTab(val labelRes: Int, val icon: ImageVector) {
-    Other(R.string.nav_other, MiuixIcons.GridView),
-    Function(R.string.nav_function, MiuixIcons.Tune),
     Home(R.string.nav_home, MiuixIcons.Home),
+    Function(R.string.nav_function, MiuixIcons.Tune),
     Log(R.string.nav_log, MiuixIcons.Notes),
     Setting(R.string.nav_setting, MiuixIcons.Settings),
 }
@@ -140,7 +137,6 @@ fun MainShell(activity: MainActivity) {
                     ) { tab, isCurrentPage ->
                         when (tab) {
                             MainTab.Home -> HomePage(activity, isCurrentPage)
-                            MainTab.Other -> OtherPage(activity, isCurrentPage)
                             MainTab.Function -> FunctionPage(
                                 activity = activity,
                                 onOpenPage = { key, title -> navController.navigateTo(ScopeRoute(key, title)) },

@@ -56,13 +56,3 @@ internal fun HomeTopBarActions(onRestart: () -> Unit, onAbout: () -> Unit) {
         miuixIcon = MiuixIcons.Info,
     )
 }
-
-@Composable
-internal fun OtherTopBarActions(onOptimize: () -> Unit) {
-    TopBarActionButton(
-        onClick = onOptimize,
-        contentDescription = stringResource(R.string.action_optimize_apps),
-        materialIcon = Icons.Outlined.Tune,
-        miuixIcon = MiuixIcons.Tune,
-    )
-}

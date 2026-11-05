@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,8 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.service.GlobalFuncService
 import com.luckyzyx.luckytool.ui.activity.MainActivity
-import com.luckyzyx.luckytool.ui.compose.components.ActionListDialog
-import com.luckyzyx.luckytool.ui.compose.components.ChoiceItem
 import com.luckyzyx.luckytool.ui.compose.components.MainPageActivationEffect
 import com.luckyzyx.luckytool.ui.service.XposedServiceBridge
 import com.luckyzyx.luckytool.ui.shell.ShellBadgeState
@@ -35,7 +32,6 @@ import com.luckyzyx.luckytool.ui.theme.LocalUiMode
 import com.luckyzyx.luckytool.ui.theme.UiMode
 import com.luckyzyx.luckytool.utils.DeviceInfoEntry
 import com.luckyzyx.luckytool.utils.DeviceUtils
-import com.luckyzyx.luckytool.utils.DonateUtils
 import com.luckyzyx.luckytool.utils.PrefState
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
 import com.luckyzyx.luckytool.utils.SettingsPrefs
@@ -93,8 +89,6 @@ fun HomePage(activity: MainActivity, isCurrentPage: Boolean = true) {
     var pendingOsVersion by remember { mutableStateOf("") }
     var showRestartMenu by remember { mutableStateOf(false) }
     var showOptimizeDex by remember { mutableStateOf(false) }
-    var showDonateList by remember { mutableStateOf(false) }
-    var showQrType by remember { mutableIntStateOf(-1) }
     var updateStage by remember { mutableStateOf<UpdateStage?>(null) }
 
     fun checkDexOptimize(controller: com.luckyzyx.luckytool.IGlobalFuncController?) {
@@ -173,8 +167,8 @@ fun HomePage(activity: MainActivity, isCurrentPage: Boolean = true) {
         ),
         onRestart = { showRestartMenu = true },
         onAbout = {
-            aboutText = if (settings.getBoolean("hidden_function", false)) "忆清鸣、luckyzyx T"
-                else "忆清鸣、luckyzyx"
+            aboutText = if (settings.getBoolean("hidden_function", false)) "CodexofLost T"
+                else "CodexofLost"
             showAbout = true
         },
         onUpdate = { updateClick?.invoke() },
@@ -183,13 +177,6 @@ fun HomePage(activity: MainActivity, isCurrentPage: Boolean = true) {
             context.copyStr(DeviceUtils.getOTACOnfigs())
             context.showToast(context.getString(R.string.home_device_info_copied))
         },
-        onDonate = {
-            context.openUrl(
-                if (zh) "https://docs.qq.com/doc/DS2ZDZlNIeUlpdlV1"
-                else "https://luckyzyx.github.io/LuckyTool_Doc/en/donate"
-            )
-        },
-        onDonateMethods = { showDonateList = true },
         onOpenNotice = { context.openUrl("https://luckyzyx.github.io/LuckyTool_Doc/use/download_link") },
     )
 
@@ -204,9 +191,9 @@ fun HomePage(activity: MainActivity, isCurrentPage: Boolean = true) {
                     val newValue = !settings.getBoolean("hidden_function", false)
                     settings.set("hidden_function", newValue)
                     aboutText = if (newValue) {
-                        "忆清鸣、luckyzyx T"
+                        "CodexofLost T"
                     } else {
-                        "忆清鸣、luckyzyx"
+                        "CodexofLost"
                     }
                 },
                 onDismiss = { showAbout = false },
@@ -227,9 +214,9 @@ fun HomePage(activity: MainActivity, isCurrentPage: Boolean = true) {
                                     val newValue = !settings.getBoolean("hidden_function", false)
                                     settings.set("hidden_function", newValue)
                                     aboutText = if (newValue) {
-                                        "忆清鸣、luckyzyx T"
+                                        "CodexofLost T"
                                     } else {
-                                        "忆清鸣、luckyzyx"
+                                        "CodexofLost"
                                     }
                                 },
                             ),
@@ -305,44 +292,6 @@ fun HomePage(activity: MainActivity, isCurrentPage: Boolean = true) {
             ),
             confirmFirst = true,
         ) { showOptimizeDex = false }
-    }
-
-    if (showDonateList) {
-        // 原来 Miuix / Material 两条线各手写一遍同一个动作列表，差异只在容器组件；
-        // 统一交给 ActionListDialog 后只剩一份数据，且改用 key 而不是下标路由：
-        // patreon 在非中文环境插在末尾，用下标判断就得依赖列表长度，key 不随插入位置漂移。
-        val donateItems = arrayListOf(
-            ChoiceItem(key = "qq", title = stringResource(R.string.qq)),
-            ChoiceItem(key = "wechat", title = stringResource(R.string.wechat)),
-            ChoiceItem(key = "alipay", title = stringResource(R.string.alipay)),
-        )
-        // 非中文环境追加 patreon（原实现在下标 3 处 add，等价于追加到末尾）
-        if (!zh) {
-            donateItems.add(ChoiceItem(key = "patreon", title = stringResource(R.string.patreon)))
-        }
-        ActionListDialog(
-            // 原来两条线都没有标题，ActionListDialog 的 title 必填，用捐赠入口自己的文案补上
-            title = stringResource(R.string.donate),
-            items = donateItems,
-            onDismiss = { showDonateList = false },
-            onSelect = { item ->
-                // 先关弹层再执行动作，保持原实现里 showDonateList = false 在路由之前的顺序
-                showDonateList = false
-                when (item.key) {
-                    "qq" -> showQrType = 0
-                    "wechat" -> showQrType = 1
-                    "alipay" -> showQrType = 2
-                    "patreon" -> context.openUrl("https://www.patreon.com/LuckyTool")
-                }
-            },
-            // 原两条线都没有可点的按钮（Miuix 无按钮行、Material 是空 confirmButton），
-            // 所以这里不造「取消」：showCancel = false 让整行动作区都不画
-            showCancel = false,
-        )
-    }
-
-    if (showQrType >= 0) {
-        DonateUtils.DonateQRDialog(showQrType) { showQrType = -1 }
     }
 
     when (val stage = updateStage) {

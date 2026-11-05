@@ -178,12 +178,12 @@ class MainPagerTest {
     @Test
     fun `preloaded pages load only on activation and only the current page refreshes on resume`() {
         PagerHost().use { h ->
-            assertEquals(5, h.instances.size)
-            assertEquals(listOf(0, 0, 1, 0, 0), MainTab.entries.map { h.loads[it] ?: 0 })
+            assertEquals(4, h.instances.size)
+            assertEquals(listOf(1, 0, 0, 0), MainTab.entries.map { h.loads[it] ?: 0 })
             val initialInstances = h.instances.toMap()
-            h.ui.clickLabel("其他")
+            h.ui.clickLabel("功能")
             h.ui.advance()
-            assertEquals(1, h.loads[MainTab.Other])
+            assertEquals(1, h.loads[MainTab.Function])
             h.ui.clickLabel("主页")
             h.ui.advance()
             assertEquals(1, h.loads[MainTab.Home])
@@ -191,7 +191,7 @@ class MainPagerTest {
             h.ui.controller.pause().stop().start().resume()
             h.ui.advance()
             assertEquals(1, h.resumes[MainTab.Home])
-            assertEquals(0, h.resumes[MainTab.Other] ?: 0)
+            assertEquals(0, h.resumes[MainTab.Function] ?: 0)
         }
     }
 
@@ -290,7 +290,7 @@ class MainPagerTest {
                     ).use { h ->
                         val tabs = h.ui.nodes().filter { it.config.getOrNull(SemanticsProperties.Role) == Role.Tab &&
                             it.config.getOrNull(SemanticsActions.OnClick)?.action != null }
-                        assertEquals(5, tabs.size)
+                        assertEquals(4, tabs.size)
                         for (tab in tabs) {
                             val bounds = tab.boundsInRoot
                             assertTrue("$style target width: $bounds", bounds.width >= 48 * 2.2f - 1)
@@ -446,7 +446,7 @@ class MainPagerTest {
                     LocalPagerInterceptionMode provides gestureMode,
                 ) {
                     LuckyTheme(AppSettings(colorMode = color, dynamicColor = false), uiMode = this.mode) {
-                        val pager = rememberPagerState(initialPage = 2) { MainTab.entries.size }
+                        val pager = rememberPagerState(initialPage = MainTab.Home.ordinal) { MainTab.entries.size }
                         val mainState = rememberMainPagerState(pager)
                         SideEffect { state = mainState }
                         MainPagerBackHandler(mainState, enabled = active)

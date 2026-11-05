@@ -93,11 +93,6 @@ class HomeDashboardTest {
             assertNotNull(h.ui.textNode("收起详细信息"))
             h.ui.clickText("收起详细信息")
             h.ui.advance()
-            h.scrollTo("支持开发")
-            h.ui.clickText("支持开发")
-            h.longClick("支持开发")
-            assertEquals(1, h.donate)
-            assertEquals(1, h.donateMethods)
             h.scrollTo("更多设备信息")
             h.ui.clickText("更多设备信息")
             h.ui.advance()
@@ -126,9 +121,6 @@ class HomeDashboardTest {
                 val bounds = h.ui.textNode(model)!!.boundsInRoot
                 assertTrue(bounds.left >= 0 && bounds.right <= 720)
                 h.ui.snapshot("home-${mode.name.lowercase()}-large-rtl")
-                h.scrollTo("支持开发")
-                h.ui.clickText("支持开发")
-                assertEquals(1, h.donate)
             }
         }
     }
@@ -179,7 +171,7 @@ class HomeDashboardTest {
                     LocalFloatingBottomBarStyle provides FloatingBottomBarStyle.IosLike,
                 ) {
                     LuckyTheme(AppSettings(colorMode = color, dynamicColor = false), uiMode = this.mode) {
-                        val pager = rememberMainPagerState(rememberPagerState(initialPage = 2) { 5 })
+                        val pager = rememberMainPagerState(rememberPagerState(initialPage = MainTab.Home.ordinal) { MainTab.entries.size })
                         MainTabs(pager, isActive = true) { tab, _ ->
                             if (tab == MainTab.Home) {
                                 HomeDashboard(

@@ -4,13 +4,13 @@ synced_commit: "03890a4df"
 synced_at: "2026-11-05T11:22:00Z"
 ---
 
-# Project Context: LuckyTool
+# Project Context: RUI Tool
 
 ## 1. Quick Specs & Project Cockpit
 
 | Property | Details / Specification |
 | :--- | :--- |
-| **Identifier** | `com.luckyzyx.luckytool` |
+| **Identifier** | `com.codexoflost.rui` |
 | **Runtime / Platform** | Kotlin 2.1 / JVM 21, Android SDK 30–37 (`compileSdk = 37`, `targetSdk = 37`, `minSdk = 30`) |
 | **Toolchain & Prerequisites** | JDK 21, Gradle, Android NDK (target `arm64-v8a`), LSPosed / LibXposed runtime |
 | **Environment & Config** | `gradle.properties`, `app/version.properties`, `local.properties` |
@@ -84,6 +84,6 @@ fast-gradlew assembleRelease
 # Unit Test Execution
 fast-gradlew test
 
-# Stream LuckyTool Logs via pidcat
-pidcat com.luckyzyx.luckytool
+# Stream RUI Tool Logs via pidcat
+pidcat com.codexoflost.rui
 ```

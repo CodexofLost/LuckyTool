@@ -24,14 +24,11 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.AdminPanelSettings
 import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.DisplaySettings
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.Feedback
 import androidx.compose.material.icons.rounded.Fingerprint
 import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material.icons.rounded.Restore
 import androidx.compose.material.icons.rounded.SaveAlt
 import androidx.compose.material.icons.rounded.SystemUpdate
-import androidx.compose.material.icons.rounded.Translate
 import androidx.compose.material.icons.rounded.VisibilityOff
 import androidx.compose.material.icons.rounded.Widgets
 import androidx.compose.material3.AlertDialog
@@ -46,15 +43,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.luckyzyx.luckytool.R
 import com.luckyzyx.luckytool.ui.activity.MainActivity
-import com.luckyzyx.luckytool.ui.compose.components.ActionListDialog
-import com.luckyzyx.luckytool.ui.compose.components.ChoiceItem
 import com.luckyzyx.luckytool.ui.compose.components.LocalScopeTopInset
 import com.luckyzyx.luckytool.ui.compose.components.ScopeScreen
 import com.luckyzyx.luckytool.ui.compose.components.PrefIcon
@@ -65,7 +59,6 @@ import com.luckyzyx.luckytool.ui.theme.ThemePrefs
 import com.luckyzyx.luckytool.ui.theme.UiMode
 import com.luckyzyx.luckytool.utils.AppUtils
 import com.luckyzyx.luckytool.utils.BiometricUtils
-import com.luckyzyx.luckytool.utils.DonateUtils
 import com.luckyzyx.luckytool.utils.FileUtils
 import com.luckyzyx.luckytool.utils.IntentPrefs
 import com.luckyzyx.luckytool.utils.LogUtils
@@ -81,7 +74,6 @@ import com.luckyzyx.luckytool.utils.clearAllPrefs
 import com.luckyzyx.luckytool.utils.formatDate
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.getOSVersionName
-import com.luckyzyx.luckytool.utils.isZh
 import com.luckyzyx.luckytool.utils.openUrl
 import com.luckyzyx.luckytool.utils.prefsData
 import com.luckyzyx.luckytool.utils.prefsForTarget
@@ -105,8 +97,6 @@ import top.yukonga.miuix.kmp.basic.TextButton as MiuixTextButton
 fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
     val context = LocalContext.current
     val settings = remember { PrefState.of(context, SettingsPrefs) }
-    // 以 Configuration 作 key：语言切换后 isZh 需要重新求值
-    val zh = remember(LocalConfiguration.current) { isZh(context) }
     var pendingRestoreJson by remember { mutableStateOf<JSONObject?>(null) }
 
     // 备份仍走系统文件选择器（落点由用户确认），只是把选择器的起始目录预设成 Download/LuckyTool；
@@ -117,7 +107,7 @@ fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
         if (uri != null) writeBackupData(activity, uri)
     }
     val startBackup: () -> Unit = {
-        backupLauncher.launch("LuckyTool_" + formatDate("yyyyMMdd_HHmmss") + "_backup.json")
+        backupLauncher.launch("RUITool_" + formatDate("yyyyMMdd_HHmmss") + "_backup.json")
     }
     val restoreLauncher = rememberLauncherForActivityResult(
         OpenBackupDocument
@@ -134,11 +124,8 @@ fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
         context.getSystemService(KeyguardManager::class.java).isDeviceSecure
     }
 
-    var showDonateList by remember { mutableStateOf(false) }
-    var showQrType by remember { mutableStateOf(-1) }
     var showBackupDialog by remember { mutableStateOf(false) }
     var showClearDialog by remember { mutableStateOf(false) }
-    var showFeedbackDialog by remember { mutableStateOf(false) }
 
     MaterialPageScaffold(
         title = stringResource(R.string.nav_setting),
@@ -177,13 +164,6 @@ fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
             val restoreDataTitle = stringResource(R.string.restore_data)
             val clearAllDataTitle = stringResource(R.string.clear_all_data)
             val clearAllDataSummary = stringResource(R.string.clear_all_data_summary)
-            val donateTitle = stringResource(R.string.donate)
-            val donateSummary = stringResource(R.string.donate_summary)
-            val feedbackDownloadTitle = stringResource(R.string.feedback_download)
-            val feedbackDownloadSummary = stringResource(R.string.feedback_download_summary)
-            val participateTranslationTitle = stringResource(R.string.participate_translation)
-            val participateTranslationSummary =
-                stringResource(R.string.participate_translation_summary)
             val appPermissionTitle = stringResource(R.string.app_permission)
             val appPermissionSummary = stringResource(R.string.app_permission_summary)
             ScopeScreen(
@@ -287,7 +267,7 @@ fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
                     title = restoreDataTitle,
                     leading = { PrefIcon(Icons.Rounded.Restore) },
                     onClick = {
-                        FileUtils.checkDownloadDir(context, "LuckyTool").apply {
+                        FileUtils.checkDownloadDir(context, "RUITool").apply {
                             if (isFile) delete()
                             if (!exists()) mkdirs()
                         }
@@ -300,29 +280,6 @@ fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
                     leading = { PrefIcon(Icons.Rounded.Delete) },
                     onClick = { showClearDialog = true },
                 )
-
-                // ---------------- 关于 ----------------
-                group()
-                click(
-                    title = donateTitle,
-                    summary = donateSummary,
-                    leading = { PrefIcon(Icons.Rounded.FavoriteBorder) },
-                    onClick = { showDonateList = true },
-                )
-                click(
-                    title = feedbackDownloadTitle,
-                    summary = feedbackDownloadSummary,
-                    leading = { PrefIcon(Icons.Rounded.Feedback) },
-                    onClick = { showFeedbackDialog = true },
-                )
-                click(
-                    title = participateTranslationTitle,
-                    summary = participateTranslationSummary,
-                    leading = { PrefIcon(Icons.Rounded.Translate) },
-                    onClick = {
-                        context.openUrl("https://github.com/luckyzyx/LuckyTool-Localization")
-                    },
-                )
             }
         }
         if (uiMode == UiMode.Miuix) {
@@ -332,44 +289,6 @@ fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
         } else {
             scopeContent()
         }
-    }
-
-    if (showDonateList) {
-        // 回调 lambda 内没有 Composer，取一次给 lambda 捕获
-        val donationListTitle = stringResource(R.string.donation_list)
-        // key 用渠道标识而不是下标：中文环境没有 patreon / paypal，「捐赠列表」的下标会跟着变
-        val donateItems = arrayListOf(
-            ChoiceItem(key = "qq", title = stringResource(R.string.qq)),
-            ChoiceItem(key = "wechat", title = stringResource(R.string.wechat)),
-            ChoiceItem(key = "alipay", title = stringResource(R.string.alipay)),
-        )
-        if (!zh) {
-            donateItems.add(ChoiceItem(key = "patreon", title = stringResource(R.string.patreon)))
-            donateItems.add(ChoiceItem(key = "paypal", title = stringResource(R.string.paypal)))
-        }
-        donateItems.add(ChoiceItem(key = "donation_list", title = donationListTitle))
-        ActionListDialog(
-            // 原来没有标题，ActionListDialog 的 title 必填，用这个入口自己的文案补上
-            title = stringResource(R.string.donate),
-            items = donateItems,
-            onDismiss = { showDonateList = false },
-            onSelect = { item ->
-                // 先关再执行动作，保持原实现里 showDonateList = false 在路由之前的顺序
-                showDonateList = false
-                when (item.key) {
-                    "qq" -> showQrType = 0
-                    "wechat" -> showQrType = 1
-                    "alipay" -> showQrType = 2
-                    "patreon" -> context.openUrl("https://www.patreon.com/LuckyTool")
-                    "paypal" -> context.openUrl("https://paypal.me/luckyzyx")
-                    else -> activity.requestFunctionNavigation("donate", donationListTitle)
-                }
-            },
-        )
-    }
-
-    if (showQrType >= 0) {
-        DonateUtils.DonateQRDialog(showQrType) { showQrType = -1 }
     }
 
     if (showClearDialog) {
@@ -424,40 +343,6 @@ fun SettingPage(activity: MainActivity, onOpenTheme: () -> Unit = {}) {
                 },
             )
         }
-    }
-
-    if (showFeedbackDialog) {
-        val feedbackItems = listOf(
-            ChoiceItem(key = "coolmarket", title = stringResource(R.string.coolmarket)),
-            ChoiceItem(key = "module_doc", title = stringResource(R.string.module_doc)),
-            ChoiceItem(key = "qq_chat_group", title = stringResource(R.string.qq_chat_group)),
-            ChoiceItem(key = "qq_channel", title = stringResource(R.string.qq_channel)),
-            ChoiceItem(key = "telegram_channel", title = stringResource(R.string.telegram_channel)),
-            ChoiceItem(key = "lsposed_repo", title = stringResource(R.string.lsposed_repo)),
-        )
-        ActionListDialog(
-            // 原来没有标题，ActionListDialog 的 title 必填，用这个入口自己的文案补上
-            title = stringResource(R.string.feedback_download),
-            items = feedbackItems,
-            onDismiss = { showFeedbackDialog = false },
-            onSelect = { item ->
-                // 先关再打开链接，保持原实现里 showFeedbackDialog = false 在路由之前的顺序
-                showFeedbackDialog = false
-                when (item.key) {
-                    "coolmarket" -> context.openUrl("coolmarket://u/1930284")
-                    "module_doc" -> context.openUrl("https://luckyzyx.gitlab.io/LuckyTool_Doc")
-                    "qq_chat_group" -> context.openUrl(
-                        "http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=3fYu6lT8IHrBPKAfFTNSHbd8wcWX0oGs&authKey=dyIpjTWH8KWHMU3v6gI05T0bAzr6XigJKasMiCwmco1%2F8BRtPCN%2B1zOGgXyK7IUB&noverify=0&group_code=663884734"
-                    )
-
-                    "qq_channel" -> context.openUrl("https://pd.qq.com/s/ahjm4zyxb")
-                    "telegram_channel" -> context.openUrl("https://t.me/LuckyTool")
-                    "lsposed_repo" -> context.openUrl(
-                        "https://modules.lsposed.org/module/com.luckyzyx.luckytool"
-                    )
-                }
-            },
-        )
     }
 
     // 备份前确认：展示当前四个 prefs 各自的落点（remote 依赖框架 service 可用）
@@ -802,4 +687,4 @@ private fun writeRestoreData(context: Context, json: JSONObject) {
 private val BackupPrefs = listOf(ModulePrefs, IntentPrefs, SettingsPrefs, OtherPrefs)
 
 /** 备份目录（外部存储相对路径）：只用来预设文件选择器打开的位置，真实落点由用户在选择器里确认 */
-private const val DOWNLOAD_TOOL_DIR = "Download/LuckyTool"
+private const val DOWNLOAD_TOOL_DIR = "Download/RUITool"
