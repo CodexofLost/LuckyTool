@@ -22,6 +22,10 @@ object LauncherRelatedPage {
     ) {
         val c = requireNotNull(context) { "ScopeScreen 未注入 Context" }
 
+        val launcherAnimTier = state.getString("customized_launcher_anim_level", "-1")
+        val isTierAOrAPlus = launcherAnimTier in arrayOf("1", "2")
+        val isTierBOrBPlus = launcherAnimTier in arrayOf("3", "4")
+
         category(c.getString(R.string.category_blur_and_animation))
         list(
             key = "customized_launcher_anim_level",
@@ -49,7 +53,11 @@ object LauncherRelatedPage {
             key = "enable_wallpaper_zoom_animation",
             title = c.getString(R.string.enable_wallpaper_zoom_animation),
             summary = arraySummaryLine(
-                c.getString(R.string.enable_wallpaper_zoom_animation_summary),
+                if (isTierBOrBPlus) {
+                    c.getString(R.string.wallpaper_zoom_tier_b_bypass)
+                } else {
+                    c.getString(R.string.enable_wallpaper_zoom_animation_summary)
+                },
                 c.getString(R.string.need_restart_scope),
             ),
         )
@@ -58,7 +66,11 @@ object LauncherRelatedPage {
             key = "force_enable_recents_stack_layout",
             title = c.getString(R.string.force_enable_recents_stack_layout),
             summary = arraySummaryLine(
-                c.getString(R.string.force_enable_recents_stack_layout_summary),
+                if (isTierBOrBPlus) {
+                    c.getString(R.string.recents_stack_tier_b_bypass)
+                } else {
+                    c.getString(R.string.force_enable_recents_stack_layout_summary)
+                },
                 c.getString(R.string.need_restart_scope),
             ),
         )
@@ -66,8 +78,13 @@ object LauncherRelatedPage {
         switch(
             key = "disable_launcher_low_mem_limits",
             title = c.getString(R.string.disable_launcher_low_mem_limits),
+            enabled = !isTierAOrAPlus,
             summary = arraySummaryLine(
-                c.getString(R.string.disable_launcher_low_mem_limits_summary),
+                if (isTierAOrAPlus) {
+                    c.getString(R.string.disable_launcher_low_mem_included_in_tier_a)
+                } else {
+                    c.getString(R.string.disable_launcher_low_mem_limits_summary)
+                },
                 c.getString(R.string.need_restart_scope),
             ),
         )

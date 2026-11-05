@@ -1525,4 +1525,9 @@
     <string name="gaussian_blur_disabled_conflict_title">高斯模糊冲突提示</string>
     <string name="gaussian_blur_disabled_conflict_message">将系统高斯模糊级别设置为“已禁用”将同步关闭“通知与控制中心动态模糊”，否则会导致背景显示纯黑或无模糊。\n\n是否确认关闭并继续？</string>
     <string name="systemui_blur_requires_gaussian_message">启用通知与控制中心动态模糊需要系统高斯模糊处于开启状态。“Android 系统”页的高斯模糊效果级别已重置为默认 (-1)。</string>
+    <string name="sf_blurs_managed_by_sysui_blur">已由「通知与控制中心动态模糊」（状态栏控制中心页）自动接管并强制开启</string>
+    <string name="disable_launcher_low_mem_included_in_tier_a">已默认包含在旗舰 Tier A/A+ 档位中，内存不足降级限制已处于强制关闭状态</string>
+    <string name="gaussian_level_sysui_override_note">SystemUI 已被动态模糊强制锁定为级别 3</string>
+    <string name="wallpaper_zoom_tier_b_bypass">绕过 Tier B/B+ 限制并强制解锁桌面壁纸景深缩放动画</string>
+    <string name="recents_stack_tier_b_bypass">绕过 Tier B/B+ 限制并强制开启最近任务层叠卡片视图</string>
 </resources>

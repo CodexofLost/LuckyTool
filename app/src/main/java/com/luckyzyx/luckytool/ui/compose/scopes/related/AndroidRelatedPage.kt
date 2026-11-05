@@ -59,6 +59,12 @@ object AndroidRelatedPage {
                 c.getString(R.string.need_restart_system),
             ),
         )
+        val sysuiBlurActive = state.getBoolean("force_enable_systemui_blur_feature", false)
+        val gaussianSummaryExtra = if (sysuiBlurActive) {
+            " (" + c.getString(R.string.gaussian_level_sysui_override_note) + ")"
+        } else {
+            ""
+        }
         list(
             key = "customized_gaussian_blur_effect_level",
             title = c.getString(R.string.customized_gaussian_blur_effect_level),
@@ -66,7 +72,7 @@ object AndroidRelatedPage {
             entryValues = arrayOf("-1", "0", "1", "2", "3"),
             default = "-1",
             summary = arraySummaryLine(
-                c.getString(R.string.current_mode) + ": %s",
+                c.getString(R.string.current_mode) + ": %s$gaussianSummaryExtra",
                 c.getString(R.string.need_restart_system),
             ),
         )
@@ -157,8 +163,13 @@ object AndroidRelatedPage {
         switch(
             key = "sf_blurs_are_expensive_bypass",
             title = c.getString(R.string.sf_blurs_are_expensive_bypass),
+            enabled = !sysuiBlurActive,
             summary = arraySummaryLine(
-                c.getString(R.string.sf_blurs_are_expensive_bypass_summary),
+                if (sysuiBlurActive) {
+                    c.getString(R.string.sf_blurs_managed_by_sysui_blur)
+                } else {
+                    c.getString(R.string.sf_blurs_are_expensive_bypass_summary)
+                },
                 c.getString(R.string.need_restart_system),
             ),
         )

@@ -1710,4 +1710,9 @@
     <string name="gaussian_blur_disabled_conflict_title">Gaussian Blur Conflict</string>
     <string name="gaussian_blur_disabled_conflict_message">Setting Gaussian Blur Effect Level to \"Disabled\" conflicts with \"Notification &amp; QS Dynamic Live Blur\". Disabling this will turn off SystemUI Dynamic Live Blur as well.\n\nDo you want to proceed?</string>
     <string name="systemui_blur_requires_gaussian_message">Notification &amp; QS Dynamic Live Blur requires Gaussian Blur to be enabled. \"Gaussian Blur Effect Level\" in Android System page has been reset to Default (-1).</string>
+    <string name="sf_blurs_managed_by_sysui_blur">Automatically enabled and managed by Notification &amp; QS Dynamic Live Blur (StatusBar page)</string>
+    <string name="disable_launcher_low_mem_included_in_tier_a">Included in Tier A/A+ by default. Low-memory simplifications are permanently disabled</string>
+    <string name="gaussian_level_sysui_override_note">SystemUI locked to High (3) by Live Blur</string>
+    <string name="wallpaper_zoom_tier_b_bypass">Bypasses Tier B/B+ restrictions to restore live wallpaper depth animations</string>
+    <string name="recents_stack_tier_b_bypass">Bypasses Tier B/B+ restrictions to force card stack recents layout</string>
 </resources>
