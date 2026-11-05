@@ -1,7 +1,7 @@
 ---
-context_version: 1.3.0
-synced_commit: "cf84ff5c8"
-synced_at: "2026-11-05T14:43:00Z"
+context_version: 1.3.1
+synced_commit: "79ca7f4b4"
+synced_at: "2026-11-05T18:32:00Z"
 ---
 
 # Project Context: RUI Tool
@@ -30,7 +30,7 @@ synced_at: "2026-11-05T14:43:00Z"
 | **Personalization & Material Blur** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookUXDesign.kt` | Unlocks official ColorOS Personalizations Material Blur switch (`system_material_blur_enable` and `animationBlurrySwitch`) via `com.oplus.uxdesign.common.PlatformLevelUtils`. |
 | **AOD & UI Physics Engine** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookUIEngine.kt` | Unlocks genuine All-Day AOD (bypasses 10-second power saving tap mode on mid-range devices), Video Portrait AOD, WCG 2.0, curved edge clock display, and inspiration AOD via `AodFeatureOptions`. |
 | **AOD Settings & Customization** | `app/src/main/java/com/luckyzyx/luckytool/hook/hookers/HookAOD.kt` | Unlocks the official ColorOS "All Day" display mode radio button (`key_always_display_open`), Canvas/Silhouette AOD, and Omoji AOD via `E2.a`. |
-| **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/scopes/systemui/HookSystemUIFeature.kt` | Notification & QS shade dynamic live blur (`ForceEnableSystemUIDynamicBlur` via `force_enable_systemui_blur_feature`), and panoramic AOD unlock (`enable_panoramic_aod`). |
+| **SystemUI & Status Bar** | `app/src/main/java/com/luckyzyx/luckytool/hook/scopes/systemui/HookSystemUIFeature.kt` | Notification & QS shade dynamic live blur (`ForceEnableSystemUIDynamicBlur` via `force_enable_systemui_blur_feature`), and panoramic seamless AOD unlock (direct controller hooking on `SmoothTransitionController`, `AodFeatureOption`, `KeyguardFeatureOption` via `enable_panoramic_aod`). |
 | **Compose UI & Settings** | `app/src/main/java/com/luckyzyx/luckytool/ui/compose/MainActivity.kt` | Focused 3-page tree: `android_related`, `statusbar_control_center`, `launcher`, each with 1-tap in-page scope reload operations. |
 | **Bluryy Module Blueprint** | `.agents/bluryy-module-analysis.md` | Full reverse-engineering spec of `BlurryAnimations v2.9` Magisk module (properties, XML features). |
 
