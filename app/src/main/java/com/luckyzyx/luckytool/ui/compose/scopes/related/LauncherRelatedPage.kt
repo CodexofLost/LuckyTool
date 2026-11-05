@@ -16,7 +16,7 @@ object LauncherRelatedPage {
         pageKey = "launcher",
         prefsName = ModulePrefs,
         packName = "com.android.launcher",
-        scopes = arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers"),
+        scopes = arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers", "com.oplus.uxdesign"),
         restartEnabled = true,
         isVisible = { checkPackName("com.android.launcher") },
     ) {
@@ -43,8 +43,13 @@ object LauncherRelatedPage {
         switch(
             key = "enable_folder_material_blur",
             title = c.getString(R.string.enable_folder_material_blur),
+            enabled = !isTierAOrAPlus,
             summary = arraySummaryLine(
-                c.getString(R.string.enable_folder_material_blur_summary),
+                if (isTierAOrAPlus) {
+                    c.getString(R.string.folder_blur_included_in_tier_a)
+                } else {
+                    c.getString(R.string.enable_folder_material_blur_summary)
+                },
                 c.getString(R.string.need_restart_scope),
             ),
         )
@@ -52,8 +57,11 @@ object LauncherRelatedPage {
         switch(
             key = "enable_wallpaper_zoom_animation",
             title = c.getString(R.string.enable_wallpaper_zoom_animation),
+            enabled = !isTierAOrAPlus,
             summary = arraySummaryLine(
-                if (isTierBOrBPlus) {
+                if (isTierAOrAPlus) {
+                    c.getString(R.string.wallpaper_zoom_included_in_tier_a)
+                } else if (isTierBOrBPlus) {
                     c.getString(R.string.wallpaper_zoom_tier_b_bypass)
                 } else {
                     c.getString(R.string.enable_wallpaper_zoom_animation_summary)
@@ -94,14 +102,14 @@ object LauncherRelatedPage {
             title = c.getString(R.string.restart_launcher),
             summary = c.getString(R.string.restart_launcher_summary),
             onClick = {
-                RestartMenuUtils.restartScope(c, arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers"))
+                RestartMenuUtils.restartScope(c, arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers", "com.oplus.uxdesign"))
             },
         )
         click(
             title = c.getString(R.string.reload_hooker_page),
             summary = c.getString(R.string.reload_hooker_page_summary),
             onClick = {
-                RestartMenuUtils.restartHooker(c, arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers"))
+                RestartMenuUtils.restartHooker(c, arrayOf("com.android.launcher", "com.oppo.launcher", "com.oplus.wallpapers", "com.oplus.uxdesign"))
             },
         )
     }

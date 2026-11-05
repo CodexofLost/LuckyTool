@@ -8,6 +8,7 @@ import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.luckyzyx.luckytool.hook.hookers.HookAndroid
 import com.luckyzyx.luckytool.hook.hookers.HookLauncher
 import com.luckyzyx.luckytool.hook.hookers.HookSystemUI
+import com.luckyzyx.luckytool.hook.hookers.HookUXDesign
 import com.luckyzyx.luckytool.hook.hookers.HookWallpapers
 import org.lsposed.lsparanoid.Obfuscate
 import java.io.File
@@ -24,6 +25,7 @@ import java.io.File
         "com.android.launcher",
         "com.oppo.launcher",
         "com.oplus.wallpapers",
+        "com.oplus.uxdesign",
     ],
 )
 @Obfuscate
@@ -65,5 +67,8 @@ class MainHook : YukiHookXposedModule {
 
         // 壁纸与个性化 (Live Wallpaper Blur, Motion & Style Filters)
         loadApp("com.oplus.wallpapers", HookWallpapers)
+
+        // 个性化与材质模糊设置 (Personalization & System Material Blur Settings)
+        loadApp("com.oplus.uxdesign", HookUXDesign)
     }
 }

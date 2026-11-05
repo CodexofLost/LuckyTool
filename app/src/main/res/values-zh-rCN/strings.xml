@@ -1530,4 +1530,6 @@
     <string name="gaussian_level_sysui_override_note">SystemUI 已被动态模糊强制锁定为级别 3</string>
     <string name="wallpaper_zoom_tier_b_bypass">绕过 Tier B/B+ 限制并强制解锁桌面壁纸景深缩放动画</string>
     <string name="recents_stack_tier_b_bypass">绕过 Tier B/B+ 限制并强制开启最近任务层叠卡片视图</string>
+    <string name="folder_blur_included_in_tier_a">已通过官方系统设置（system_material_blur_enable）原生包含在 Tier A/A+ 档位中</string>
+    <string name="wallpaper_zoom_included_in_tier_a">已通过 ColorOS 官方旗舰壁纸渲染管线原生包含在 Tier A/A+ 档位中</string>
 </resources>

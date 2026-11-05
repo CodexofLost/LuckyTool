@@ -153,6 +153,9 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.oplus.wallpapers.video_depth", true)
                 put("com.oplus.wallpapers.home_page_reflection_effect", true)
                 put("os.personalization.wallpaper.live.ripple.enable", true)
+                put("com.oplus.blur.support_upgrade_anim_material_blur", true)
+                put("com.android.launcher.support_dynamic_blur", true)
+                put("com.oplus.systemui.kg_disable_zoom_wallpaper", false)
             }
             if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)
