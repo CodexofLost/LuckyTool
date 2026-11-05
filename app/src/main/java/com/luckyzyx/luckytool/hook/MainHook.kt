@@ -6,8 +6,10 @@ import com.highcapable.yukihookapi.hook.factory.configure
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.luckyzyx.luckytool.hook.hookers.HookAndroid
+import com.luckyzyx.luckytool.hook.hookers.HookCOSA
 import com.luckyzyx.luckytool.hook.hookers.HookLauncher
 import com.luckyzyx.luckytool.hook.hookers.HookSystemUI
+import com.luckyzyx.luckytool.hook.hookers.HookUIEngine
 import com.luckyzyx.luckytool.hook.hookers.HookUXDesign
 import com.luckyzyx.luckytool.hook.hookers.HookWallpapers
 import org.lsposed.lsparanoid.Obfuscate
@@ -26,6 +28,8 @@ import java.io.File
         "com.oppo.launcher",
         "com.oplus.wallpapers",
         "com.oplus.uxdesign",
+        "com.oplus.cosa",
+        "com.oplus.uiengine",
     ],
 )
 @Obfuscate
@@ -70,5 +74,11 @@ class MainHook : YukiHookXposedModule {
 
         // 个性化与材质模糊设置 (Personalization & System Material Blur Settings)
         loadApp("com.oplus.uxdesign", HookUXDesign)
+
+        // 游戏性能调度与插帧 (COSA HyperBoost, 120FPS MEMC, Super Resolution, GT Mode)
+        loadApp("com.oplus.cosa", HookCOSA)
+
+        // 息屏显示与流体动效 (UIEngine AOD, All-Day Display, Video Portrait AOD)
+        loadApp("com.oplus.uiengine", HookUIEngine)
     }
 }

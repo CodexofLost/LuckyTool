@@ -156,6 +156,9 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)
                 put("com.android.launcher.support_dynamic_blur", true)
                 put("com.oplus.systemui.kg_disable_zoom_wallpaper", false)
+                put("os.personalization.theme.inspiration_aod.disable", false)
+                put("com.android.systemui.prevented_screen_burn", true)
+                put("com.oplus.aod.scene_info_enable", true)
             }
             if (folderBlur) {
                 put("com.oplus.blur.support_upgrade_anim_material_blur", true)
