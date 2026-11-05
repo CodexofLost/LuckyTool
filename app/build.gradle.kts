@@ -30,9 +30,10 @@ android {
         ndk.abiFilters.addAll(arrayOf("arm64-v8a"/*, "armeabi-v7a", "x86", "x86_64"*/))
     }
     val customStoreFile = rootProject.extra.get("storeFile") as? String ?: ""
-    if (customStoreFile.isNotEmpty() && file(customStoreFile).exists()) {
-        signingConfigs {
-            all {
+    val hasCustomKeystore = customStoreFile.isNotEmpty() && file(customStoreFile).exists()
+    signingConfigs {
+        if (hasCustomKeystore) {
+            create("release") {
                 enableV1Signing = true
                 enableV2Signing = true
                 enableV3Signing = true
@@ -53,7 +54,11 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = if (hasCustomKeystore) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
         }
         debug {
             isDebuggable = false
