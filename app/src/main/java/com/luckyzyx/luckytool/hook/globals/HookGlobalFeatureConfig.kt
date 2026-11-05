@@ -36,22 +36,8 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
                 put("oplus.software.display.osie_aisdr2hdr_support", false)
             }
 
-            // Flagship Tier A/A+ Display & AOD Features
-            val launcherAnimTier = prefs.getString("customized_launcher_anim_level", "-1")
-            val launcherHigh = prefs.getBoolean("force_enable_launcher_high_level", false)
-            val isTierAOrAPlus = (launcherAnimTier in arrayOf("1", "2")) || (launcherAnimTier == "-1" && launcherHigh)
-
-            if (isTierAOrAPlus) {
-                // UI Engine & AOD Capabilities
-                put("oplus.software.disable_aod_all_day_mode", false)
-                put("oplus.software.display.video_mode_aod_support", true)
-                put("oplus.software.display.wcg_2.0_support", true)
-                put("oplus.uiengine.support_left_swipe", true)
-                put("oplus.software.display.resolution_switch_support", true)
-            }
-
             val panoramicAod = prefs.getBoolean("enable_panoramic_aod", false)
-            if (panoramicAod || isTierAOrAPlus) {
+            if (panoramicAod) {
                 put("oplus.software.display.aod_ramless_support", false)
             }
         }
