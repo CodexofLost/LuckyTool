@@ -5,6 +5,7 @@ import com.luckyzyx.luckytool.ui.compose.scopes.ScopePageSpec
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.RestartMenuUtils
 import com.luckyzyx.luckytool.utils.arraySummaryLine
+import com.luckyzyx.luckytool.utils.sendPrefsValue
 import com.luckyzyx.luckytool.utils.showToast
 
 /**
@@ -49,6 +50,20 @@ object StatusBarControlCenterPage {
                 c.getString(R.string.need_restart_scope),
             ),
             notify = true,
+        )
+
+        category(c.getString(R.string.category_fluid_cloud_capsule))
+        switch(
+            key = "enable_fluid_cloud_capsule_live_alerts",
+            title = c.getString(R.string.enable_fluid_cloud_capsule_live_alerts),
+            summary = arraySummaryLine(
+                c.getString(R.string.enable_fluid_cloud_capsule_live_alerts_summary),
+                c.getString(R.string.need_restart_scope),
+            ),
+            notify = true,
+            onChange = { newValue ->
+                c.sendPrefsValue("system", "enable_fluid_cloud_capsule_live_alerts", newValue)
+            },
         )
 
         category(c.getString(R.string.category_scope_management))
