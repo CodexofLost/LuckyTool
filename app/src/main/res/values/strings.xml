@@ -318,6 +318,9 @@
     <string name="set_custom_music_fluid_cloud_whitelist">Set up music fluid cloud whitelist</string>
     <string name="disable_media_music_fluid_cloud_blacklist">Disable music fluid cloud blacklist</string>
     <string name="force_enable_media_music_fluid_cloud_ripple">Force enable media music fluid cloud ripple</string>
+    <string name="category_fluid_cloud_capsule">Fluid Cloud &amp; Live Capsules</string>
+    <string name="enable_fluid_cloud_capsule_live_alerts">Force enable Fluid Cloud &amp; Live Capsules</string>
+    <string name="enable_fluid_cloud_capsule_live_alerts_summary">Injects system properties and feature flags to unlock punch-hole capsule pills, Live Alerts, and Pantanal Live Bridge across ColorOS/OxygenOS</string>
     
     <!--StatusBarIcon-->
     <string name="StatusBarIcon">StatusBar Icon</string>

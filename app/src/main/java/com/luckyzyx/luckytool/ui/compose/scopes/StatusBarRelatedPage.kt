@@ -21,6 +21,7 @@ import com.luckyzyx.luckytool.ui.theme.UiMode
 import com.luckyzyx.luckytool.utils.A13
 import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
+import com.luckyzyx.luckytool.utils.arraySummaryLine
 import com.luckyzyx.luckytool.utils.getOSVersionCode
 import com.luckyzyx.luckytool.utils.sendPrefsValue
 
@@ -76,6 +77,22 @@ object StatusBarRelatedPage {
                 default = "0",
                 summary = c.getString(R.string.current_mode) + ": %s\n" +
                     c.getString(R.string.need_restart_system),
+            )
+        }
+        // 流体云与实时胶囊
+        if (getOSVersionCode >= 33) {
+            category(c.getString(R.string.category_fluid_cloud_capsule))
+            switch(
+                key = "enable_fluid_cloud_capsule_live_alerts",
+                title = c.getString(R.string.enable_fluid_cloud_capsule_live_alerts),
+                summary = arraySummaryLine(
+                    c.getString(R.string.enable_fluid_cloud_capsule_live_alerts_summary),
+                    c.getString(R.string.need_restart_scope),
+                ),
+                onChange = { newValue ->
+                    c.sendPrefsValue("system", "enable_fluid_cloud_capsule_live_alerts", newValue)
+                    c.sendPrefsValue("com.android.systemui", "enable_fluid_cloud_capsule_live_alerts", newValue)
+                },
             )
         }
         // 音乐流体云

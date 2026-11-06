@@ -14,16 +14,24 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
             val springOverscroll = prefs.getBoolean("enable_spring_overscroll", false)
             val parallelGestures = prefs.getBoolean("enable_parallel_gesture_animation", false)
             val adaptiveSmooth = prefs.getBoolean("enable_adaptive_smooth_animation", false)
+            val capsuleLiveAlerts = prefs.getBoolean("enable_fluid_cloud_capsule_live_alerts", false)
 
             if (springOverscroll) {
                 put("oplus.software.view.spring_over_scroller", true)
             }
 
+            if (parallelGestures || capsuleLiveAlerts) {
+                put("oplus.software.support_fluid_entry", true)
+                put("oplus.software.fluid_replace_ntf", true)
+            }
+
+            if (capsuleLiveAlerts) {
+                put("oplus.software.notification_alert_support_fifo", true)
+            }
+
             if (parallelGestures) {
                 put("oplus.software.support_blockable_animation", true)
                 put("oplus.software.support_quick_launchapp", true)
-                put("oplus.software.support_fluid_entry", true)
-                put("oplus.software.fluid_replace_ntf", true)
             }
 
             if (adaptiveSmooth) {

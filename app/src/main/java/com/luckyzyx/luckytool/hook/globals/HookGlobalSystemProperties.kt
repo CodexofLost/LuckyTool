@@ -86,6 +86,16 @@ object HookGlobalSystemProperties : YukiBaseHooker() {
             } else if (sysuiDynamicBlurPref == "0") {
                 put("persist.sys.oplus.systemui.dynamic_blur", "false")
             }
+
+            // Fluid Cloud & Live Alerts Capsule Unblock
+            val enableCapsuleLiveAlerts = prefs.getBoolean("enable_fluid_cloud_capsule_live_alerts", false)
+            if (enableCapsuleLiveAlerts) {
+                put("persist.sys.oplus.live_bridge.support", 1)
+                put("persist.sys.oplus.capsule.support", 1)
+                put("debug.oplus.capsule.enable", 1)
+                put("persist.sys.oplus.notification.alert", 1)
+                put("ro.oplus.support.notification.capsule", 1)
+            }
         }
         loadHooker(HookSystemProperties(list))
     }

@@ -53,6 +53,14 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.realme.systemui.low_mem_glass_mode_on", false)
             }
 
+            // Source SystemUI / MediaController 流体云状态栏胶囊
+            val capsuleLiveAlerts = preferences(ModulePrefs).getBoolean(
+                "enable_fluid_cloud_capsule_live_alerts", false
+            )
+            if (capsuleLiveAlerts) {
+                put("com.oplus.mediacontroller.fluidConfig", "{\"statusbar_enable_default\":1}")
+            }
+
             //Source SystemUI 启用手电筒亮度调节
 //            if (preferences(ModulePrefs).getBoolean("disable_flashlight_strength", false)) {
 //                put("oplus.camera.disable_flashlight_strength", false)
