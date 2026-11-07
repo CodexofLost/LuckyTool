@@ -53,12 +53,17 @@ class HookGlobalFeatureProvider(val dexKitBridge: DexKitBridge) : YukiBaseHooker
                 put("com.realme.systemui.low_mem_glass_mode_on", false)
             }
 
-            // Source SystemUI / MediaController 流体云状态栏胶囊
+            // Source SystemUI / MediaController / Pantanal / NotificationCenter 流体云状态栏胶囊与实时提醒
             val capsuleLiveAlerts = preferences(ModulePrefs).getBoolean(
                 "enable_fluid_cloud_capsule_live_alerts", false
             )
             if (capsuleLiveAlerts) {
                 put("com.oplus.mediacontroller.fluidConfig", "{\"statusbar_enable_default\":1}")
+                put("com.oplus.software.support.mini_capsule", true)
+                put("com.oplus.support_ai_seedling", true)
+                put("com.oplus.pantanal.ums.support_entrance_control", true)
+                put("com.oplus.seedling.support_entrance_control", true)
+                put("fluid_settings_capsule_to_card", true)
             }
 
             //Source SystemUI 启用手电筒亮度调节

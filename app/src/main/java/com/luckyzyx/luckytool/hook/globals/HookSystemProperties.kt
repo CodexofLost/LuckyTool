@@ -1,7 +1,6 @@
 package com.luckyzyx.luckytool.hook.globals
 
 import com.highcapable.kavaref.KavaRef.Companion.resolve
-import com.highcapable.yukihookapi.extension.kavaref.hook
 import com.highcapable.yukihookapi.extension.kavaref.hookAll
 import com.highcapable.yukihookapi.extension.kavaref.toClassOrNull
 import com.highcapable.yukihookapi.hook.entity.YukiBaseHooker
@@ -31,7 +30,7 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
                         }
                     }
                 }
-                firstMethod { name = "getBoolean"; returnType = Boolean::class }.hook {
+                method { name = "getBoolean"; returnType = Boolean::class }.hookAll {
                     before {
                         val key = firstArg().get<String>()
                         if (key.isNullOrBlank()) return@before
@@ -47,7 +46,7 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
                         }
                     }
                 }
-                firstMethod { name = "getInt"; returnType = Int::class }.hook {
+                method { name = "getInt"; returnType = Int::class }.hookAll {
                     before {
                         val key = firstArg().get<String>()
                         if (key.isNullOrBlank()) return@before
@@ -60,7 +59,7 @@ class HookSystemProperties(private val props: Map<String, Any>) : YukiBaseHooker
                         }
                     }
                 }
-                firstMethod { name = "getLong"; returnType = Long::class }.hook {
+                method { name = "getLong"; returnType = Long::class }.hookAll {
                     before {
                         val key = firstArg().get<String>()
                         if (key.isNullOrBlank()) return@before

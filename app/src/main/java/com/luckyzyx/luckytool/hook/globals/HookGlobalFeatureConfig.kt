@@ -27,6 +27,8 @@ object HookGlobalFeatureConfig : YukiBaseHooker() {
 
             if (capsuleLiveAlerts) {
                 put("oplus.software.notification_alert_support_fifo", true)
+                put("com.oplus.software.support.mini_capsule", true)
+                put("com.oplus.support_ai_seedling", true)
             }
 
             if (parallelGestures) {

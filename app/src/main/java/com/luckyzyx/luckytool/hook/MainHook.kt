@@ -6,6 +6,7 @@ import com.highcapable.yukihookapi.hook.factory.configure
 import com.highcapable.yukihookapi.hook.factory.encase
 import com.highcapable.yukihookapi.hook.xposed.YukiHookXposedModule
 import com.luckyzyx.luckytool.hook.hookers.HookAndroid
+import com.luckyzyx.luckytool.hook.hookers.HookFluidCloudCapsule
 import com.luckyzyx.luckytool.hook.hookers.HookLauncher
 import com.luckyzyx.luckytool.hook.hookers.HookSystemUI
 import com.luckyzyx.luckytool.hook.hookers.HookUXDesign
@@ -26,6 +27,10 @@ import java.io.File
         "com.oppo.launcher",
         "com.oplus.wallpapers",
         "com.oplus.uxdesign",
+        "com.oplus.pantanal.ums",
+        "com.oplus.notificationmanager",
+        "com.oplus.systemui.plugins",
+        "com.oplus.mediacontroller",
     ],
 )
 @Obfuscate
@@ -70,5 +75,11 @@ class MainHook : YukiHookXposedModule {
 
         // 个性化与材质模糊设置 (Personalization & System Material Blur Settings)
         loadApp("com.oplus.uxdesign", HookUXDesign)
+
+        // 流体云与实时胶囊 (Pantanal UMS, Notification Center, SystemUI Plugin, MediaController)
+        loadApp("com.oplus.pantanal.ums", HookFluidCloudCapsule)
+        loadApp("com.oplus.notificationmanager", HookFluidCloudCapsule)
+        loadApp("com.oplus.systemui.plugins", HookFluidCloudCapsule)
+        loadApp("com.oplus.mediacontroller", HookFluidCloudCapsule)
     }
 }

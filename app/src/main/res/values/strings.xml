@@ -321,6 +321,8 @@
     <string name="category_fluid_cloud_capsule">Fluid Cloud &amp; Live Capsules</string>
     <string name="enable_fluid_cloud_capsule_live_alerts">Force enable Fluid Cloud &amp; Live Capsules</string>
     <string name="enable_fluid_cloud_capsule_live_alerts_summary">Injects system properties and feature flags to unlock punch-hole capsule pills, Live Alerts, and Pantanal Live Bridge across ColorOS/OxygenOS</string>
+    <string name="open_live_alerts_settings">Live Alerts &amp; Capsule Settings</string>
+    <string name="open_live_alerts_settings_summary">Configure per-app Live Alerts permissions, capsule pills, and interaction cards in official settings</string>
     
     <!--StatusBarIcon-->
     <string name="StatusBarIcon">StatusBar Icon</string>

@@ -21,6 +21,7 @@ import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyHighBrightness
 import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyTileAutoStart
 import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyTouchSamplingRate
 import com.luckyzyx.luckytool.utils.GlobalKeyValue.keyTouchSamplingRateLevel
+import com.luckyzyx.luckytool.utils.ModulePrefs
 import com.luckyzyx.luckytool.utils.SDK
 import com.luckyzyx.luckytool.utils.SettingsPrefs
 import com.luckyzyx.luckytool.utils.getBoolean
@@ -95,6 +96,16 @@ class AutoStartControllerService : Service() {
                     command.add(CommandUtils.globalDCModeOppo)
                     command.add(CommandUtils.globalDCModeOplus)
                 }
+            }
+            // 流体云与实时胶囊系统属性与服务保活
+            if (getBoolean(ModulePrefs, "enable_fluid_cloud_capsule_live_alerts", false)) {
+                command.add("resetprop persist.sys.oplus.live_bridge.support 1")
+                command.add("resetprop persist.sys.oplus.capsule.support 1")
+                command.add("resetprop debug.oplus.capsule.enable 1")
+                command.add("resetprop persist.sys.oplus.notification.alert 1")
+                command.add("resetprop -n ro.oplus.support.notification.capsule 1")
+                command.add("pm enable com.oplus.pantanal.ums")
+                command.add("am startservice -a coloros.intent.action.ums.running.server -p com.oplus.pantanal.ums")
             }
             if (command.isNotEmpty()) ShellUtils.fastCmd(*command.toTypedArray())
             stopForeground(STOP_FOREGROUND_REMOVE)

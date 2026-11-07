@@ -295,6 +295,8 @@
     <string name="category_fluid_cloud_capsule">流体云与实时胶囊</string>
     <string name="enable_fluid_cloud_capsule_live_alerts">强制启用流体云与实时胶囊</string>
     <string name="enable_fluid_cloud_capsule_live_alerts_summary">强制注入系统属性与特性开关，解锁前摄挖孔胶囊、实时提醒以及 Pantanal Live Bridge 跨应用流体云通道</string>
+    <string name="open_live_alerts_settings">实时提醒与胶囊设置</string>
+    <string name="open_live_alerts_settings_summary">在官方系统设置中配置各应用的实时提醒权限、挖孔胶囊胶囊条以及卡片联动展示</string>
     <!--StatusBarIcon-->
     <string name="StatusBarIcon">状态栏图标</string>
     <string name="StatusBarIcon_summary">状态栏图标相关</string>
